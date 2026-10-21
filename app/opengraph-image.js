@@ -1,5 +1,5 @@
 import { ogCard, OG_SIZE } from "@/lib/og";
-export const size = OG_SIZE; export const contentType = "image/png"; export const alt = "Online name picker wheel";
+export const size = OG_SIZE; export const contentType = "image/png"; export const alt = "Free Secret Santa generator";
 export default function Image() {
-  return ogCard({ festive: false, kicker: "Free · No sign-up", title: "Online Name Picker Wheel", sub: "Paste your names, spin the wheel, get a fair random winner.", site: "onlinenamepickertool.com" });
+  return ogCard({ kicker: "Free Secret Santa generator", title: "Draw names online. Share wish lists.", sub: "One link for the whole group. Nobody draws themselves. No sign-up.", site: "secretsantageneratorapp.com" });
 }
