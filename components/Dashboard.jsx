@@ -10,6 +10,9 @@ import Festive from "./Festive";
 import XBanner from "./XBanner";
 import { Ornament, WishBar, Sheet } from "./bits";
 import { ExclusionGrid } from "./Wizard";
+import SignIn from "./SignIn";
+import { GOOGLE_CLIENT_ID, EMAIL_SIGNIN } from "@/lib/auth";
+const SIGNIN_ON = !!(GOOGLE_CLIENT_ID || EMAIL_SIGNIN);
 
 export default function Dashboard({ gid }) {
   const { state, error, tokens, reload, setFast } = useGroup(gid);
@@ -147,9 +150,11 @@ export default function Dashboard({ gid }) {
             </div>
           </div>
           {me?.reset_count > 0 && <p className="tiny muted panel" role="note">ℹ️ Your name was reset by the organizer {me.reset_count === 1 ? "once" : `${me.reset_count} times`}. A reset lets whoever picks the name next see its match, so if you didn't ask for this, tell the organizer and ask them to redraw names.</p>}
+          {me && !me.linked && SIGNIN_ON && <div className="panel stack"><h3>🔒 Keep your spot</h3><p className="small muted">Sign in with Google or email so you can open this on any device, nobody else can ever pick your name, and you get a reminder before the exchange. Optional.</p><button className="btn small" style={{ alignSelf: "flex-start" }} onClick={() => setSheet("signin")}>Sign in</button></div>}
           {me && !welcome && <PersonalLink gid={gid} />}
         </div>
       </div>
+      {sheet === "signin" && <SignIn close={() => setSheet(null)} next={`/g/${gid}`} />}
       {sheet === "settings" && <Settings gid={gid} state={state} tokens={tokens} close={() => setSheet(null)} reload={reload} />}
       {sheet === "excl" && <Exclusions gid={gid} state={state} tokens={tokens} close={() => setSheet(null)} reload={reload} />}
       {sheet === "remind" && <Reminder state={state} close={() => setSheet(null)} />}

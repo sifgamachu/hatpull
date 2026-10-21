@@ -292,3 +292,10 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
   .check{min-height:40px;align-items:center}
   input[type=checkbox],input[type=radio]{width:20px;height:20px}
 }
+
+/* Sign-in */
+.btn.google{background:#FFFFFF;color:#1F1F1F;box-shadow:inset 0 0 0 1px #747775;font-weight:600}
+.btn.google:hover{background:#F8F9FA;filter:none}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.linkish{background:none;border:0;font:inherit;cursor:pointer}
+.gbtn{min-height:44px;display:flex;justify-content:center}

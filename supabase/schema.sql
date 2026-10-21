@@ -250,7 +250,7 @@ begin
        'live_at', g.live_at, 'created_at', g.created_at, 'join_code', case when adm then g.join_code end),
     'is_admin', adm,
     'me', case when me.id is null then null else jsonb_build_object('id', me.id, 'name', me.name, 'receiver_id', me.receiver_id,
-       'drawn', coalesce(me.drawn_round = g.round, false), 'is_org', me.is_org, 'reset_count', me.reset_count) end,
+       'drawn', coalesce(me.drawn_round = g.round, false), 'is_org', me.is_org, 'reset_count', me.reset_count, 'linked', me.user_id is not null, 'linked_to_me', me.user_id is not null and me.user_id = auth.uid()) end,
     'members', coalesce((select jsonb_agg(x order by s) from (
        select m.sort as s, jsonb_build_object('id', m.id, 'name', m.name, 'kid', m.kid, 'parent_id', m.parent_id, 'is_org', m.is_org,
          'claimed', m.token is not null or m.kid, 'drawn', coalesce(m.drawn_round = g.round, false),

@@ -2,11 +2,12 @@
 const SB = (() => { try { return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || "https://rkpglmwjpwbrxbluvsqm.supabase.co").origin; } catch { return "https://rkpglmwjpwbrxbluvsqm.supabase.co"; } })();
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
-  `connect-src 'self' ${SB}`,
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "script-src 'self' 'unsafe-inline' https://accounts.google.com",
+  `connect-src 'self' ${SB} https://accounts.google.com`,
+  "frame-src https://accounts.google.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com",
   "font-src 'self' https://fonts.gstatic.com data:",
-  "img-src 'self' data: blob:",
+  "img-src 'self' data: blob: https://*.googleusercontent.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -24,7 +25,7 @@ const nextConfig = {
         { key: "X-Frame-Options", value: "DENY" },
         { key: "Content-Security-Policy", value: CSP },
         { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
-        { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+        { key: "Cross-Origin-Opener-Policy", value: "same-origin-allow-popups" },
         { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
       ],
     }];

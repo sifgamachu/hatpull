@@ -2,6 +2,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SiteAnalytics from "@/components/SiteAnalytics";
+import AuthSync from "@/components/AuthSync";
 
 export const metadata = {
   metadataBase: new URL("https://secretsantageneratorapp.com"),
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
           <Footer />
         </div>
         <SiteAnalytics />
+        <AuthSync />
       </body>
     </html>
   );

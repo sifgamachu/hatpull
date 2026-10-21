@@ -8,10 +8,11 @@ import { toast } from "@/lib/ui";
 import Festive from "./Festive";
 import XBanner from "./XBanner";
 import { Sheet } from "./bits";
+import SignIn from "./SignIn";
 
 export default function Join({ code }) {
   const router = useRouter();
-  const [info, setInfo] = useState(null), [err, setErr] = useState(""), [pick, setPick] = useState(null), [busy, setBusy] = useState(false);
+  const [info, setInfo] = useState(null), [err, setErr] = useState(""), [pick, setPick] = useState(null), [busy, setBusy] = useState(false), [signIn, setSignIn] = useState(null);
   useEffect(() => {
     rpc("hp_join_info", { p_code: code }).then(d => {
       if (!d) return setErr("missing");
@@ -32,6 +33,7 @@ export default function Join({ code }) {
       toast(`Welcome, ${pick.name}`); router.push(`/g/${r.id}?welcome=1`);
     } catch (e) {
       setBusy(false); setPick(null);
+      if (/protected/.test(e.message)) { setSignIn(pick); return; }
       toast(/taken/.test(e.message) ? "That name was just taken. Pick your own name." : "Couldn't join. Check your connection and try again.");
       rpc("hp_join_info", { p_code: code }).then(setInfo).catch(() => {});
     }
@@ -48,9 +50,10 @@ export default function Join({ code }) {
         {!xm && <p className="eyebrow">{info.occasion || "Celebration"}</p>}
         {xm ? <h2>Who are you joining as?</h2> : <h1 style={{ fontSize: 26 }}>Who are you joining as?</h1>}
         <p className="muted">{info.org_name} invited you to <b>{info.name}</b>{info.date ? ` on ${fmtDate(info.date, { month: "long", day: "numeric" })}` : ""}. Pick your name. Each name can only be picked once.</p>
-        <div className="optlist">{ppl.map(m => <button key={m.id} className="opt" disabled={m.claimed} onClick={() => setPick(m)}><span>{m.name}</span><span className={`pill ${m.claimed ? "" : "ok"}`}>{m.claimed ? "Joined" : "Pick"}</span></button>)}</div>
+        <div className="optlist">{ppl.map(m => <button key={m.id} className="opt" disabled={m.claimed && !m.protected} onClick={() => m.protected && !m.mine ? setSignIn(m) : setPick(m)}><span>{m.name}</span><span className={`pill ${m.claimed && !m.protected ? "" : "ok"}`}>{m.mine ? "You" : m.protected ? "🔒 Sign in" : m.claimed ? "Joined" : "Pick"}</span></button>)}</div>
         <p className="muted small">Not on the list? Ask {info.org_name} to add you.</p>
       </div>
+      {signIn && <SignIn close={() => setSignIn(null)} next={`/join/${code}`} why={`${signIn.name} is protected by a sign-in, so only ${signIn.name} can open it. If that's you, sign in with the same Google account or email you used before.`} />}
       {pick && <Sheet onClose={() => !busy && setPick(null)}>
         <h3>Join as {pick.name}?</h3><p className="muted">You can't switch names later. Only pick your own name.</p>
         <div className="row between"><button className="btn ghost" onClick={() => setPick(null)} disabled={busy}>Cancel</button><button className="btn" onClick={claim} disabled={busy}>{busy ? "Joining…" : `Yes, I'm ${pick.name}`}</button></div>

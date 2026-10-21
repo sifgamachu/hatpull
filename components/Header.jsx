@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AccountButton from "./AccountButton";
 export default function Header() {
   return (
     <header className="top">
@@ -12,6 +13,7 @@ export default function Header() {
         <Link className="navlink" href="/secret-santa-generator">Secret Santa</Link>
         <Link className="navlink" href="/my">My celebrations</Link>
         <Link className="navlink" href="/gift-finder">Gift Finder</Link>
+        <AccountButton />
         <Link className="btn small" href="/new">Draw names</Link>
       </nav>
     </header>

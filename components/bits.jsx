@@ -9,6 +9,4 @@ export function Bow() {
 export function WishBar({ n }) {
   return <div className="wishbar" role="img" aria-label={`${n} ${n === 1 ? "wish" : "wishes"}`}>{[0, 1, 2].map(i => <i key={i} className={i < n ? "on" : ""} />)}</div>;
 }
-export function Sheet({ children, onClose }) {
-  return <div className="sheet" role="dialog" aria-modal="true" onClick={e => { if (e.target === e.currentTarget) onClose?.(); }}><div className="panel stack">{children}</div></div>;
-}
+export { Sheet } from "./Sheet";
