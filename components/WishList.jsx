@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useGroup } from "@/lib/useGroup";
 import { rpc } from "@/lib/db";
 import { allG } from "@/lib/store";
-import { isXmas, money, safeUrl, daysUntil, AGES, GIFT_CATS, amazonUrl, rid } from "@/lib/core";
+import { isXmas, money, safeUrl, daysUntil, AGES, GIFT_CATS, amazonUrl, rid, AMAZON_DISCLOSURE, AFF_REL, cleanUserLink } from "@/lib/core";
 import { toast, burst } from "@/lib/ui";
 import Festive from "./Festive";
 import XBanner from "./XBanner";
@@ -42,7 +42,7 @@ export default function WishList({ gid, mid }) {
 }
 
 function ItemRow({ w, g, xm, children, reserved }) {
-  const u = w.u && safeUrl(w.u);
+  const u = w.u && cleanUserLink(safeUrl(w.u));
   return (
     <div className={`wish ${reserved ? "reserved" : ""}`}>
       <span className="tag" style={{ "--h": "28px", paddingLeft: 24, fontSize: 13 }}>{w.p ? money(g.cur, w.p) : xm ? "🎁" : "★"}</span>
@@ -154,9 +154,8 @@ function Viewer({ gid, g, m, me, prof, items, state, tokens, reload, xm }) {
       </div>}
       <div className="panel stack">
         <div className="row between"><h3>Gift ideas for {m.name}</h3>{b > 0 && <span className="pill">{money(g.cur, `${lo}–${hi}`)}</span>}</div>
-        <p className="small muted">{hob.length ? `Based on ${m.name}'s interests and the group budget.` : "Popular picks within the group budget."} Opens a store search in a new tab.</p>
-        <div className="ideas">{terms.map(t => <a key={t} href={amazonUrl(t, lo, usd ? hi : 0)} target="_blank" rel="noopener noreferrer sponsored">{t[0].toUpperCase() + t.slice(1)}</a>)}</div>
-        <p className="tiny muted">We may earn a commission from purchases made through these links, at no extra cost to you.</p>
+        <p className="small muted">{AMAZON_DISCLOSURE} {hob.length ? `Based on ${m.name}'s interests and the group budget.` : "Popular picks within the group budget."} Each opens an Amazon search in a new tab.</p>
+        <div className="ideas">{terms.map(t => <a key={t} href={amazonUrl(t, lo, usd ? hi : 0)} target="_blank" rel={AFF_REL}>{t[0].toUpperCase() + t.slice(1)}</a>)}</div>
       </div>
     </>
   );

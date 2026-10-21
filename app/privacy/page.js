@@ -4,7 +4,7 @@ export default function Page() {
   return (
     <div className="page prose">
       <h1>Privacy Policy</h1>
-      <p className="muted">Last updated: October 21, 2026</p>
+      <p className="muted">Last updated: October 20, 2026</p>
       <p>This policy explains what information Hatpull ("we", "us"), a product of {SITE.company}, collects when you use our Secret Santa generator, name picker and related pages, and how we use it.</p>
       <h2>What we collect</h2>
       <ul>
@@ -20,7 +20,13 @@ export default function Page() {
       <h2>Who can see what</h2>
       <p>Each person's drawn name is visible only to them. The organizer can see the full results only after the celebration date. Wish lists, messages and questions are visible to members of the same celebration, subject to the organizer's visibility settings. Access is controlled by private links. Anyone with a link can open what it unlocks, so please keep personal and organizer links private.</p>
       <h2>Cookies and local storage</h2>
-      <p>We store your private celebration links in your browser's local storage so you can return to them. We don't use advertising cookies. Some gift links go to third-party stores, such as Amazon, that may set their own cookies and pay us a commission.</p>
+      <p>We store your private celebration links in your browser's local storage so you can return to them. We don't set advertising cookies ourselves.</p>
+      <h2>Amazon Associates and affiliate links</h2>
+      <p>Hatpull is a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com. As an Amazon Associate I earn from qualifying purchases.</p>
+      <p>When you click a gift idea, you go to Amazon, and Amazon may set cookies in your browser so it can tell that the visit came from us and credit any qualifying purchase. We don't receive your name, address or what you bought. You can block or delete these cookies in your browser settings. To learn how Amazon uses cookies and interest-based ads, see <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=GX7NJQ4ZB8MHFRNJ" target="_blank" rel="noopener">Amazon's Privacy Notice</a> and <a href="https://www.amazon.com/adprefs" target="_blank" rel="noopener">Amazon's advertising preferences</a>.</p>
+      <p>Amazon links that people paste into their own wish lists are kept as written, except that we remove any other person's affiliate tag.</p>
+      <h2>Visitor statistics</h2>
+      <p>We use Vercel Web Analytics to count page views and see which pages are useful. It doesn't use cookies and doesn't track you across other websites.</p>
       <h2>Service providers</h2>
       <p>We use Vercel to host the website and Supabase to store celebration data in the United States. They process data on our behalf under their own security and privacy commitments.</p>
       <h2>Retention and deletion</h2>

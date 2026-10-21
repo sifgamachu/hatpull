@@ -15,7 +15,7 @@ export default function Page() {
       <h2>Draw results</h2>
       <p>Names are assigned randomly, subject to the exclusions set by the organizer. We don't guarantee that a particular result will occur.</p>
       <h2>Third-party links</h2>
-      <p>Gift ideas may link to third-party stores. We don't control those sites, and purchases are between you and the store. We may earn a commission on qualifying purchases.</p>
+      <p>Gift ideas may link to third-party stores. We don't control those sites, and purchases are between you and the store. As an Amazon Associate I earn from qualifying purchases.</p>
       <h2>Disclaimer</h2>
       <p>Hatpull is provided "as is" without warranties of any kind. To the fullest extent permitted by law, {SITE.company} isn't liable for indirect or consequential damages arising from your use of the service.</p>
       <h2>Changes and termination</h2>

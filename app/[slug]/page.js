@@ -4,7 +4,7 @@ import Festive from "@/components/Festive";
 import Snow from "@/components/Snow";
 import Lights from "@/components/Lights";
 import { LANDINGS, getLanding, IDEAS_BY_BUDGET } from "@/lib/landings";
-import { SITE, amazonUrl, xmasYear } from "@/lib/core";
+import { SITE, amazonUrl, xmasYear, AMAZON_DISCLOSURE, AFF_REL } from "@/lib/core";
 
 export const dynamicParams = false;
 export const revalidate = 86400;
@@ -68,17 +68,18 @@ export default function Landing({ params }) {
       {l.ideas ? (
         <section className="section">
           <h2>Ideas by budget</h2>
+          <p className="small muted" style={{ marginBottom: 12 }}>{AMAZON_DISCLOSURE} Each idea opens an Amazon search filtered to that price range.</p>
           <div className="feature-grid">
             {IDEAS_BY_BUDGET.map(b => (
               <div className="panel" key={b.label}>
-                <h3>{b.label}</h3>
+                <h3>{b.label}</h3>{b.tip && <p className="small muted">{b.tip}</p>}
                 <ul className="idea-list">
-                  {b.items.map(it => <li key={it}><a href={amazonUrl(it, b.lo, b.hi)} target="_blank" rel="noopener noreferrer sponsored">{it}</a></li>)}
+                  {b.items.map(it => <li key={it}><a href={amazonUrl(it, b.lo, b.hi)} target="_blank" rel={AFF_REL}>{it}</a></li>)}
                 </ul>
               </div>
             ))}
           </div>
-          <p className="tiny muted" style={{ marginTop: 10 }}>Links go to store searches. We may earn a commission on purchases, at no extra cost to you.</p>
+          <p className="tiny muted" style={{ marginTop: 10 }}>{AMAZON_DISCLOSURE} Buying through these links costs you nothing extra.</p>
           <div className="row" style={{ marginTop: 16 }}><Link className="btn ghost" href="/gift-finder">Open the gift finder</Link></div>
         </section>
       ) : (

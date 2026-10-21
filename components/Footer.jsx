@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Garland from "./Garland";
+import { AMAZON_DISCLOSURE } from "@/lib/core";
 import { LANDINGS } from "@/lib/landings";
 export default function Footer() {
   return (
@@ -21,7 +22,8 @@ export default function Footer() {
       <div className="footer-links more">
         {LANDINGS.map(l => <Link key={l.slug} href={`/${l.slug}`}>{l.nav}</Link>)}
       </div>
-      <div className="tiny" style={{ marginTop: 8 }}>© {new Date().getFullYear()} Hatpull, a Teregna product.</div>
+      <div className="tiny" style={{ marginTop: 8 }}>{AMAZON_DISCLOSURE}</div>
+      <div className="tiny" style={{ marginTop: 4 }}>© {new Date().getFullYear()} Hatpull, a Teregna product.</div>
     </footer>
   );
 }

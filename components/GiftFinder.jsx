@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { AGES, GIFT_CATS, amazonUrl } from "@/lib/core";
+import { AGES, GIFT_CATS, CAT_TIPS, amazonUrl, AMAZON_DISCLOSURE, AFF_REL } from "@/lib/core";
 import Festive from "./Festive";
 import XBanner from "./XBanner";
 
@@ -14,9 +14,9 @@ export default function GiftFinder() {
   return (
     <div className="mid stack">
       <Festive on />
-      <XBanner><p className="kicker">🎁 Christmas gift ideas</p><h1>Gift Finder</h1><p className="lede">Pick who it's for and your budget. Each idea opens a store search in a new tab.</p></XBanner>
+      <XBanner><p className="kicker">🎁 Christmas gift ideas</p><h1>Gift Finder</h1><p className="lede">Pick who it's for and your budget. Each idea opens an Amazon search in a new tab, filtered to your price range.</p></XBanner>
       <div className="panel stack">
-        <div className="row" style={{ flexWrap: "nowrap" }}><input value={f.q} onChange={e => up({ q: e.target.value })} placeholder="Search any gift idea, e.g. coffee lover" aria-label="Search gift ideas" /><a className="btn small" href={amazonUrl(f.q.trim() || "christmas gift ideas", lo, hi)} target="_blank" rel="noopener noreferrer sponsored">Search</a></div>
+        <div className="row" style={{ flexWrap: "nowrap" }}><input value={f.q} onChange={e => up({ q: e.target.value })} placeholder="Search any gift idea, e.g. coffee lover" aria-label="Search gift ideas" /><a className="btn small" href={amazonUrl(f.q.trim() || "christmas gift ideas", lo, hi)} target="_blank" rel={AFF_REL}>Search</a></div>
         <div className="grid2">
           <div><label htmlFor="gfWho">For</label><select id="gfWho" value={f.who} onChange={e => up({ who: e.target.value })}><option value="">Anyone</option><option value="women">A woman</option><option value="men">A man</option></select></div>
           <div><label htmlFor="gfAge">Age</label><select id="gfAge" value={f.age} onChange={e => up({ age: e.target.value })}><option value="">Any age</option>{AGES.map(a => <option key={a}>{a}</option>)}</select></div>
@@ -25,8 +25,9 @@ export default function GiftFinder() {
         </div>
         <div className="choices">{[[0, 25], [25, 50], [50, 100], [100, 200]].map(([a, b]) => <button key={a} type="button" className="choice" aria-pressed={f.min === String(a) && f.max === String(b)} onClick={() => up({ min: String(a), max: String(b) })}>${a}–{b}</button>)}</div>
       </div>
-      <div className="stack" style={{ gap: 20 }}>{cats.map(c => <div key={c} className="stack" style={{ gap: 8 }}><h3>{c}</h3><div className="ideas">{GIFT_CATS[c].map(t => <a key={t} href={amazonUrl(t + suffix, lo, hi)} target="_blank" rel="noopener noreferrer sponsored">{t[0].toUpperCase() + t.slice(1)}{suffix && <span className="tiny muted">{suffix}</span>}</a>)}</div></div>)}</div>
-      <p className="tiny muted">We may earn a commission from purchases made through these links, at no extra cost to you.</p>
+      <p className="small muted">{AMAZON_DISCLOSURE} Ideas change with your filters: choosing a child's age shows toys and stocking stuffers, a teen age adds "for teens" to each search, and your price range is applied to every link.</p>
+      <div className="stack" style={{ gap: 20 }}>{cats.map(c => <div key={c} className="stack" style={{ gap: 8 }}><h3>{c}</h3>{CAT_TIPS[c] && <p className="small muted">{CAT_TIPS[c]}</p>}<div className="ideas">{GIFT_CATS[c].map(t => <a key={t} href={amazonUrl(t + suffix, lo, hi)} target="_blank" rel={AFF_REL}>{t[0].toUpperCase() + t.slice(1)}{suffix && <span className="tiny muted">{suffix}</span>}</a>)}</div></div>)}</div>
+      <p className="tiny muted">{AMAZON_DISCLOSURE} Buying through these links costs you nothing extra.</p>
     </div>
   );
 }
