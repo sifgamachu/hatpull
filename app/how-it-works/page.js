@@ -9,7 +9,7 @@ export default function Page() {
     ["Share one invitation link", "Copy the invitation into WhatsApp, a text or an email. It's the same link for the whole group."],
     ["Everyone picks their name and draws", "Each person opens the link, taps their own name, and reveals who they're buying for. Nobody else can see it, not even the organizer."],
     ["Make wish lists and reserve gifts", "People add gift ideas with links and prices. Whoever drew them can reserve a gift secretly so nothing gets bought twice."],
-    ["Exchange gifts", "On the day, swap presents. After the date, the organizer can see who drew whom and reuse the group next year."],
+    ["Exchange gifts", "On the day, swap presents. After the date, the organizer can see who drew whom, which helps you avoid repeat matches next year."],
   ];
   return (
     <div className="page prose">

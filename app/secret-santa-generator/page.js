@@ -5,6 +5,7 @@ import Lights from "@/components/Lights";
 import SantaHat from "@/components/SantaHat";
 import Countdown from "@/components/Countdown";
 import { Bow } from "@/components/bits";
+import { LANDINGS } from "@/lib/landings";
 import { xmasYear, upcomingOccasions, fmtDate, daysUntil, XMAS_OCC } from "@/lib/core";
 
 export const metadata = {
@@ -20,7 +21,7 @@ const FAQ = [
   ["Can someone draw their own name?", "No. The generator never lets anyone draw themselves, so you never have to start over."],
   ["Can I stop couples from drawing each other?", "Yes. Add exclusions for couples, siblings, housemates, or anyone who drew each other last year."],
   ["Does everyone need an account?", "No. People join with the invitation link and pick their name. Nobody has to sign up or share an email address."],
-  ["Can the organizer see who drew whom?", "Not while the exchange is running. The organizer can view the full results after the celebration date, which is handy for reusing the group next year."],
+  ["Can the organizer see who drew whom?", "Not while the exchange is running. The organizer can view the full results after the celebration date, so you can set exclusions to avoid the same matches next year."],
   ["How do wish lists work?", "Each person adds gift ideas with links and prices. Whoever drew them can secretly reserve a gift, so nobody buys the same thing twice."],
   ["Is it free?", "Yes. Drawing names, wish lists and invitations are all free."],
 ];
@@ -83,6 +84,17 @@ export default function SantaLanding() {
             <h3>{o.k}</h3>
             <Link className="btn small ghost" href={`/new?occ=${o.i}`} style={{ alignSelf: "flex-start" }}>Start a draw</Link>
           </div>))}
+        </div>
+      </section>
+
+      <section className="section">
+        <h2>Pick the Secret Santa that fits your group</h2>
+        <div className="chip-links">
+          {LANDINGS.filter(l => l.group === "santa").map(l => <Link key={l.slug} href={`/${l.slug}`}>{l.nav}</Link>)}
+        </div>
+        <h2 style={{ marginTop: 28 }}>Gift exchanges all year</h2>
+        <div className="chip-links">
+          {LANDINGS.filter(l => l.group === "year").map(l => <Link key={l.slug} href={`/${l.slug}`}>{l.nav}</Link>)}
         </div>
       </section>
 

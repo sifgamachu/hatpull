@@ -266,3 +266,16 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
 .santa-promo{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:18px 22px;border-radius:16px;background:linear-gradient(135deg,#0F3328,#17493A);color:#F7F2E7;margin-top:28px}
 .santa-promo b{font-family:var(--f-display);font-weight:400;font-size:22px;display:block}
 .santa-promo .btn{background:#EDC25E;color:#2A1D04}
+/* Search landing pages */
+.land-hero{grid-template-columns:1fr;padding-block:32px 8px}
+.land-hero h1{font-size:clamp(32px,5.4vw,52px)}
+.land-hero h1 em{font-style:normal;color:var(--ribbon)}
+.prose-wide{max-width:760px}
+.prose-wide p{font-size:17px;line-height:1.7;margin:0 0 14px}
+.chip-links{display:flex;flex-wrap:wrap;gap:10px}
+.chip-links a{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;font-size:14px;font-weight:600}
+.chip-links a:hover{border-color:var(--ribbon)}
+.idea-list{margin:8px 0 0;padding-left:18px;line-height:1.9}
+.idea-list a{color:var(--ink);text-decoration-color:var(--line)}
+.idea-list a:hover{color:var(--ribbon)}
+.footer-links.more{margin-top:6px;opacity:.85}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Garland from "./Garland";
+import { LANDINGS } from "@/lib/landings";
 export default function Footer() {
   return (
     <footer>
@@ -16,6 +17,9 @@ export default function Footer() {
         <Link href="/contact">Contact</Link>
         <Link href="/privacy">Privacy</Link>
         <Link href="/terms">Terms</Link>
+      </div>
+      <div className="footer-links more">
+        {LANDINGS.map(l => <Link key={l.slug} href={`/${l.slug}`}>{l.nav}</Link>)}
       </div>
       <div className="tiny" style={{ marginTop: 8 }}>© {new Date().getFullYear()} Hatpull, a Teregna product.</div>
     </footer>
