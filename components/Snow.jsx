@@ -41,9 +41,12 @@ export default function Snow({ density = 2600 }) {
       flakes.sort((a, b) => a.layer - b.layer);
     };
     size(); const ro = new ResizeObserver(size); ro.observe(c);
-    let raf, last = performance.now(), t = 0, gust = 0, gustTarget = 0, nextGust = 4000, alive = true;
+    let raf, last = performance.now(), t = 0, gust = 0, gustTarget = 0, nextGust = 4000, alive = true, visible = true;
+    // Pause when the snow is scrolled off-screen or the tab is hidden, to save phone batteries.
+    const io = new IntersectionObserver(([e]) => { const was = visible; visible = e.isIntersecting; if (visible && !was && !reduce) { last = performance.now(); raf = requestAnimationFrame(frame); } });
+    io.observe(c);
     const frame = now => {
-      if (!alive) return;
+      if (!alive || !visible || document.hidden) { if (alive && visible && !reduce) setTimeout(() => { last = performance.now(); raf = requestAnimationFrame(frame); }, 500); return; }
       const dt = Math.min(48, now - last) / 16.67; last = now; t += dt * 16.67;
       nextGust -= dt * 16.67; if (nextGust <= 0) { gustTarget = (Math.random() - 0.35) * 1.6; nextGust = 3000 + Math.random() * 6000; }
       gust += (gustTarget - gust) * 0.006 * dt; gustTarget *= Math.pow(0.997, dt);
@@ -66,7 +69,7 @@ export default function Snow({ density = 2600 }) {
       if (!reduce) raf = requestAnimationFrame(frame);
     };
     frame(performance.now());
-    return () => { alive = false; cancelAnimationFrame(raf); ro.disconnect(); };
+    return () => { alive = false; cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); };
   }, [density]);
   return <canvas ref={ref} className="snow" aria-hidden="true" />;
 }

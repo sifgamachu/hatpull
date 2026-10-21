@@ -12,7 +12,7 @@ export default function GiftFinder() {
   useEffect(() => { setPlain(new URLSearchParams(location.search).get("for") === "any"); }, []);
   const isKid = f.age === "Under 5" || f.age === "5–11";
   const cats = f.cat ? [f.cat] : Object.keys(GIFT_CATS).filter(c => isKid ? c === "Kids" || (!plain && c === "Stocking stuffers") : c !== "Kids" && !(plain && c === "Stocking stuffers"));
-  const suffix = isKid ? "" : f.age === "12–17" ? " for teens" : f.who ? ` for ${f.who}` : "";
+  const suffix = isKid || f.cat === "Kids" ? "" : f.age === "12–17" ? " for teens" : f.who ? ` for ${f.who}` : "";
   const lo = parseFloat(f.min) || 0, hi = parseFloat(f.max) || 0;
   return (
     <div className="mid stack">

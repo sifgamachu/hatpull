@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { allG } from "@/lib/store";
+import { allG, delG } from "@/lib/store";
 import { rpc } from "@/lib/db";
 import { fmtDate, daysUntil, isXmas, normState } from "@/lib/core";
 import Festive from "./Festive";
@@ -9,10 +9,15 @@ import XBanner from "./XBanner";
 import { Bow, Ornament, WishBar } from "./bits";
 
 export default function My() {
-  const [rows, setRows] = useState(null);
+  const [rows, setRows] = useState(null), [offline, setOffline] = useState(false);
   useEffect(() => {
     const gs = allG();
     Promise.all(gs.map(async x => { try { return { x, s: normState(await rpc("hp_state", { p_gid: x.gid, p_mtok: x.mtok || null, p_atok: x.atok || null })) }; } catch (e) { return { x, s: null, gone: /not_found/.test(e.message) }; } }))
+      .then(r => {
+        r.filter(y => y.gone).forEach(y => delG(y.x.gid)); // deleted celebrations: forget them on this device
+        setOffline(r.some(y => !y.s && !y.gone) && !r.some(y => y.s));
+        return r;
+      })
       .then(r => setRows(r.filter(y => y.s).sort((a, b) => { const da = daysUntil(a.s.group.date), db = daysUntil(b.s.group.date); return (da < 0) - (db < 0) || String(a.s.group.date || "").localeCompare(String(b.s.group.date || "")); })));
   }, []);
   return (
@@ -20,6 +25,7 @@ export default function My() {
       <Festive on />
       <XBanner><p className="kicker">🎄 Your gift exchanges</p><h1>My celebrations</h1><p className="lede">Everything you're organizing or joined on this device, with your wish lists and the people on your list.</p></XBanner>
       {rows === null ? <div className="panel muted">Checking the list twice…</div>
+        : offline ? <div className="panel stack"><h3>Can't reach the server</h3><p className="muted">Your celebrations are safe. Check your connection and reload this page.</p><button className="btn small ghost" onClick={() => location.reload()} style={{ alignSelf: "flex-start" }}>Try again</button></div>
         : !rows.length ? <div className="panel stack card-x"><Bow /><h3>Nothing under the tree yet</h3><p className="muted">Start a Secret Santa, or open an invitation link someone sent you. If you joined on another device, open your personal link here to bring it over.</p><div className="row"><Link className="btn small" href="/new?occ=0">Start a Secret Santa</Link><Link className="btn small ghost" href="/new?mode=wish">Start a wish list group</Link></div></div>
         : <>
           <div className="cards">{rows.map(({ x, s }) => { const g = s.group, d = daysUntil(g.date), xm = isXmas(g), past = d != null && d < 0;

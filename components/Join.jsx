@@ -16,8 +16,11 @@ export default function Join({ code }) {
     rpc("hp_join_info", { p_code: code }).then(d => {
       if (!d) return setErr("missing");
       const mine = allG().find(x => x.gid === d.id && x.mtok);
-      if (mine) return router.replace(`/g/${d.id}`);
-      setInfo(d);
+      if (!mine) return setInfo(d);
+      // Only skip ahead if this device's saved link still works (it stops working after a reset or removal).
+      rpc("hp_state", { p_gid: d.id, p_mtok: mine.mtok, p_atok: null })
+        .then(() => router.replace(`/g/${d.id}`))
+        .catch(e => { if (/forbidden/.test(e.message)) setG(d.id, { mtok: null, mid: null }); setInfo(d); });
     }).catch(() => setErr("network"));
   }, [code, router]);
 
@@ -34,7 +37,7 @@ export default function Join({ code }) {
     }
   }
 
-  if (err) return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>We can't find this invitation</h1><p className="muted">{err === "network" ? "Check your connection and reload the page." : "The organizer may have deleted the celebration, or the link was cut off when it was copied."}</p></div>;
+  if (err) return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>{err === "network" ? "Can't reach the server" : "We can't find this invitation"}</h1><p className="muted">{err === "network" ? "Check your connection and reload the page." : "The organizer may have deleted the celebration, or the link was cut off when it was copied."}</p></div>;
   if (!info) return <div className="narrow panel muted">Opening your invitation…</div>;
   const xm = isXmas(info), ppl = info.members;
   return (

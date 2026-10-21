@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useGroup } from "@/lib/useGroup";
 import { rpc } from "@/lib/db";
 import { getG, delG } from "@/lib/store";
-import { isXmas, fmtDate, daysUntil, money, CURRENCIES, inviteText } from "@/lib/core";
+import { isXmas, fmtDate, daysUntil, daysLeftText, money, CURRENCIES, inviteText } from "@/lib/core";
 import { toast, copy, burst } from "@/lib/ui";
 import Festive from "./Festive";
 import XBanner from "./XBanner";
@@ -19,7 +19,8 @@ export default function Dashboard({ gid }) {
   const [results, setResults] = useState(null);
   const firedLive = useRef(false);
   const [now, setNow] = useState(Date.now());
-  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 250); return () => clearInterval(t); }, []);
+  const liveSoon = !!state?.group?.live_at && Math.abs(new Date(state.group.live_at).getTime() - Date.now()) < 180000;
+  useEffect(() => { const t = setInterval(() => setNow(Date.now()), liveSoon ? 250 : 30000); return () => clearInterval(t); }, [liveSoon]);
 
   const g = state?.group, me = state?.me, adm = state?.is_admin, xm = isXmas(g);
   const ppl = state?.members.filter(m => !m.kid) || [], kids = state?.members.filter(m => m.kid) || [];
@@ -63,7 +64,7 @@ export default function Dashboard({ gid }) {
     try { await rpc("hp_message", { p_gid: gid, p_mtok: tokens.mtok, p_body: t }); reload(); } catch { toast("Couldn't send your message."); setMsg(t); }
   }
   async function startLive() {
-    try { await rpc("hp_admin_live", { p_gid: gid, p_atok: tokens.atok }); firedLive.current = false; toast("Live draw in 10 seconds"); reload(); } catch { toast("Couldn't start the live draw."); }
+    try { await rpc("hp_admin_live", { p_gid: gid, p_atok: tokens.atok }); firedLive.current = false; toast("Live draw in 30 seconds"); reload(); } catch { toast("Couldn't start the live draw."); }
   }
 
   return (
@@ -84,7 +85,7 @@ export default function Dashboard({ gid }) {
         <div>
           <div className="panel stack">
             {xm ? <h3>Celebration details</h3> : <h1 style={{ fontSize: 28 }}>{g.name}</h1>}
-            {me ? <p>Hi {me.name}! {dleft != null && dleft >= 0 && <span className="muted">{dleft === 0 ? "It's today." : `${dleft} days to go.`}</span>}</p> : <p className="muted">You're organizing but not in the draw.</p>}
+            {me ? <p>Hi {me.name}! {dleft != null && dleft >= 0 && <span className="muted">{daysLeftText(dleft)}</span>}</p> : <p className="muted">You're organizing but not in the draw.</p>}
             <div className="meta">
               {g.date && <div>📅 {fmtDate(g.date)}</div>}
               {g.budget && <div>💸 {money(g.cur, g.budget)}</div>}
@@ -250,7 +251,7 @@ function Settings({ gid, state, tokens, close, reload }) {
       <button className="btn" onClick={save} disabled={busy}>Save settings</button>
       <p className="eyebrow">Members</p>
       <div className="list">{state.members.filter(m => !m.kid).map(m => <div className="item" key={m.id}><span className="grow">{m.name} <span className="tiny muted">{m.claimed ? "joined" : "not joined"}</span></span>
-        {m.claimed
+        {m.is_org ? null : m.claimed
           ? <button className="btn small ghost" disabled={busy} title="Free this name so its owner can pick it again" onClick={() => reset(m)}>{armed === "r" + m.id ? "Tap again to reset" : "Reset"}</button>
           : <button className="btn small ghost" onClick={() => sendLink(m)}>Send link</button>}
         {!m.is_org && <button className="btn small ghost" disabled={busy} onClick={() => armed === m.id ? change({ remove: [m.id] }, `${m.name} removed`) : setArmed(m.id)}>{armed === m.id ? "Tap again to remove" : "Remove"}</button>}</div>)}</div>
@@ -286,7 +287,7 @@ function Reminder({ state, close }) {
   const link = `${location.origin}/join/${g.join_code}`;
   const notJoined = ppl.filter(m => !m.claimed).map(m => m.name), notDrawn = g.mode === "draw" ? ppl.filter(m => m.claimed && !m.drawn).map(m => m.name) : [], noWish = ppl.filter(m => m.claimed && !m.wishes).map(m => m.name);
   const d = daysUntil(g.date);
-  const lines = [`⏰ Reminder for ${g.name}${d != null && d >= 0 ? ` (${d === 0 ? "today!" : `${d} days to go`})` : ""}`];
+  const lines = [`⏰ Reminder for ${g.name}${d != null && d >= 0 ? ` (${d === 0 ? "today!" : d === 1 ? "1 day to go" : `${d} days to go`})` : ""}`];
   if (notJoined.length) lines.push(`\n👋 Still need to join: ${notJoined.join(", ")}`);
   if (notDrawn.length) lines.push(`🎩 Still need to draw a name: ${notDrawn.join(", ")}`);
   if (noWish.length) lines.push(`🎁 No wish list yet: ${noWish.join(", ")}`);

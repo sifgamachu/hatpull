@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { useGroup } from "@/lib/useGroup";
 import { rpc } from "@/lib/db";
@@ -13,8 +13,8 @@ import { Bow } from "./bits";
 export default function WishList({ gid, mid }) {
   const { state, error, tokens, reload } = useGroup(gid);
   const [draft, setDraft] = useState(null); // optimistic items
-  if (error) return <div className="mid panel stack"><p>You don't have access to this wish list on this device.</p><Link className="btn small ghost" href="/my">My celebrations</Link></div>;
-  if (!state) return <div className="mid panel muted">Loading wish list…</div>;
+  if (error && error !== "network") return <div className="mid panel stack"><p>{error === "not_found" ? "This celebration no longer exists." : "You don't have access to this wish list on this device."}</p><Link className="btn small ghost" href="/my">My celebrations</Link></div>;
+  if (!state) return <div className="mid panel muted">{error === "network" ? "Can't reach the server. Retrying…" : "Loading wish list…"}</div>;
   const g = state.group, me = state.me, xm = isXmas(g);
   const m = state.members.find(x => x.id === mid);
   if (!m) return <div className="mid panel stack"><p>This person isn't in the celebration anymore.</p><Link className="btn small ghost" href={`/g/${gid}`}>Back</Link></div>;
@@ -46,13 +46,14 @@ function ItemRow({ w, g, xm, children, reserved }) {
   return (
     <div className={`wish ${reserved ? "reserved" : ""}`}>
       <span className="tag" style={{ "--h": "28px", paddingLeft: 24, fontSize: 13 }}>{w.p ? money(g.cur, w.p) : xm ? "🎁" : "★"}</span>
-      <div className="grow"><div className="wt">{w.t}</div>{u && <a href={u} target="_blank" rel="noopener noreferrer nofollow">{w.u.replace(/^https?:\/\//, "").slice(0, 60)}</a>}{w.n && <div className="tiny muted">{w.n}</div>}</div>
+      <div className="grow"><div className="wt">{w.t}</div>{u && <a href={u} target="_blank" rel="noopener noreferrer nofollow">{u.replace(/^https?:\/\//, "").slice(0, 60)}</a>}{w.n && <div className="tiny muted">{w.n}</div>}</div>
       {children}
     </div>
   );
 }
 
 function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, questions }) {
+  const adding = useRef(false);
   const [f, setF] = useState({ t: "", p: "", u: "", n: "" });
   const [about, setAbout] = useState({ hobbies: prof.hobbies || "", age: prof.age || "", who: prof.who || "", address: prof.address || "" });
   const [ans, setAns] = useState({});
@@ -83,8 +84,9 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
           </div></ItemRow>)
           : <p className="muted">{xm ? "Dear Santa, I'd love… Add at least 3 wishes so your Secret Santa has choices." : "Nothing yet. Add at least 3 gifts so whoever drew you has choices."}</p>}
         <form className="stack" style={{ gap: 10, borderTop: "1px solid var(--line)", paddingTop: 14 }} onSubmit={async e => {
-          e.preventDefault(); if (!f.t.trim()) return;
+          e.preventDefault(); if (!f.t.trim() || adding.current) return; adding.current = true;
           const ok = await saveProfile(items.concat([{ id: rid(6), t: f.t.trim().slice(0, 120), p: f.p.trim().slice(0, 10), u: f.u.trim().slice(0, 400), n: f.n.trim().slice(0, 140) }]).slice(0, 40));
+          adding.current = false;
           if (ok) { setF({ t: "", p: "", u: "", n: "" }); toast("Added to your wish list"); }
         }}>
           <div className="grid2"><div><label htmlFor="wT">Gift</label><input id="wT" maxLength={120} value={f.t} onChange={e => setF({ ...f, t: e.target.value })} placeholder="Wool socks, size 9" /></div>

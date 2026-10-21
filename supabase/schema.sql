@@ -89,56 +89,53 @@ revoke all on function public.hp_tok(int) from public, anon, authenticated;
 
 -- ---------- draw + validation helpers (private) ----------
 -- The draw runs inside the database so nobody, including the organizer, can supply or choose the result.
--- Randomized greedy assignment with restarts: nobody draws themselves, exclusions (giver|receiver) are respected.
-create or replace function public.hp_draw_dfs(p_order text[], k int, p_avail text[], p_ex jsonb, p_res jsonb) returns jsonb
-language plpgsql volatile set search_path = public as $$
-declare g text := p_order[k]; r text; o jsonb; c int;
-begin
-  if k > array_length(p_order, 1) then return p_res; end if;
-  c := coalesce(nullif(current_setting('hp.steps', true), ''), '0')::int + 1;
-  perform set_config('hp.steps', c::text, true);
-  if c > 20000 then return null; end if;
-  for r in select v from unnest(p_avail) v where v <> g and not (p_ex ? (g || '|' || v)) order by random() loop
-    o := hp_draw_dfs(p_order, k + 1, array_remove(p_avail, r), p_ex, p_res || jsonb_build_object(g, r));
-    if o is not null then return o; end if;
-  end loop;
-  return null;
-end $$;
-
 create or replace function public.hp_draw(p_ids text[], p_excl jsonb) returns jsonb
 language plpgsql volatile set search_path = public as $$
+-- A valid draw: everyone gives once and receives once, nobody draws themselves, no excluded giver->receiver pair.
+-- 1) Rejection sampling (shuffle until valid): every valid draw is equally likely; fast for real groups.
+-- 2) Fallback for tightly constrained groups: random-order bipartite matching (BFS augmenting paths), which
+--    always finds a valid draw when one exists.
 declare
   n int := coalesce(array_length(p_ids, 1), 0);
-  ex jsonb := '{}'::jsonb; x jsonb; att int; ord text[]; avail text[]; cand text[]; g text; r text; res jsonb; ok boolean;
+  pos jsonb := '{}'::jsonb; ok boolean[]; x jsonb; a int; b int; t int; g int; r int; u int; prev int; good boolean;
+  p int[]; owner int[]; mg int[]; par int[]; seen boolean[]; q int[]; qh int; found int; rord int[]; gord int[];
 begin
   if n < 2 then return null; end if;
+  for i in 1..n loop pos := pos || jsonb_build_object(p_ids[i], i); end loop;
+  ok := array_fill(true, array[n * n]);
+  for i in 1..n loop ok[(i - 1) * n + i] := false; end loop;
   for x in select * from jsonb_array_elements(coalesce(p_excl, '[]'::jsonb)) loop
-    ex := ex || jsonb_build_object((x->>'a') || '|' || (x->>'b'), true);
+    a := (pos->>(x->>'a'))::int; b := (pos->>(x->>'b'))::int;
+    if a is not null and b is not null then ok[(a - 1) * n + b] := false; end if;
   end loop;
-  -- Quick impossibility checks: everyone needs someone to give to and someone to receive from.
-  if exists (select 1 from unnest(p_ids) a where not exists (select 1 from unnest(p_ids) b where b <> a and not (ex ? (a || '|' || b))))
-     or exists (select 1 from unnest(p_ids) b where not exists (select 1 from unnest(p_ids) a where a <> b and not (ex ? (a || '|' || b)))) then
-    return null;
-  end if;
-  -- Most constrained givers first, random among equals.
-  select array_agg(a order by (select count(*) from unnest(p_ids) b where b <> a and not (ex ? (a || '|' || b))), random())
-    into ord from unnest(p_ids) a;
-  -- Fast path: randomized greedy with a few restarts (almost always succeeds for real groups).
-  for att in 1..30 loop
-    avail := p_ids; res := '{}'::jsonb; ok := true;
-    foreach g in array ord loop
-      select array_agg(v) into cand from unnest(avail) v where v <> g and not (ex ? (g || '|' || v));
-      if cand is null then ok := false; exit; end if;
-      r := cand[1 + floor(random() * array_length(cand, 1))::int];
-      res := res || jsonb_build_object(g, r);
-      avail := array_remove(avail, r);
+  for t in 1..400 loop
+    select array_agg(v order by random()) into p from generate_series(1, n) v;
+    good := true;
+    for i in 1..n loop if not ok[(i - 1) * n + p[i]] then good := false; exit; end if; end loop;
+    if good then return (select jsonb_object_agg(p_ids[i], p_ids[p[i]]) from generate_series(1, n) i); end if;
+  end loop;
+  owner := array_fill(0, array[n]); mg := array_fill(0, array[n]);
+  select array_agg(v order by random()) into rord from generate_series(1, n) v;
+  select array_agg(v order by random()) into gord from generate_series(1, n) v;
+  foreach g in array gord loop
+    par := array_fill(0, array[n]); seen := array_fill(false, array[n]); q := array[g]; qh := 1; found := 0;
+    while qh <= coalesce(array_length(q, 1), 0) and found = 0 loop
+      u := q[qh]; qh := qh + 1;
+      foreach r in array rord loop
+        if ok[(u - 1) * n + r] and not seen[r] then
+          seen[r] := true; par[r] := u;
+          if owner[r] = 0 then found := r; exit; end if;
+          q := q || owner[r];
+        end if;
+      end loop;
     end loop;
-    if ok then return res; end if;
+    if found = 0 then return null; end if;
+    r := found;
+    while r <> 0 loop
+      u := par[r]; prev := mg[u]; mg[u] := r; owner[r] := u; r := prev;
+    end loop;
   end loop;
-  -- Exhaustive randomized backtracking for tightly constrained groups (bounded work).
-  if n > 60 then return null; end if;
-  perform set_config('hp.steps', '0', true);
-  return hp_draw_dfs(ord, 1, p_ids, ex, '{}'::jsonb);
+  return (select jsonb_object_agg(p_ids[i], p_ids[mg[i]]) from generate_series(1, n) i);
 end $$;
 
 -- Members: 1..200 objects with short safe ids and 1..40 char names, ids unique.
@@ -167,7 +164,7 @@ language sql immutable as $$
           and not exists (select 1 from jsonb_array_elements(p->'items') it
                           where jsonb_typeof(it) <> 'object'
                              or exists (select 1 from jsonb_each(it) f where jsonb_typeof(f.value) <> 'string' or char_length(f.value #>> '{}') > 500)))) $$;
-revoke all on function public.hp_draw(text[], jsonb), public.hp_draw_dfs(text[], int, text[], jsonb, jsonb), public.hp_valid_members(jsonb), public.hp_clean_excl(jsonb, text[]), public.hp_valid_profile(jsonb) from public, anon, authenticated;
+revoke all on function public.hp_draw(text[], jsonb), public.hp_valid_members(jsonb), public.hp_clean_excl(jsonb, text[]), public.hp_valid_profile(jsonb) from public, anon, authenticated;
 
 -- ---------- create ----------
 create or replace function public.hp_create_group(p jsonb) returns jsonb
@@ -192,7 +189,7 @@ begin
   end if;
   if omid is not null and not (omid = any(ids)) then omid := null; end if;
   insert into hp_groups(id, admin_token, join_code, name, occasion, event_date, results_after, budget, cur, note, mode, settings, exclusions, org_name)
-  values (gid, atok, code, p->>'name', nullif(p->>'occasion',''), nullif(p->>'date','')::date, nullif(p->>'date','')::date, nullif(p->>'budget',''), coalesce(nullif(p->>'cur',''),'$'),
+  values (gid, atok, code, p->>'name', nullif(p->>'occasion',''), nullif(p->>'date','')::date, greatest(nullif(p->>'date','')::date, current_date), nullif(p->>'budget',''), coalesce(nullif(p->>'cur',''),'$'),
           nullif(p->>'note',''), md, coalesce(p->'settings','{}'), excl, p->>'org_name');
   for m in select * from jsonb_array_elements(p->'members') loop
     i := i + 1;
@@ -254,11 +251,11 @@ begin
        select m.sort as s, jsonb_build_object('id', m.id, 'name', m.name, 'kid', m.kid, 'parent_id', m.parent_id, 'is_org', m.is_org,
          'claimed', m.token is not null or m.kid, 'drawn', coalesce(m.drawn_round = g.round, false),
          'wishes', case when jsonb_typeof(m.profile->'items') = 'array' then jsonb_array_length(m.profile->'items') else 0 end,
-         'visible', (v.id is null or m.id = v.id or m.parent_id = v.id or vis_all or v.receiver_id = m.id or m.kid),
-         'profile', case when (v.id is null or m.id = v.id or m.parent_id = v.id or vis_all or v.receiver_id = m.id or m.kid)
+         'visible', (v.id is null or m.id = v.id or m.parent_id = v.id or vis_all or (v.receiver_id = m.id and v.drawn_round = g.round) or m.kid),
+         'profile', case when (v.id is null or m.id = v.id or m.parent_id = v.id or vis_all or (v.receiver_id = m.id and v.drawn_round = g.round) or m.kid)
               then (m.profile - 'address')
                    || case when m.profile ? 'address' and (m.id = v.id or m.parent_id = v.id
-                             or (mail_on and (mail_all or v.receiver_id = m.id)))
+                             or (mail_on and (mail_all or (v.receiver_id = m.id and v.drawn_round = g.round))))
                       then jsonb_build_object('address', m.profile->'address') else '{}'::jsonb end
               else null end) as x
        from hp_members m where m.group_id = g.id) q), '[]'),
@@ -304,7 +301,7 @@ begin
   if p_on and not exists (
     select 1 from hp_members o join hp_groups g on g.id = o.group_id
     where o.group_id = p_gid and o.id = p_owner and o.parent_id is distinct from me.id
-      and (g.mode <> 'draw' or coalesce(g.settings->>'wishVis','all') <> 'drawn' or me.receiver_id = o.id or o.kid)
+      and (g.mode <> 'draw' or coalesce(g.settings->>'wishVis','all') <> 'drawn' or (me.receiver_id = o.id and me.drawn_round = g.round) or o.kid)
   ) then raise exception 'forbidden'; end if;
   if p_on then
     insert into hp_reservations(group_id, owner_id, item_id, by_member) values (p_gid, p_owner, left(p_item, 20), me.id) on conflict do nothing;
@@ -366,7 +363,7 @@ begin
     name = coalesce(nullif(left(p->>'name', 80),''), name),
     event_date = case when p ? 'date' then nd else event_date end,
     -- The date the organizer may see results can only move later, so moving the date back can't unlock them early.
-    results_after = case when nd is null then results_after else greatest(coalesce(results_after, nd), nd) end,
+    results_after = case when nd is null then results_after else greatest(coalesce(results_after, nd), nd, current_date) end,
     budget = case when p ? 'budget' then nullif(left(p->>'budget', 12),'') else budget end,
     cur = coalesce(nullif(left(p->>'cur', 4),''), cur),
     note = case when p ? 'note' then nullif(left(p->>'note', 500),'') else note end,
@@ -406,7 +403,7 @@ end $$;
 
 create or replace function public.hp_admin_live(p_gid text, p_atok text) returns timestamptz
 language plpgsql security definer set search_path = public as $$
-declare t timestamptz := now() + interval '10 seconds';
+declare t timestamptz := now() + interval '30 seconds';
 begin
   if not hp_is_admin(p_gid, p_atok) then raise exception 'forbidden'; end if;
   update hp_groups set live_at = t where id = p_gid;

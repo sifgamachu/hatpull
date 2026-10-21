@@ -15,8 +15,11 @@ export default function NamePicker() {
   const [winner, setWinner] = useState(null);
   const [history, setHistory] = useState([]);
   const [removeWinner, setRemoveWinner] = useState(false);
+  const spinBtn = useRef(null);
   const canvas = useRef(null), angleRef = useRef(0);
-  const names = text.split(/\n|,/).map(s => s.trim()).filter(Boolean).slice(0, 500);
+  // One name per line; commas only separate names when everything is on a single line ("Smith, John" stays one name).
+  const all = (text.includes("\n") ? text.split("\n") : text.split(",")).map(s => s.trim()).filter(Boolean);
+  const LIMIT = 1000, names = all.slice(0, LIMIT);
 
   useEffect(() => { try { const s = JSON.parse(localStorage.getItem(KEY)); if (s?.text) setText(s.text); if (s?.removeWinner) setRemoveWinner(true); } catch {} }, []);
   useEffect(() => { try { localStorage.setItem(KEY, JSON.stringify({ text, removeWinner })); } catch {} }, [text, removeWinner]);
@@ -62,9 +65,12 @@ export default function NamePicker() {
     requestAnimationFrame(step);
   }
   function closeWinner(remove) {
-    if (remove && winner) { const idx = names.indexOf(winner); const next = names.slice(); next.splice(idx, 1); setText(next.join("\n")); }
+    if (remove && winner) { const idx = all.indexOf(winner); const next = all.slice(); next.splice(idx, 1); setText(next.join("\n")); }
     setWinner(null);
+    setTimeout(() => spinBtn.current?.focus(), 0);
   }
+
+  useEffect(() => { if (!winner) return; const k = e => { if (e.key === "Escape") closeWinner(removeWinner); }; addEventListener("keydown", k); return () => removeEventListener("keydown", k); });
 
   return (
     <div className="picker">
@@ -75,7 +81,7 @@ export default function NamePicker() {
           <button className="hub" onClick={spin} disabled={spinning || names.length < 2}>{spinning ? "…" : "SPIN"}</button>
         </div>
         <div className="row" style={{ justifyContent: "center" }}>
-          <button className="btn" onClick={spin} disabled={spinning || names.length < 2}>{spinning ? "Spinning…" : "Spin the wheel"}</button>
+          <button className="btn" ref={spinBtn} onClick={spin} disabled={spinning || names.length < 2}>{spinning ? "Spinning…" : "Spin the wheel"}</button>
         </div>
         {names.length < 2 && <p className="muted small" style={{ textAlign: "center" }}>Add at least two names to spin.</p>}
       </div>
@@ -83,12 +89,13 @@ export default function NamePicker() {
         <div className="panel stack">
           <div className="row between"><label htmlFor="names" style={{ margin: 0 }}>Names ({names.length})</label>
             <div className="row" style={{ gap: 6 }}>
-              <button className="btn small ghost" onClick={() => setText(shuffle(names).join("\n"))} disabled={spinning}>Shuffle</button>
-              <button className="btn small ghost" onClick={() => setText(names.slice().sort((a, b) => a.localeCompare(b)).join("\n"))} disabled={spinning}>Sort</button>
+              <button className="btn small ghost" onClick={() => setText(shuffle(all).join("\n"))} disabled={spinning}>Shuffle</button>
+              <button className="btn small ghost" onClick={() => setText(all.slice().sort((a, b) => a.localeCompare(b)).join("\n"))} disabled={spinning}>Sort</button>
               <button className="btn small ghost" onClick={() => setText("")} disabled={spinning}>Clear</button>
             </div>
           </div>
-          <textarea id="names" className="namebox" value={text} onChange={e => setText(e.target.value)} placeholder="One name per line" spellCheck="false" />
+          <textarea id="names" className="namebox" value={text} onChange={e => setText(e.target.value)} placeholder="One name per line" spellCheck="false" readOnly={spinning} />
+          {all.length > LIMIT && <p className="small" role="status">The wheel uses the first {LIMIT} names. You have {all.length}.</p>}
           <label className="check"><input type="checkbox" checked={removeWinner} onChange={e => setRemoveWinner(e.target.checked)} /> Remove the winner after each spin</label>
         </div>
         {history.length > 0 && <div className="panel stack"><div className="row between"><h3>Picked so far</h3><button className="link" onClick={() => copy(history.join("\n"))}>Copy</button></div><div className="hist">{history.map((h, i) => <span className="chip" key={i}>{i + 1}. {h}</span>)}</div></div>}
