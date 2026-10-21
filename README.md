@@ -13,8 +13,8 @@ Next.js 14 (App Router) on Vercel, Supabase Postgres. All data access goes throu
 
 ## Environment variables
 ```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=      # publishable key
+NEXT_PUBLIC_SUPABASE_URL=            # optional, defaults to the Hatpull project
+NEXT_PUBLIC_SUPABASE_ANON_KEY=      # optional, defaults to the Hatpull publishable key
 NEXT_PUBLIC_AMAZON_TAG=             # optional Amazon Associates tag
 ```
 
