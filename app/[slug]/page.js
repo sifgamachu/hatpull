@@ -21,7 +21,7 @@ export function generateMetadata({ params }) {
   };
 }
 
-function startHref(l) { return l.slug.includes("wish-list") || l.slug.startsWith("mothers-day") ? "/new?mode=wish" : `/new?occ=${l.occ}`; }
+function startHref(l) { return l.wishOnly ? `/new?mode=wish&occ=${l.occ}` : `/new?occ=${l.occ}`; }
 
 export default function Landing({ params }) {
   const l = getLanding(params.slug); if (!l) notFound();
@@ -55,7 +55,7 @@ export default function Landing({ params }) {
             <p className="lede">{l.lede}</p>
             <div className="row" style={{ marginTop: 20 }}>
               <Link className="btn" href={href}>{cta}</Link>
-              <Link className="btn ghost" href="/gift-finder">Find gift ideas</Link>
+              <Link className="btn ghost" href="/gift-finder?for=any">Find gift ideas</Link>
             </div>
           </div>
         </section>

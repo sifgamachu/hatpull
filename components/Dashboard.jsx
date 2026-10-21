@@ -144,7 +144,7 @@ export default function Dashboard({ gid }) {
               {g.note && <div className="msg"><div className="row between"><b>{g.org_name}</b><span className="tiny muted">{new Date(g.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span></div><div className="small">{g.note}</div></div>}
             </div>
           </div>
-          {me?.reset_count > 0 && <p className="tiny muted panel" role="note">ℹ️ The organizer reset your name {me.reset_count === 1 ? "once" : `${me.reset_count} times`}. If you didn't ask for that, let them know.</p>}
+          {me?.reset_count > 0 && <p className="tiny muted panel" role="note">ℹ️ Your name was reset by the organizer {me.reset_count === 1 ? "once" : `${me.reset_count} times`}. A reset lets whoever picks the name next see its match, so if you didn't ask for this, tell the organizer and ask them to redraw names.</p>}
           {me && !welcome && <PersonalLink gid={gid} />}
         </div>
       </div>
@@ -254,7 +254,7 @@ function Settings({ gid, state, tokens, close, reload }) {
           ? <button className="btn small ghost" disabled={busy} title="Free this name so its owner can pick it again" onClick={() => reset(m)}>{armed === "r" + m.id ? "Tap again to reset" : "Reset"}</button>
           : <button className="btn small ghost" onClick={() => sendLink(m)}>Send link</button>}
         {!m.is_org && <button className="btn small ghost" disabled={busy} onClick={() => armed === m.id ? change({ remove: [m.id] }, `${m.name} removed`) : setArmed(m.id)}>{armed === m.id ? "Tap again to remove" : "Remove"}</button>}</div>)}</div>
-      <p className="tiny muted">Someone lost access or tapped the wrong name? <b>Reset</b> frees their name so they can pick it again from the invitation link. Their match stays the same, and they'll see that their name was reset.</p>
+      <p className="tiny muted">Someone lost access or tapped the wrong name? <b>Reset</b> frees their name so they can pick it again from the invitation link. Their match stays the same, and they'll see that their name was reset. If someone else may have opened it, use Redraw all names instead.</p>
       <form className="row" style={{ flexWrap: "nowrap" }} onSubmit={e => { e.preventDefault(); if (add.trim()) change({ add: [add.trim()] }, `${add.trim()} added`); }}><input maxLength={40} placeholder="Add a member" value={add} onChange={e => setAdd(e.target.value)} aria-label="New member name" /><button className="btn small ghost" type="submit" disabled={busy}>Add</button></form>
       {g.mode === "draw" && <><p className="tiny muted">Adding or removing someone redraws all names. Everyone keeps their link and sees their new name next time they open the celebration.</p>
         <button className="btn ghost" disabled={busy} onClick={() => armed === "redraw" ? change({}, "Done") : setArmed("redraw")}>{armed === "redraw" ? "Tap again: everyone gets a new name" : "Redraw all names"}</button></>}

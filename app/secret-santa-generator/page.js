@@ -76,7 +76,7 @@ export default function SantaLanding() {
       </section>
 
       <section className="section">
-        <div className="row between"><h2>Coming up</h2><Link className="link" href="/how-it-works">Holiday ideas</Link></div>
+        <div className="row between"><h2>Coming up</h2><Link className="link" href="/how-it-works">How it works</Link></div>
         <div className="cards">{upcoming.map(o => (
           <div key={o.k} className={`panel stack ${XMAS_OCC.includes(o.k) ? "card-x" : ""}`} style={{ gap: 8 }}>
             {XMAS_OCC.includes(o.k) && <Bow />}

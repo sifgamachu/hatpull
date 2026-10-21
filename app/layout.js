@@ -1,7 +1,7 @@
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Analytics } from "@vercel/analytics/react";
+import SiteAnalytics from "@/components/SiteAnalytics";
 
 export const metadata = {
   metadataBase: new URL("https://secretsantageneratorapp.com"),
@@ -22,12 +22,13 @@ export default function RootLayout({ children }) {
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" />
       </head>
       <body>
+        <a className="skip" href="#app">Skip to content</a>
         <div className="wrap">
           <Header />
           <main id="app">{children}</main>
           <Footer />
         </div>
-        <Analytics />
+        <SiteAnalytics />
       </body>
     </html>
   );

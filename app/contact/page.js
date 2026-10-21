@@ -1,8 +1,10 @@
 import { SITE } from "@/lib/core";
-export const metadata = { title: "Contact", description: "Get in touch with the Hatpull team." };
+import Festive from "@/components/Festive";
+export const metadata = { title: "Contact", description: "Get in touch with the Hatpull team.", alternates: { canonical: "https://secretsantageneratorapp.com/contact" } };
 export default function Page() {
   return (
     <div className="page prose">
+      <Festive on={false} />
       <h1>Contact us</h1>
       <p>We'd love to hear from you, whether it's a question about your celebration, a bug, a feature idea, or a partnership.</p>
       <div className="panel stack" style={{ marginTop: 12 }}>

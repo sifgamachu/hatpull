@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { allG } from "@/lib/store";
 import { rpc } from "@/lib/db";
-import { fmtDate, daysUntil, isXmas } from "@/lib/core";
+import { fmtDate, daysUntil, isXmas, normState } from "@/lib/core";
 import Festive from "./Festive";
 import XBanner from "./XBanner";
 import { Bow, Ornament, WishBar } from "./bits";
@@ -12,7 +12,7 @@ export default function My() {
   const [rows, setRows] = useState(null);
   useEffect(() => {
     const gs = allG();
-    Promise.all(gs.map(async x => { try { return { x, s: await rpc("hp_state", { p_gid: x.gid, p_mtok: x.mtok || null, p_atok: x.atok || null }) }; } catch (e) { return { x, s: null, gone: /not_found/.test(e.message) }; } }))
+    Promise.all(gs.map(async x => { try { return { x, s: normState(await rpc("hp_state", { p_gid: x.gid, p_mtok: x.mtok || null, p_atok: x.atok || null })) }; } catch (e) { return { x, s: null, gone: /not_found/.test(e.message) }; } }))
       .then(r => setRows(r.filter(y => y.s).sort((a, b) => { const da = daysUntil(a.s.group.date), db = daysUntil(b.s.group.date); return (da < 0) - (db < 0) || String(a.s.group.date || "").localeCompare(String(b.s.group.date || "")); })));
   }, []);
   return (

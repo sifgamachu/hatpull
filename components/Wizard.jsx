@@ -16,7 +16,8 @@ export default function Wizard() {
     const s = { step: 0, mode: "draw", orgName: "", includeMe: true, names: ["", "", ""], excl: {}, wantExcl: false, occ: "", name: "", date: "", budget: "", cur: "$", note: "" };
     if (q.get("mode") === "wish") { s.mode = "wish"; s.step = 1; }
     const oi = q.get("occ");
-    if (oi != null && OCCASIONS[+oi]) { s.occ = OCCASIONS[+oi].k; const d = suggestDates(s.occ); s.name = `${s.occ} ${(d[0] || iso(new Date())).slice(0, 4)}`; s.date = d.find(x => x.endsWith("-12-25")) || d[0] || ""; s.step = 1; }
+    if (oi === "other") { s.occ = "Other"; s.step = 1; }
+    else if (oi != null && OCCASIONS[+oi]) { s.occ = OCCASIONS[+oi].k; const d = suggestDates(s.occ); s.name = `${s.occ} ${(d[0] || iso(new Date())).slice(0, 4)}`; s.date = d.find(x => x.endsWith("-12-25")) || d[0] || ""; s.step = 1; }
     return s;
   });
   const [err, setErr] = useState(""); const [busy, setBusy] = useState(false);

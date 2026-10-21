@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useGroup } from "@/lib/useGroup";
 import { rpc } from "@/lib/db";
 import { allG } from "@/lib/store";
-import { isXmas, money, safeUrl, daysUntil, AGES, GIFT_CATS, amazonUrl, rid, AMAZON_DISCLOSURE, AFF_REL, cleanUserLink } from "@/lib/core";
+import { isXmas, money, safeUrl, daysUntil, AGES, GIFT_CATS, amazonUrl, rid, AMAZON_DISCLOSURE, AFF_REL, cleanUserLink, normState } from "@/lib/core";
 import { toast, burst } from "@/lib/ui";
 import Festive from "./Festive";
 import XBanner from "./XBanner";
@@ -65,7 +65,7 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
   async function importFrom(otherGid) {
     const o = others.find(x => x.gid === otherGid); if (!o) return;
     try {
-      const s = await rpc("hp_state", { p_gid: o.gid, p_mtok: o.mtok, p_atok: null });
+      const s = normState(await rpc("hp_state", { p_gid: o.gid, p_mtok: o.mtok, p_atok: null }));
       const src = s.members.find(x => x.id === s.me?.id)?.profile?.items || [];
       const have = new Set(items.map(i => i.t.toLowerCase()));
       const add = src.filter(i => !have.has(i.t.toLowerCase())).map(i => ({ ...i, id: rid(6) }));

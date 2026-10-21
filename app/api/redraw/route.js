@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { rpc } from "@/lib/db";
 import { drawNames, rid } from "@/lib/core";
 
-// Organizer changes people or exclusions: recompute the draw on the server and save it.
+// Organizer changes people or exclusions. The new draw itself is made inside the database (hp_draw);
+// the check here only gives a friendly error before saving.
 // Body: { gid, atok, add?: [name], remove?: [id], exclusions?: [{a,b}] (member ids) }
 export async function POST(req) {
   try {
@@ -10,7 +11,7 @@ export async function POST(req) {
     const roster = await rpc("hp_admin_roster", { p_gid: b.gid, p_atok: b.atok });
     if (!roster) return NextResponse.json({ error: "Not allowed." }, { status: 403 });
     let members = roster.members.filter(m => !(b.remove || []).includes(m.id));
-    for (const n of (b.add || []).map(s => String(s).trim().slice(0, 40)).filter(Boolean)) {
+    for (const n of (b.add || []).map(s => String(s).replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, "").trim().slice(0, 40)).filter(Boolean)) {
       if (members.some(m => m.name.toLowerCase() === n.toLowerCase())) return NextResponse.json({ error: `${n} is already in the group.` }, { status: 400 });
       members.push({ id: rid(6), name: n });
     }
@@ -22,9 +23,10 @@ export async function POST(req) {
       assignment = drawNames(members.map(m => m.id), exclusions);
       if (!assignment) return NextResponse.json({ error: "That change leaves no valid draw. Remove an exclusion first." }, { status: 400 });
     }
-    await rpc("hp_admin_redraw", { p_gid: b.gid, p_atok: b.atok, p_members: members, p_exclusions: exclusions, p_assignment: assignment });
+    await rpc("hp_admin_redraw", { p_gid: b.gid, p_atok: b.atok, p_members: members, p_exclusions: exclusions, p_assignment: null });
     return NextResponse.json({ ok: true });
   } catch (e) {
+    if (/no_valid_draw/.test(e.message)) return NextResponse.json({ error: "That change leaves no valid draw. Remove an exclusion first." }, { status: 400 });
     const msg = /forbidden/.test(e.message) ? "Not allowed." : "Couldn't save that change. Try again.";
     return NextResponse.json({ error: msg }, { status: /forbidden/.test(e.message) ? 403 : 500 });
   }

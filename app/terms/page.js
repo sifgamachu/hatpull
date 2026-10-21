@@ -1,8 +1,10 @@
 import { SITE } from "@/lib/core";
-export const metadata = { title: "Terms of Service", description: "The terms for using Hatpull." };
+import Festive from "@/components/Festive";
+export const metadata = { title: "Terms of Service", description: "The terms for using Hatpull.", alternates: { canonical: "https://secretsantageneratorapp.com/terms" } };
 export default function Page() {
   return (
     <div className="page prose">
+      <Festive on={false} />
       <h1>Terms of Service</h1>
       <p className="muted">Last updated: October 21, 2026</p>
       <p>These terms govern your use of Hatpull, including the Secret Santa generator at secretsantageneratorapp.com and the name picker at onlinenamepickertool.com, provided by {SITE.company}. By using Hatpull you agree to them.</p>
