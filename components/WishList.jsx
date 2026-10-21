@@ -14,7 +14,7 @@ export default function WishList({ gid, mid }) {
   const { state, error, tokens, reload } = useGroup(gid);
   const [draft, setDraft] = useState(null); // optimistic items
   if (error && error !== "network") return <div className="mid panel stack"><p>{error === "not_found" ? "This celebration no longer exists." : "You don't have access to this wish list on this device."}</p><Link className="btn small ghost" href="/my">My celebrations</Link></div>;
-  if (!state) return <div className="mid panel muted">{error === "network" ? "Can't reach the server. Retrying…" : "Loading wish list…"}</div>;
+  if (!state) return <div className="mid panel muted"><h1 className="sr-only">Wish list</h1>{error === "network" ? "Can't reach the server. Retrying…" : "Loading wish list…"}</div>;
   const g = state.group, me = state.me, xm = isXmas(g);
   const m = state.members.find(x => x.id === mid);
   if (!m) return <div className="mid panel stack"><p>This person isn't in the celebration anymore.</p><Link className="btn small ghost" href={`/g/${gid}`}>Back</Link></div>;
@@ -30,10 +30,10 @@ export default function WishList({ gid, mid }) {
       <Link href={`/g/${gid}`} className="link crumb">← {g.name}</Link>
       {xm ? <XBanner>
           <p className="kicker">{mineList ? (m.kid ? `✉️ ${m.name}'s letter to Santa` : "✉️ Dear Santa…") : iDrew ? "🎅 You're their Secret Santa" : "🎁 Wish list"}</p>
-          <h1>{mineList ? (m.kid ? `${m.name}'s wish list` : "My wish list") : `${m.name}'s wish list`}</h1>
+          <h1>{mineList ? (m.kid ? `${m.name}'s wish list` : "My wish list") : `${m.name}'s wish list`}</h1><h2 className="sr-only">Gifts and details</h2>
           <div className="meta-x"><span>🎁 <b>{items.length}</b> wish{items.length === 1 ? "" : "es"}</span>{g.budget && <span>💸 <b>{money(g.cur, g.budget)}</b> budget</span>}{d != null && d >= 0 && <span>{d} sleeps to go</span>}</div>
         </XBanner>
-        : <div className="row between"><h1 style={{ fontSize: "clamp(28px,5vw,40px)" }}>{mineList ? (m.kid ? `${m.name}'s wish list` : "My wish list") : `Wish list of ${m.name}`}</h1><span className="pill">{items.length} gifts</span></div>}
+        : <div className="row between"><h1 style={{ fontSize: "clamp(28px,5vw,40px)" }}>{mineList ? (m.kid ? `${m.name}'s wish list` : "My wish list") : `Wish list of ${m.name}`}</h1><h2 className="sr-only">Gifts and details</h2><span className="pill">{items.length} gifts</span></div>}
       {iDrew && <div className="note">{xm ? `🎅 You're ${m.name}'s Secret Santa.` : `You drew ${m.name}.`} Reserve a gift so nobody else buys the same thing. {m.name} won't see it.</div>}
       {mineList ? <Editor gid={gid} g={g} m={m} prof={prof} items={items} setDraft={setDraft} tokens={tokens} reload={reload} xm={xm} questions={state.questions.filter(q => q.to === m.id)} />
         : <Viewer gid={gid} g={g} m={m} me={me} prof={prof} items={items} state={state} tokens={tokens} reload={reload} xm={xm} />}

@@ -24,6 +24,7 @@ export default function My() {
     <div className="mid stack">
       <Festive on />
       <XBanner><p className="kicker">🎄 Your gift exchanges</p><h1>My celebrations</h1><p className="lede">Everything you're organizing or joined on this device, with your wish lists and the people on your list.</p></XBanner>
+      <h2 className="sr-only">Your celebrations</h2>
       {rows === null ? <div className="panel muted">Checking the list twice…</div>
         : offline ? <div className="panel stack"><h3>Can't reach the server</h3><p className="muted">Your celebrations are safe. Check your connection and reload this page.</p><button className="btn small ghost" onClick={() => location.reload()} style={{ alignSelf: "flex-start" }}>Try again</button></div>
         : !rows.length ? <div className="panel stack card-x"><Bow /><h3>Nothing under the tree yet</h3><p className="muted">Start a Secret Santa, or open an invitation link someone sent you. If you joined on another device, open your personal link here to bring it over.</p><div className="row"><Link className="btn small" href="/new?occ=0">Start a Secret Santa</Link><Link className="btn small ghost" href="/new?mode=wish">Start a wish list group</Link></div></div>

@@ -24,26 +24,36 @@ export default function NamePicker() {
   useEffect(() => { try { const s = JSON.parse(localStorage.getItem(KEY)); if (s?.text) setText(s.text); if (s?.removeWinner) setRemoveWinner(true); } catch {} }, []);
   useEffect(() => { try { localStorage.setItem(KEY, JSON.stringify({ text, removeWinner })); } catch {} }, [text, removeWinner]);
 
+  // The wheel face is drawn once per name list into an off-screen canvas; each animation frame only rotates
+  // that image, so spinning stays smooth even with hundreds of names.
+  const face = useRef({ key: "", img: null });
+  const [fontsOk, setFontsOk] = useState(0);
+  useEffect(() => { document.fonts?.ready.then(() => setFontsOk(1)).catch(() => {}); }, []);
   useEffect(() => {
     const c = canvas.current; if (!c) return; const ctx = c.getContext("2d");
     const S = c.width, R = S / 2 - 6, n = Math.max(names.length, 1), seg = (Math.PI * 2) / n;
-    ctx.clearRect(0, 0, S, S); ctx.save(); ctx.translate(S / 2, S / 2); ctx.rotate(angle);
-    for (let i = 0; i < n; i++) {
-      ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, R, i * seg, (i + 1) * seg); ctx.closePath();
-      ctx.fillStyle = names.length ? PALETTE[i % PALETTE.length] : "#C9D3CE"; ctx.fill();
-      ctx.strokeStyle = "rgba(255,255,255,.7)"; ctx.lineWidth = 2; ctx.stroke();
-      if (names[i]) {
-        ctx.save(); ctx.rotate(i * seg + seg / 2); ctx.textAlign = "right"; ctx.textBaseline = "middle";
-        const fs = Math.max(11, Math.min(30, (seg * R) / 2.2, 520 / Math.max(6, names[i].length) / 2));
-        ctx.font = `600 ${fs}px Outfit, system-ui, sans-serif`;
-        ctx.fillStyle = [1].includes(i % PALETTE.length) ? "#2A1D04" : "#FFFFFF";
-        const label = names[i].length > 22 ? names[i].slice(0, 21) + "…" : names[i];
-        ctx.fillText(label, R - 16, 1); ctx.restore();
+    const key = fontsOk + "|" + S + "|" + names.join("\n");
+    if (face.current.key !== key) {
+      const off = document.createElement("canvas"); off.width = S; off.height = S; const o = off.getContext("2d");
+      o.translate(S / 2, S / 2);
+      for (let i = 0; i < n; i++) {
+        o.beginPath(); o.moveTo(0, 0); o.arc(0, 0, R, i * seg, (i + 1) * seg); o.closePath();
+        o.fillStyle = names.length ? PALETTE[i % PALETTE.length] : "#C9D3CE"; o.fill();
+        if (n <= 300) { o.strokeStyle = "rgba(255,255,255,.7)"; o.lineWidth = 2; o.stroke(); }
+        if (names[i] && seg * R >= 9) { // skip labels on slices too thin to read
+          o.save(); o.rotate(i * seg + seg / 2); o.textAlign = "right"; o.textBaseline = "middle";
+          const fs = Math.max(9, Math.min(30, (seg * R) / 2.2, 520 / Math.max(6, names[i].length) / 2));
+          o.font = `600 ${fs}px Outfit, system-ui, sans-serif`;
+          o.fillStyle = [1].includes(i % PALETTE.length) ? "#2A1D04" : "#FFFFFF";
+          const label = names[i].length > 22 ? names[i].slice(0, 21) + "…" : names[i];
+          o.fillText(label, R - 16, 1); o.restore();
+        }
       }
+      face.current = { key, img: off };
     }
-    ctx.restore();
+    ctx.clearRect(0, 0, S, S); ctx.save(); ctx.translate(S / 2, S / 2); ctx.rotate(angle); ctx.drawImage(face.current.img, -S / 2, -S / 2); ctx.restore();
     ctx.beginPath(); ctx.arc(S / 2, S / 2, R, 0, Math.PI * 2); ctx.lineWidth = 6; ctx.strokeStyle = "rgba(0,0,0,.12)"; ctx.stroke();
-  }, [angle, text]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [angle, text, fontsOk]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function spin() {
     if (spinning || names.length < 2) return;

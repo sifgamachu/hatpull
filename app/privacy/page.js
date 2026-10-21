@@ -6,7 +6,7 @@ export default function Page() {
     <div className="page prose">
       <Festive on={false} />
       <h1>Privacy Policy</h1>
-      <p className="muted">Last updated: October 20, 2026</p>
+      <p className="muted">Last updated: October 21, 2026</p>
       <p>This policy explains what information Hatpull ("we", "us"), a product of {SITE.company}, collects when you use our Secret Santa generator, name picker and related pages, and how we use it.</p>
       <h2>What we collect</h2>
       <ul>
@@ -15,6 +15,7 @@ export default function Page() {
         <li><b>Messages and questions</b> posted inside a celebration.</li>
         <li><b>Name picker lists</b> stay in your own browser and are not sent to us.</li>
         <li><b>Technical data:</b> our hosting provider processes standard request data such as IP address and browser type to deliver and secure the service.</li>
+        <li><b>Abuse prevention:</b> when someone creates a celebration, we store a scrambled one-way code made from their IP address, so we can limit how many celebrations one person creates. It can't be turned back into the address.</li>
         <li><b>Fonts:</b> our pages load fonts from Google Fonts, so your browser connects to Google, which receives your IP address and browser details.</li>
       </ul>
       <p>We don't require accounts, and we don't ask for email addresses or phone numbers to take part.</p>

@@ -46,7 +46,7 @@ export default function Join({ code }) {
       {xm && <XBanner><p className="kicker">✉️ You're invited</p><h1>{info.name}</h1><div className="meta-x">{info.date && <span>📅 {fmtDate(info.date, { month: "long", day: "numeric" })}</span>}{info.budget && <span>💸 <b>{money(info.cur, info.budget)}</b></span>}<span>👥 {ppl.length} people</span></div></XBanner>}
       <div className="panel stack">
         {!xm && <p className="eyebrow">{info.occasion || "Celebration"}</p>}
-        <h2>Who are you joining as?</h2>
+        {xm ? <h2>Who are you joining as?</h2> : <h1 style={{ fontSize: 26 }}>Who are you joining as?</h1>}
         <p className="muted">{info.org_name} invited you to <b>{info.name}</b>{info.date ? ` on ${fmtDate(info.date, { month: "long", day: "numeric" })}` : ""}. Pick your name. Each name can only be picked once.</p>
         <div className="optlist">{ppl.map(m => <button key={m.id} className="opt" disabled={m.claimed} onClick={() => setPick(m)}><span>{m.name}</span><span className={`pill ${m.claimed ? "" : "ok"}`}>{m.claimed ? "Joined" : "Pick"}</span></button>)}</div>
         <p className="muted small">Not on the list? Ask {info.org_name} to add you.</p>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { rpc } from "@/lib/db";
+import { serverRpc } from "@/lib/serverDb";
 import { drawNames, rid } from "@/lib/core";
 
 // Organizer changes people or exclusions. The new draw itself is made inside the database (hp_draw);
@@ -8,7 +8,7 @@ import { drawNames, rid } from "@/lib/core";
 export async function POST(req) {
   try {
     const b = await req.json();
-    const roster = await rpc("hp_admin_roster", { p_gid: b.gid, p_atok: b.atok });
+    const roster = await serverRpc("hp_admin_roster", { p_gid: b.gid, p_atok: b.atok });
     if (!roster) return NextResponse.json({ error: "Not allowed." }, { status: 403 });
     let members = roster.members.filter(m => !(b.remove || []).includes(m.id));
     for (const n of (b.add || []).map(s => String(s).replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, "").trim().slice(0, 40)).filter(Boolean)) {
@@ -23,7 +23,7 @@ export async function POST(req) {
       assignment = drawNames(members.map(m => m.id), exclusions);
       if (!assignment) return NextResponse.json({ error: "That change leaves no valid draw. Remove an exclusion first." }, { status: 400 });
     }
-    await rpc("hp_admin_redraw", { p_gid: b.gid, p_atok: b.atok, p_members: members, p_exclusions: exclusions, p_assignment: null });
+    await serverRpc("hp_admin_redraw", { p_gid: b.gid, p_atok: b.atok, p_members: members, p_exclusions: exclusions, p_assignment: null });
     return NextResponse.json({ ok: true });
   } catch (e) {
     if (/no_valid_draw/.test(e.message)) return NextResponse.json({ error: "That change leaves no valid draw. Remove an exclusion first." }, { status: 400 });

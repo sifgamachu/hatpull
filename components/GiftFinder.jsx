@@ -31,6 +31,7 @@ export default function GiftFinder() {
         <div className="choices">{[[0, 25], [25, 50], [50, 100], [100, 200]].map(([a, b]) => <button key={a} type="button" className="choice" aria-pressed={f.min === String(a) && f.max === String(b)} onClick={() => up({ min: String(a), max: String(b) })}>${a}–{b}</button>)}</div>
       </div>
       <p className="small muted">{AMAZON_DISCLOSURE} Ideas change with your filters: choosing a child's age shows toys and stocking stuffers, a teen age adds "for teens" to each search, and your price range is applied to every link.</p>
+      <h2 className="sr-only">Gift ideas by category</h2>
       <div className="stack" style={{ gap: 20 }}>{cats.map(c => <div key={c} className="stack" style={{ gap: 8 }}><h3>{c}</h3>{CAT_TIPS[c] && <p className="small muted">{CAT_TIPS[c]}</p>}<div className="ideas">{GIFT_CATS[c].map(t => <a key={t} href={amazonUrl(t + suffix, lo, hi)} target="_blank" rel={AFF_REL}>{t[0].toUpperCase() + t.slice(1)}{suffix && <span className="tiny muted">{suffix}</span>}</a>)}</div></div>)}</div>
       <p className="tiny muted">{AMAZON_DISCLOSURE} Buying through these links costs you nothing extra.</p>
     </div>

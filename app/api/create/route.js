@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { rpc } from "@/lib/db";
+import { serverRpc } from "@/lib/serverDb";
+import { createHash } from "crypto";
 import { drawNames, rid } from "@/lib/core";
 
 // Light per-IP limit (per server instance). The database also has a global circuit breaker.
@@ -35,7 +36,10 @@ export async function POST(req) {
     if (mode === "draw" && !drawNames(members.map(m => m.id), exclusions)) { return NextResponse.json({ error: "These exclusions leave no valid draw." }, { status: 400 }); }
     const orgMid = b.includeMe && clean(b.orgName) ? idOf(clean(b.orgName).slice(0, 40)) : null;
 
-    const out = await rpc("hp_create_group", { p: {
+    // A one-way hash of the creator's IP lets the database apply a per-person limit across all servers.
+    const ipHash = createHash("sha256").update("hatpull:" + ip).digest("hex").slice(0, 32);
+    const out = await serverRpc("hp_create_group", { p: {
+      client: ipHash,
       name: clean(b.name).slice(0, 80), occasion: clean(b.occasion).slice(0, 40), date: clean(b.date), budget: clean(b.budget).slice(0, 12), cur: clean(b.cur).slice(0, 4) || "$",
       note: clean(b.note).slice(0, 500), mode, settings: { wishVis: "all", mail: { on: false, vis: "drawn" }, venue: { type: "", address: "" } },
       exclusions, org_name: clean(b.orgName).slice(0, 40), members, org_mid: orgMid,
@@ -43,6 +47,7 @@ export async function POST(req) {
     return NextResponse.json(out);
   } catch (e) {
     if (/no_valid_draw/.test(e.message)) return NextResponse.json({ error: "These exclusions leave no valid draw." }, { status: 400 });
+    if (/slow_down/.test(e.message)) return NextResponse.json({ error: "You've created a lot of celebrations recently. Try again in a little while." }, { status: 429 });
     if (/busy/.test(e.message)) return NextResponse.json({ error: "We're very busy right now. Try again in a minute." }, { status: 503 });
     return NextResponse.json({ error: "Couldn't create the celebration. Try again." }, { status: 500 });
   }

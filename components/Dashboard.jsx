@@ -45,9 +45,9 @@ export default function Dashboard({ gid }) {
     if (liveOn && liveMs <= 0 && me && !me.drawn && me.receiver_id && !firedLive.current) { firedLive.current = true; reveal(); }
   }); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (error === "no_access") return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>You haven't joined this celebration on this device</h1><p className="muted">Open the invitation link from the organizer to pick your name, or open your personal link if you joined on another device. If the organizer reset your name, open the invitation link and pick your name again: your match is the same.</p></div>;
+  if (error === "no_access") return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>You haven't joined this celebration on this device</h1><p className="muted">Open the invitation link from the organizer to pick your name, or open your personal link if you joined on another device.</p><p className="muted">If the organizer reset your name, open the invitation link and pick it again: your match is the same. If your name isn't on the list anymore, the organizer removed you from this celebration.</p></div>;
   if (error === "not_found") return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>We can't find this celebration</h1><p className="muted">It may have been deleted.</p><Link className="btn small ghost" href="/my">My celebrations</Link></div>;
-  if (!state) return <div className="panel muted">{error === "network" ? "Can't reach the server. Retrying…" : "Loading celebration…"}</div>;
+  if (!state) return <div className="panel muted"><h1 className="sr-only">Your celebration</h1>{error === "network" ? "Can't reach the server. Retrying…" : "Loading celebration…"}</div>;
   if (me === null && !adm) return <div className="narrow panel">You're no longer in this celebration.</div>;
 
   const isDraw = g.mode === "draw";
@@ -82,9 +82,10 @@ export default function Dashboard({ gid }) {
       </XBanner></div>}
       {welcome && me && <PersonalLink gid={gid} first />}
       <div className="dash">
+        {xm && <h2 className="sr-only">Celebration details</h2>}
         <div>
           <div className="panel stack">
-            {xm ? <h3>Celebration details</h3> : <h1 style={{ fontSize: 28 }}>{g.name}</h1>}
+            {xm ? <h3>Celebration details</h3> : <><h1 style={{ fontSize: 28 }}>{g.name}</h1><h2 className="sr-only">Details</h2></>}
             {me ? <p>Hi {me.name}! {dleft != null && dleft >= 0 && <span className="muted">{daysLeftText(dleft)}</span>}</p> : <p className="muted">You're organizing but not in the draw.</p>}
             <div className="meta">
               {g.date && <div>📅 {fmtDate(g.date)}</div>}
