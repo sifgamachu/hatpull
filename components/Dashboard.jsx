@@ -44,7 +44,7 @@ export default function Dashboard({ gid }) {
     if (liveOn && liveMs <= 0 && me && !me.drawn && me.receiver_id && !firedLive.current) { firedLive.current = true; reveal(); }
   }); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (error === "no_access") return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>You haven't joined this celebration on this device</h1><p className="muted">Open the invitation link from the organizer to pick your name, or open your personal link if you joined on another device.</p></div>;
+  if (error === "no_access") return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>You haven't joined this celebration on this device</h1><p className="muted">Open the invitation link from the organizer to pick your name, or open your personal link if you joined on another device. If the organizer reset your name, open the invitation link and pick your name again: your match is the same.</p></div>;
   if (error === "not_found") return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>We can't find this celebration</h1><p className="muted">It may have been deleted.</p><Link className="btn small ghost" href="/my">My celebrations</Link></div>;
   if (!state) return <div className="panel muted">{error === "network" ? "Can't reach the server. Retrying…" : "Loading celebration…"}</div>;
   if (me === null && !adm) return <div className="narrow panel">You're no longer in this celebration.</div>;
@@ -144,6 +144,7 @@ export default function Dashboard({ gid }) {
               {g.note && <div className="msg"><div className="row between"><b>{g.org_name}</b><span className="tiny muted">{new Date(g.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span></div><div className="small">{g.note}</div></div>}
             </div>
           </div>
+          {me?.reset_count > 0 && <p className="tiny muted panel" role="note">ℹ️ The organizer reset your name {me.reset_count === 1 ? "once" : `${me.reset_count} times`}. If you didn't ask for that, let them know.</p>}
           {me && !welcome && <PersonalLink gid={gid} />}
         </div>
       </div>
@@ -207,6 +208,19 @@ function Settings({ gid, state, tokens, close, reload }) {
     try { await redraw({ gid, atok: tokens.atok, ...body }); toast(msg + (g.mode === "draw" ? ". Names redrawn." : "")); await reload(); close(); }
     catch (e) { toast(e.message); setBusy(false); }
   }
+  async function reset(m) {
+    if (armed !== "r" + m.id) return setArmed("r" + m.id);
+    setBusy(true);
+    try { await rpc("hp_admin_reset_member", { p_gid: gid, p_atok: tokens.atok, p_mid: m.id }); toast(`${m.name} can pick their name again from the invitation link`); setArmed(null); await reload(); }
+    catch (e) { toast(/not_joined/.test(e.message) ? `${m.name} hasn't joined yet` : "Couldn't reset. Try again."); }
+    setBusy(false);
+  }
+  async function sendLink(m) {
+    const link = `${location.origin}/join/${g.join_code}`;
+    const text = `Hi ${m.name}! Here's the link for ${g.name}. Open it, tap your name and ${g.mode === "draw" ? "draw" : "add your wish list"}: ${link}`;
+    try { if (navigator.share) { await navigator.share({ title: g.name, text }); return; } } catch (e) { if (e?.name === "AbortError") return; }
+    copy(text);
+  }
   async function del() {
     if (armed !== "del") return setArmed("del");
     setBusy(true);
@@ -236,7 +250,11 @@ function Settings({ gid, state, tokens, close, reload }) {
       <button className="btn" onClick={save} disabled={busy}>Save settings</button>
       <p className="eyebrow">Members</p>
       <div className="list">{state.members.filter(m => !m.kid).map(m => <div className="item" key={m.id}><span className="grow">{m.name} <span className="tiny muted">{m.claimed ? "joined" : "not joined"}</span></span>
+        {m.claimed
+          ? <button className="btn small ghost" disabled={busy} title="Free this name so its owner can pick it again" onClick={() => reset(m)}>{armed === "r" + m.id ? "Tap again to reset" : "Reset"}</button>
+          : <button className="btn small ghost" onClick={() => sendLink(m)}>Send link</button>}
         {!m.is_org && <button className="btn small ghost" disabled={busy} onClick={() => armed === m.id ? change({ remove: [m.id] }, `${m.name} removed`) : setArmed(m.id)}>{armed === m.id ? "Tap again to remove" : "Remove"}</button>}</div>)}</div>
+      <p className="tiny muted">Someone lost access or tapped the wrong name? <b>Reset</b> frees their name so they can pick it again from the invitation link. Their match stays the same, and they'll see that their name was reset.</p>
       <form className="row" style={{ flexWrap: "nowrap" }} onSubmit={e => { e.preventDefault(); if (add.trim()) change({ add: [add.trim()] }, `${add.trim()} added`); }}><input maxLength={40} placeholder="Add a member" value={add} onChange={e => setAdd(e.target.value)} aria-label="New member name" /><button className="btn small ghost" type="submit" disabled={busy}>Add</button></form>
       {g.mode === "draw" && <><p className="tiny muted">Adding or removing someone redraws all names. Everyone keeps their link and sees their new name next time they open the celebration.</p>
         <button className="btn ghost" disabled={busy} onClick={() => armed === "redraw" ? change({}, "Done") : setArmed("redraw")}>{armed === "redraw" ? "Tap again: everyone gets a new name" : "Redraw all names"}</button></>}

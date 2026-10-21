@@ -1,6 +1,7 @@
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   metadataBase: new URL("https://secretsantageneratorapp.com"),
@@ -26,6 +27,7 @@ export default function RootLayout({ children }) {
           <main id="app">{children}</main>
           <Footer />
         </div>
+        <Analytics />
       </body>
     </html>
   );

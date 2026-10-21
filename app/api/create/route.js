@@ -2,9 +2,20 @@ import { NextResponse } from "next/server";
 import { rpc } from "@/lib/db";
 import { drawNames, rid } from "@/lib/core";
 
+// Light per-IP limit (per server instance). The database also has a global circuit breaker.
+const hits = new Map(); const WINDOW = 10 * 60 * 1000, LIMIT = 20;
+function limited(ip) {
+  const now = Date.now(), arr = (hits.get(ip) || []).filter(t => now - t < WINDOW);
+  arr.push(now); hits.set(ip, arr);
+  if (hits.size > 5000) for (const [k, v] of hits) if (now - v[v.length - 1] > WINDOW) hits.delete(k);
+  return arr.length > LIMIT;
+}
+
 // Creates a celebration. The draw runs here on the server so the organizer's browser never sees the results.
 export async function POST(req) {
   try {
+    const ip = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || "anon";
+    if (limited(ip)) return NextResponse.json({ error: "You've created a lot of celebrations in a short time. Wait a few minutes and try again." }, { status: 429 });
     const b = await req.json();
     const clean = s => String(s ?? "").trim();
     const people = (b.people || []).map(clean).filter(Boolean).map(s => s.slice(0, 40));
@@ -29,6 +40,7 @@ export async function POST(req) {
     } });
     return NextResponse.json(out);
   } catch (e) {
+    if (/busy/.test(e.message)) return NextResponse.json({ error: "We're very busy right now. Try again in a minute." }, { status: 503 });
     return NextResponse.json({ error: "Couldn't create the celebration. Try again." }, { status: 500 });
   }
 }

@@ -30,6 +30,7 @@ create table if not exists public.hp_members (
   claimed_at timestamptz,
   receiver_id text,
   drawn_round int,
+  reset_count int not null default 0,
   profile jsonb not null default '{}'::jsonb,
   sort int not null default 0,
   created_at timestamptz not null default now(),
@@ -65,6 +66,10 @@ create table if not exists public.hp_messages (
 create index if not exists hp_messages_group_idx on public.hp_messages(group_id, created_at desc);
 create index if not exists hp_questions_group_idx on public.hp_questions(group_id);
 create index if not exists hp_reservations_group_idx on public.hp_reservations(group_id);
+create index if not exists hp_groups_created_idx on public.hp_groups(created_at);
+
+-- Columns added after launch (safe to rerun on an existing database)
+alter table public.hp_members add column if not exists reset_count int not null default 0;
 
 alter table public.hp_groups enable row level security;
 alter table public.hp_members enable row level security;
@@ -86,13 +91,15 @@ declare gid text := substr(hp_tok(8),1,12); atok text := hp_tok(18); code text :
         omid text := p->>'org_mid'; otok text; m jsonb; i int := 0;
 begin
   if jsonb_array_length(coalesce(p->'members','[]')) > 200 then raise exception 'too many members'; end if;
+  -- Circuit breaker against scripted spam: real peak traffic is far below this.
+  if (select count(*) from hp_groups where created_at > now() - interval '1 minute') >= 600 then raise exception 'busy'; end if;
   insert into hp_groups(id, admin_token, join_code, name, occasion, event_date, budget, cur, note, mode, settings, exclusions, org_name)
   values (gid, atok, code, p->>'name', nullif(p->>'occasion',''), nullif(p->>'date','')::date, nullif(p->>'budget',''), coalesce(nullif(p->>'cur',''),'$'),
           nullif(p->>'note',''), coalesce(p->>'mode','draw'), coalesce(p->'settings','{}'), coalesce(p->'exclusions','[]'), p->>'org_name');
   for m in select * from jsonb_array_elements(p->'members') loop
     i := i + 1;
     insert into hp_members(group_id, id, name, receiver_id, sort, is_org)
-    values (gid, m->>'id', m->>'name', p->'assignment'->>(m->>'id'), i, (m->>'id') = omid);
+    values (gid, m->>'id', m->>'name', p->'assignment'->>(m->>'id'), i, coalesce((m->>'id') = omid, false));
   end loop;
   if omid is not null then
     otok := hp_tok(18);
@@ -141,7 +148,7 @@ begin
        'live_at', g.live_at, 'created_at', g.created_at, 'join_code', case when adm then g.join_code end),
     'is_admin', adm,
     'me', case when me.id is null then null else jsonb_build_object('id', me.id, 'name', me.name, 'receiver_id', me.receiver_id,
-       'drawn', coalesce(me.drawn_round = g.round, false), 'is_org', me.is_org) end,
+       'drawn', coalesce(me.drawn_round = g.round, false), 'is_org', me.is_org, 'reset_count', me.reset_count) end,
     'members', coalesce((select jsonb_agg(x order by s) from (
        select m.sort as s, jsonb_build_object('id', m.id, 'name', m.name, 'kid', m.kid, 'parent_id', m.parent_id, 'is_org', m.is_org,
          'claimed', m.token is not null or m.kid, 'drawn', coalesce(m.drawn_round = g.round, false),
@@ -300,6 +307,16 @@ begin
           from hp_members a join hp_members b on b.group_id = a.group_id and b.id = a.receiver_id where a.group_id = p_gid and not a.kid);
 end $$;
 
+create or replace function public.hp_admin_reset_member(p_gid text, p_atok text, p_mid text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if not hp_is_admin(p_gid, p_atok) then raise exception 'forbidden'; end if;
+  -- Frees a claimed name so its owner can pick it again from the invitation link. The match itself is kept.
+  update hp_members set token = null, claimed_at = null, drawn_round = null, reset_count = reset_count + 1
+   where group_id = p_gid and id = p_mid and not kid and token is not null;
+  if not found then raise exception 'not_joined'; end if;
+end $$;
+
 create or replace function public.hp_admin_roster(p_gid text, p_atok text) returns jsonb
 language plpgsql stable security definer set search_path = public as $$
 begin
@@ -313,9 +330,9 @@ revoke all on function public.hp_create_group(jsonb), public.hp_join_info(text),
   public.hp_mark_drawn(text, text), public.hp_save_profile(text, text, text, jsonb), public.hp_reserve(text, text, text, text, boolean),
   public.hp_ask(text, text, text, text), public.hp_answer(text, text, uuid, text), public.hp_message(text, text, text), public.hp_add_kid(text, text, text),
   public.hp_admin_update(text, text, jsonb), public.hp_admin_redraw(text, text, jsonb, jsonb, jsonb), public.hp_admin_live(text, text),
-  public.hp_admin_delete(text, text), public.hp_results(text, text), public.hp_admin_roster(text, text) from public;
+  public.hp_admin_delete(text, text), public.hp_results(text, text), public.hp_admin_roster(text, text), public.hp_admin_reset_member(text, text, text) from public;
 grant execute on function public.hp_create_group(jsonb), public.hp_join_info(text), public.hp_claim(text, text), public.hp_state(text, text, text),
   public.hp_mark_drawn(text, text), public.hp_save_profile(text, text, text, jsonb), public.hp_reserve(text, text, text, text, boolean),
   public.hp_ask(text, text, text, text), public.hp_answer(text, text, uuid, text), public.hp_message(text, text, text), public.hp_add_kid(text, text, text),
   public.hp_admin_update(text, text, jsonb), public.hp_admin_redraw(text, text, jsonb, jsonb, jsonb), public.hp_admin_live(text, text),
-  public.hp_admin_delete(text, text), public.hp_results(text, text), public.hp_admin_roster(text, text) to anon, authenticated;
+  public.hp_admin_delete(text, text), public.hp_results(text, text), public.hp_admin_roster(text, text), public.hp_admin_reset_member(text, text, text) to anon, authenticated;
