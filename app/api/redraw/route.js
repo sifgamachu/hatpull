@@ -1,0 +1,31 @@
+import { NextResponse } from "next/server";
+import { rpc } from "@/lib/db";
+import { drawNames, rid } from "@/lib/core";
+
+// Organizer changes people or exclusions: recompute the draw on the server and save it.
+// Body: { gid, atok, add?: [name], remove?: [id], exclusions?: [{a,b}] (member ids) }
+export async function POST(req) {
+  try {
+    const b = await req.json();
+    const roster = await rpc("hp_admin_roster", { p_gid: b.gid, p_atok: b.atok });
+    if (!roster) return NextResponse.json({ error: "Not allowed." }, { status: 403 });
+    let members = roster.members.filter(m => !(b.remove || []).includes(m.id));
+    for (const n of (b.add || []).map(s => String(s).trim().slice(0, 40)).filter(Boolean)) {
+      if (members.some(m => m.name.toLowerCase() === n.toLowerCase())) return NextResponse.json({ error: `${n} is already in the group.` }, { status: 400 });
+      members.push({ id: rid(6), name: n });
+    }
+    const ids = new Set(members.map(m => m.id));
+    const exclusions = (b.exclusions ?? roster.exclusions ?? []).filter(x => ids.has(x.a) && ids.has(x.b) && x.a !== x.b);
+    let assignment = null;
+    if (roster.mode === "draw") {
+      if (members.length < 3) return NextResponse.json({ error: "A draw needs at least 3 people." }, { status: 400 });
+      assignment = drawNames(members.map(m => m.id), exclusions);
+      if (!assignment) return NextResponse.json({ error: "That change leaves no valid draw. Remove an exclusion first." }, { status: 400 });
+    }
+    await rpc("hp_admin_redraw", { p_gid: b.gid, p_atok: b.atok, p_members: members, p_exclusions: exclusions, p_assignment: assignment });
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    const msg = /forbidden/.test(e.message) ? "Not allowed." : "Couldn't save that change. Try again.";
+    return NextResponse.json({ error: msg }, { status: /forbidden/.test(e.message) ? 403 : 500 });
+  }
+}
