@@ -1,0 +1,48 @@
+Hatpull: work and school network connection guide
+Updated: 2026-10-22
+Operator: Teregna LLC
+Contact: hello@secretsantageneratorapp.com
+
+Please review access under your organization's policies. Allow outbound HTTPS
+(TCP 443) only for the features you approve:
+
+onlinenamepickertool.com
+  Name picker. Scripts, styles, and fonts are on this domain.
+  Names and spins run in the browser. No account or database connection is
+  required for the picker itself.
+
+secretsantageneratorapp.com
+  Secret Santa, invitations, wish lists, and accounts.
+
+rkpglmwjpwbrxbluvsqm.supabase.co
+  Required for Secret Santa data and authentication, including email sign-in.
+  HTTPS polling is used for updates; no WebSocket exception is required.
+
+accounts.google.com
+  Optional Google sign-in. Existing organizational account policies apply.
+  Email sign-in is available when Google sign-in is restricted.
+
+www.onlinenamepickertool.com
+www.secretsantageneratorapp.com
+  Redirects to the corresponding domain without www.
+
+drawnamesonlinetool.com
+  Optional legacy address; redirects to secretsantageneratorapp.com.
+
+Email sender: reminders@send.secretsantageneratorapp.com
+  Review mail filtering if a requested sign-in email or reminder is missing.
+  Resend is contacted by our servers, not by users' browsers.
+
+No browser extension or software installation is required. JavaScript must be
+enabled in a current browser. Fonts are self-hosted; Google Fonts access is not
+required. Analytics can remain blocked without preventing normal use.
+
+Use exact hostnames rather than fixed IP addresses or platform-wide wildcards.
+Retain your normal TLS, endpoint protection, and security inspection policies.
+If a filter reports an incorrect category, use that vendor's review process.
+There is no guarantee that every organization permits the service.
+
+Test with fictional names: load each website, spin the picker, create/join an
+approved test exchange, and test the permitted sign-in method if required.
+For support provide hostname, time, browser and block category. Do not send
+invitation tokens, personal links, passwords or sign-in codes.

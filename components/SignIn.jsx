@@ -10,7 +10,7 @@ export default function SignIn({ close, next, why }) {
   const [email, setEmail] = useState(""), [sent, setSent] = useState(false), [code, setCode] = useState(""), [busy, setBusy] = useState(false), [err, setErr] = useState(""), [mkt, setMkt] = useState(false);
   const gBox = useRef(null), mktRef = useRef(false); mktRef.current = mkt;
   const done = () => { toast("You're signed in"); close?.(); if (next && next !== location.pathname + location.search) location.href = next; else location.reload(); };
-  useEffect(() => { renderGoogleButton(gBox.current, { marketing: () => mktRef.current, onSignedIn: done, onError: () => setErr("Google sign-in didn't work. Try again.") }).catch(() => setErr("Couldn't load Google sign-in. Check your connection.")); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { renderGoogleButton(gBox.current, { marketing: () => mktRef.current, onSignedIn: done, onError: () => setErr("Google sign-in didn't work. You can try email sign-in instead.") }).catch(() => setErr("Google sign-in is unavailable on this connection. You can try email sign-in instead.")); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   async function mail(e) {
     e.preventDefault(); if (!/^\S+@\S+\.\S+$/.test(email.trim())) return setErr("Enter a valid email address.");
     setBusy(true); setErr("");
@@ -42,7 +42,7 @@ export default function SignIn({ close, next, why }) {
               <button className="btn ghost block" type="submit" disabled={busy}>{busy ? "Sending…" : "Send link"}</button>
             </form></>)}
       </>}
-      {err && <p className="small" role="alert" style={{ color: "var(--ribbon)" }}>{err}</p>}
+      {err && <div className="small" role="alert"><p style={{ color: "var(--ribbon)" }}>{err}</p><Link href="/network-access">Help with work or school networks</Link></div>}
       <p className="tiny muted">We use your name and email to run your account and to send reminders about celebrations you're in (you can turn these off). Marketing emails only if you tick the box. See our <Link href="/privacy">Privacy Policy</Link>.</p>
     </Sheet>
   );

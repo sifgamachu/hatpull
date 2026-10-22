@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { rpc } from "@/lib/db";
 import { allG, setG } from "@/lib/store";
 import { fmtDate, money, isXmas } from "@/lib/core";
@@ -39,7 +40,7 @@ export default function Join({ code }) {
     }
   }
 
-  if (err) return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>{err === "network" ? "Can't reach the server" : "We can't find this invitation"}</h1><p className="muted">{err === "network" ? "Check your connection and reload the page." : "The organizer may have deleted the celebration, or the link was cut off when it was copied."}</p></div>;
+  if (err) return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>{err === "network" ? "Can't reach the server" : "We can't find this invitation"}</h1><p className="muted">{err === "network" ? "Check your connection and reload the page." : "The organizer may have deleted the celebration, or the link was cut off when it was copied."}</p>{err === "network" && <Link href="/network-access">Help with work or school networks</Link>}</div>;
   if (!info) return <div className="narrow panel muted">Opening your invitation…</div>;
   const xm = isXmas(info), ppl = info.members;
   return (

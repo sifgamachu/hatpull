@@ -11,7 +11,7 @@ a{color:inherit}
   --ribbon:#C22B3E; --ribbon-ink:#FFFFFF; --tag:#E2AE48; --tag-ink:#3A2A08; --pine:#1F4A40; --soft:#E7EEEA;
   --ok:#2E7D5B; --warn:#A86400;
   --f-display:"Young Serif", Georgia, "Times New Roman", serif;
-  --f-body:"Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-body:"Outfit Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
   --r:14px;
 }
@@ -239,6 +239,10 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
 .prose p,.prose li{line-height:1.7;color:var(--ink)}
 .prose p{margin:0 0 12px}
 .prose .muted{color:var(--muted)}
+.prose table{width:100%;border-collapse:collapse;margin:16px 0;text-align:left;font-size:14px}
+.prose th,.prose td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
+.prose th{background:var(--soft)}
+.prose td code{overflow-wrap:anywhere}
 .faq details{border-bottom:1px solid var(--line);padding:14px 0}
 .faq summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
 .faq summary::after{content:"+";font-weight:700;color:var(--ribbon)}

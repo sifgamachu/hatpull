@@ -1,4 +1,7 @@
 import "./globals.css";
+import "@fontsource-variable/outfit";
+import "@fontsource/young-serif/400.css";
+import "@fontsource/jetbrains-mono/500.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SiteAnalytics from "@/components/SiteAnalytics";
@@ -18,11 +21,6 @@ export const viewport = { width: "device-width", initialScale: 1, viewportFit: "
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" />
-      </head>
       <body>
         <a className="skip" href="#app">Skip to content</a>
         <div className="wrap">

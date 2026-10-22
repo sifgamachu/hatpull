@@ -50,7 +50,7 @@ export default function Dashboard({ gid }) {
 
   if (error === "no_access") return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>You haven't joined this celebration on this device</h1><p className="muted">Open the invitation link from the organizer to pick your name, or open your personal link if you joined on another device.</p><p className="muted">If the organizer reset your name, open the invitation link and pick it again: your match is the same. If your name isn't on the list anymore, the organizer removed you from this celebration.</p></div>;
   if (error === "not_found") return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>We can't find this celebration</h1><p className="muted">It may have been deleted.</p><Link className="btn small ghost" href="/my">My celebrations</Link></div>;
-  if (!state) return <div className="panel muted"><h1 className="sr-only">Your celebration</h1>{error === "network" ? "Can't reach the server. Retrying…" : "Loading celebration…"}</div>;
+  if (!state) return <div className="panel muted stack"><h1 className="sr-only">Your celebration</h1><p>{error === "network" ? "Can't reach the server. Retrying…" : "Loading celebration…"}</p>{error === "network" && <Link href="/network-access">Help with work or school networks</Link>}</div>;
   if (me === null && !adm) return <div className="narrow panel">You're no longer in this celebration.</div>;
 
   const isDraw = g.mode === "draw";

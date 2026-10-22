@@ -43,7 +43,7 @@ export default function NamePicker() {
         if (names[i] && seg * R >= 9) { // skip labels on slices too thin to read
           o.save(); o.rotate(i * seg + seg / 2); o.textAlign = "right"; o.textBaseline = "middle";
           const fs = Math.max(9, Math.min(30, (seg * R) / 2.2, 520 / Math.max(6, names[i].length) / 2));
-          o.font = `600 ${fs}px Outfit, system-ui, sans-serif`;
+          o.font = `600 ${fs}px "Outfit Variable", system-ui, sans-serif`;
           o.fillStyle = [1].includes(i % PALETTE.length) ? "#2A1D04" : "#FFFFFF";
           const label = names[i].length > 22 ? names[i].slice(0, 21) + "…" : names[i];
           o.fillText(label, R - 16, 1); o.restore();

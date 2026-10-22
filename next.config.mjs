@@ -1,19 +1,21 @@
-/** @type {import('next').NextConfig} */
+import { fileURLToPath } from "node:url";
 const SB = (() => { try { return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || "https://rkpglmwjpwbrxbluvsqm.supabase.co").origin; } catch { return "https://rkpglmwjpwbrxbluvsqm.supabase.co"; } })();
 const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' https://accounts.google.com",
   `connect-src 'self' ${SB} https://accounts.google.com`,
   "frame-src https://accounts.google.com",
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com",
-  "font-src 'self' https://fonts.gstatic.com data:",
+  "style-src 'self' 'unsafe-inline' https://accounts.google.com",
+  "font-src 'self' data:",
   "img-src 'self' data: blob: https://*.googleusercontent.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
 ].join("; ");
+/** @type {import('next').NextConfig} */
 const nextConfig = {
+  outputFileTracingRoot: fileURLToPath(new URL(".", import.meta.url)),
   reactStrictMode: true,
   poweredByHeader: false,
   async headers() {

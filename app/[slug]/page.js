@@ -10,7 +10,8 @@ export const dynamicParams = false;
 export const revalidate = 86400;
 export function generateStaticParams() { return LANDINGS.map(l => ({ slug: l.slug })); }
 
-export function generateMetadata({ params }) {
+export async function generateMetadata({ params }) {
+  params = await params;
   const l = getLanding(params.slug); if (!l) return {};
   const url = `${SITE.santa}/${l.slug}`;
   return {
@@ -23,7 +24,8 @@ export function generateMetadata({ params }) {
 
 function startHref(l) { return l.wishOnly ? `/new?mode=wish&occ=${l.occ}` : `/new?occ=${l.occ}`; }
 
-export default function Landing({ params }) {
+export default async function Landing({ params }) {
+  params = await params;
   const l = getLanding(params.slug); if (!l) notFound();
   const href = startHref(l);
   const cta = l.festive ? "Start your Secret Santa" : l.slug.startsWith("mothers-day") ? "Start a wish list" : "Start your gift exchange";

@@ -26,7 +26,7 @@ export function middleware(req) {
   }
   // The picker domain serves only the picker; any Secret Santa page moves to its own domain (so invites and
   // "My celebrations" always live on one host).
-  if (host === PICKER_HOST && !(url.pathname === "/" || url.pathname.startsWith("/name-picker") || /opengraph-image|robots\.txt|sitemap\.xml/.test(url.pathname))) {
+  if (host === PICKER_HOST && !(["/", "/network-access", "/network-allowlist.txt", "/font-licenses.txt"].includes(url.pathname) || url.pathname.startsWith("/name-picker") || /opengraph-image|robots\.txt|sitemap\.xml/.test(url.pathname))) {
     return NextResponse.redirect(`https://${SANTA_HOST}${url.pathname}${url.search}`, 308);
   }
   if (host === SANTA_HOST && url.pathname === "/") {

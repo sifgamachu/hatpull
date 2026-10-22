@@ -16,6 +16,7 @@ export default function Footer() {
         <Link href="/faq">FAQ</Link>
         <Link href="/about">About</Link>
         <Link href="/contact">Contact</Link>
+        <Link href="/network-access">Network help</Link>
         <Link href="/privacy">Privacy</Link>
         <Link href="/terms">Terms</Link>
       </div>

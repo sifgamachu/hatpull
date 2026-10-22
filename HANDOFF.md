@@ -6,7 +6,7 @@ Written 2026-10-21. Read this whole file before changing anything. **Never commi
 Free Secret Santa / gift-exchange site (drawnames.com alternative), a Teregna LLC product.
 - Live: https://secretsantageneratorapp.com (main) · https://onlinenamepickertool.com (name picker) · drawnamesonlinetool.com 301-redirects
 - Repo: https://github.com/sifgamachu/hatpull (branch `main`; every push auto-deploys to production on Vercel)
-- Stack: Next.js 14 App Router + supabase-js. All database access is through `SECURITY DEFINER` RPCs (`hp_*`), tables have RLS on and no grants.
+- Stack: Next.js 15.5.28 App Router, React 19.3.1 + supabase-js 2.118.0. All database access is through `SECURITY DEFINER` RPCs (`hp_*`), tables have RLS on and no grants.
 
 ## Dashboards
 | What | Link |
@@ -88,6 +88,8 @@ Set `NEXT_PUBLIC_GOOGLE_CLIENT_ID` in Vercel (step 1) and redeploy. Test: Header
 - Optional owner items above remain separate. Supabase currently displays an organization billing grace-period warning; review billing to avoid quota-related interruption.
 
 ## Local dev
+Work/school access improvements, validation commands and incomplete vendor classification checks are documented in `NETWORK_ACCESS.md`. Public IT help is at `/network-access` on either domain.
+
 ```
 npm install
 NEXT_PUBLIC_SUPABASE_URL=https://rkpglmwjpwbrxbluvsqm.supabase.co \

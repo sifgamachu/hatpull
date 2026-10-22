@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
-export default function robots() {
-  const host = (headers().get("host") || "secretsantageneratorapp.com").replace(/^www\./, "");
+export default async function robots() {
+  const host = ((await headers()).get("host") || "secretsantageneratorapp.com").replace(/^www\./, "");
   const publicHost = ["secretsantageneratorapp.com", "onlinenamepickertool.com"].includes(host);
   if (!publicHost) return { rules: [{ userAgent: "*", disallow: "/" }] };
   return {
