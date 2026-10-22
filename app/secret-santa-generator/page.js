@@ -13,6 +13,7 @@ export const metadata = {
   title: { absolute: "Secret Santa Generator: Draw Names Online Free | Hatpull" },
   description: "Free Secret Santa generator. Add names, set exclusions for couples, share one invite link, and let everyone draw a name and make a wish list. No sign-up needed.",
   alternates: { canonical: "https://secretsantageneratorapp.com/" },
+  verification: { other: { "msvalidate.01": "F4861D58DE9F22DD604DD37B0F0CE192" } },
   openGraph: { title: "Secret Santa Generator: Draw Names Online Free", description: "Draw names, keep couples apart, share wish lists. Free and no sign-up.", url: "https://secretsantageneratorapp.com/", siteName: "Hatpull", type: "website" },
 };
 export const revalidate = 3600;
