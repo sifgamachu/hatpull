@@ -9,6 +9,7 @@ Prepared 2026-10-22. An organization's own filtering and identity policies deter
 - Bound browser Supabase connection waits to 20 seconds, preserving caller cancellation. The wrapper does not retry writes. Bound loading of Google's optional sign-in script to 10 seconds and allow another attempt after failure.
 - Add connection-help links to invitation, celebration and sign-in errors and the footer. Email sign-in remains available when Google sign-in is unavailable.
 - Publish `/network-access` and `/network-allowlist.txt` on both public domains, with exact hostnames, optional dependencies, mail sender and IT verification steps. Include the public help page in each domain's sitemap.
+- Point shared navigation directly at each site's canonical hostname so cross-domain links do not trigger failed background route-prefetch requests.
 - Update Next.js to 15.5.28, React to 19.3.1, Supabase JS to 2.118.0 and Vercel Analytics to 2.0.1 to address dependency advisories and maintain compatibility. Override PostCSS to 8.5.31. Migrate route params and request headers to the asynchronous Next.js API.
 - Keep Cloudflare records DNS-only with direct Vercel hosting. Switching to a proxy solely for traffic counts would not establish corporate-network approval. Use Vercel Analytics for visits.
 
@@ -19,6 +20,7 @@ Prepared 2026-10-22. An organization's own filtering and identity policies deter
 - `node scripts/check-search.cjs`: both hostnames' canonical links, schema, robots, sitemaps and redirects passed against the local production build.
 - `node scripts/check-network.cjs`: both hostnames' security headers, same-origin font files, IT guides, licenses, dynamic route rendering and social images passed against the local production build.
 - Local browser: the help page rendered, and a picker spin with fictional names completed.
+- Production deployment `bc37b3e`: Vercel Ready; both live check scripts passed; health reported `ok`, `serverKey`, `email` and `cron` true. The live help page and Google/email sign-in controls rendered. Follow-up navigation changes must pass the same checks before and after deployment.
 
 Run `npx next build` before pushing. After Vercel is Ready, run the same checks with `SEARCH_CHECK_BASE=live` and `NETWORK_CHECK_BASE=live`, confirm `/api/health`, and inspect the live help page. These checks do not exercise an actual employer's or school's firewall.
 

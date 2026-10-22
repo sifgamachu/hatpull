@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { SITE } from "@/lib/core";
 import { signInWithEmail, verifyEmailCode, renderGoogleButton, GOOGLE_CLIENT_ID, EMAIL_SIGNIN, CONSENT_TEXT, syncAccount } from "@/lib/auth";
 import { toast } from "@/lib/ui";
 import { Sheet } from "./bits";
@@ -43,7 +44,7 @@ export default function SignIn({ close, next, why }) {
             </form></>)}
       </>}
       {err && <div className="small" role="alert"><p style={{ color: "var(--ribbon)" }}>{err}</p><Link href="/network-access">Help with work or school networks</Link></div>}
-      <p className="tiny muted">We use your name and email to run your account and to send reminders about celebrations you're in (you can turn these off). Marketing emails only if you tick the box. See our <Link href="/privacy">Privacy Policy</Link>.</p>
+      <p className="tiny muted">We use your name and email to run your account and to send reminders about celebrations you're in (you can turn these off). Marketing emails only if you tick the box. See our <Link href={SITE.santa + "/privacy"}>Privacy Policy</Link>.</p>
     </Sheet>
   );
 }

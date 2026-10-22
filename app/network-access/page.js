@@ -41,6 +41,6 @@ export default function NetworkAccess() {
       <li>If accounts are needed, test the permitted sign-in method and reopen the exchange.</li>
     </ol>
     <p>When requesting help, share the hostname, time, browser, and the block message or category. Remove invitation codes, personal links and sign-in codes before sharing screenshots or logs.</p>
-    <p>Questions: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. See our <Link href="/privacy">privacy policy</Link> and <Link href="/how-it-works">setup guide</Link> for how the service works.</p>
+    <p>Questions: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. See our <Link href={SITE.santa + "/privacy"}>privacy policy</Link> and <Link href={SITE.santa + "/how-it-works"}>setup guide</Link> for how the service works.</p>
   </div>;
 }

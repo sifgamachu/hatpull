@@ -1,4 +1,5 @@
 import { siteIdentity } from "@/lib/search";
+import { SITE } from "@/lib/core";
 import Link from "next/link";
 import NamePicker from "./NamePicker";
 import Festive from "./Festive";
@@ -23,7 +24,7 @@ export default function PickerPage() {
       <NamePicker />
       <div className="santa-promo">
         <div><b>Drawing names for Secret Santa?</b><span style={{ color: "#C9D8CF" }}>Use the free generator: no one draws themselves, couples kept apart, wish lists included.</span></div>
-        <Link className="btn" href="/secret-santa-generator">Open the Secret Santa generator</Link>
+        <Link className="btn" href={SITE.santa + "/"}>Open the Secret Santa generator</Link>
       </div>
       <section className="section">
         <h2>How to use the name picker</h2>

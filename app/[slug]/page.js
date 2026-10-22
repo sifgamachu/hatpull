@@ -117,7 +117,7 @@ export default async function Landing({ params }) {
             ? <Link href="/gift-exchange-generator">Gift exchanges all year</Link>
             : <Link href="/secret-santa-generator">Secret Santa generator</Link>}
           {l.group === "year" && other.filter(x => x.slug !== "secret-santa-gift-ideas").slice(0, 3).map(x => <Link key={x.slug} href={`/${x.slug}`}>{x.nav}</Link>)}
-          <Link href="/name-picker">Name picker wheel</Link>
+          <Link href={SITE.picker + "/"}>Name picker wheel</Link>
         </div>
       </section>
 

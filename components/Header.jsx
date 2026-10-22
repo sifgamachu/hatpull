@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SITE } from "@/lib/core";
 import AccountButton from "./AccountButton";
 export default function Header() {
   return (
@@ -9,12 +10,12 @@ export default function Header() {
         Hatpull
       </Link>
       <nav className="row" style={{ gap: 6, justifyContent: "flex-end" }} aria-label="Main">
-        <Link className="navlink" href="/name-picker">Name Picker</Link>
-        <Link className="navlink" href="/secret-santa-generator">Secret Santa</Link>
-        <Link className="navlink" href="/my">My celebrations</Link>
-        <Link className="navlink" href="/gift-finder">Gift Finder</Link>
+        <Link className="navlink" href={SITE.picker + "/"}>Name Picker</Link>
+        <Link className="navlink" href={SITE.santa + "/"}>Secret Santa</Link>
+        <Link className="navlink" href={SITE.santa + "/my"}>My celebrations</Link>
+        <Link className="navlink" href={SITE.santa + "/gift-finder"}>Gift Finder</Link>
         <AccountButton />
-        <Link className="btn small" href="/new">Draw names</Link>
+        <Link className="btn small" href={SITE.santa + "/new"}>Draw names</Link>
       </nav>
     </header>
   );

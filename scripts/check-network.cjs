@@ -26,6 +26,7 @@ function get(host, path) {
     const html = home.body.toString();
     assert.doesNotMatch(html, /fonts\.(googleapis|gstatic)\.com/);
     assert.match(html, /href="\/network-access"/);
+    for (const destination of hosts) assert.ok(html.includes(`href="https://${destination}/"`), 'Navigation links target the canonical host directly');
     const styles = [...new Set([...html.matchAll(/href="([^"\s]+\.css(?:\?[^"\s]*)?)"/g)].map(m => m[1]))];
     assert.ok(styles.length > 0, 'Stylesheets are present');
     let css = '';
