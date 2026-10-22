@@ -6,6 +6,7 @@ import { OCCASIONS, XMAS_OCC, CURRENCIES, BUDGETS, suggestDates, iso, fmtDate, m
 import { setG } from "@/lib/store";
 import { toast } from "@/lib/ui";
 import { syncAccount } from "@/lib/auth";
+import { sb } from "@/lib/db";
 import Festive from "./Festive";
 import XBanner from "./XBanner";
 
@@ -58,7 +59,8 @@ export default function Wizard() {
     creating.current = true; setBusy(true); setErr("");
     try {
       const note = st.note || (st.mode === "draw" ? `✨ You've been invited to make a wish list and draw a name for ${st.name}!` : `✨ You've been invited to share your wish list for ${st.name}!`);
-      const res = await fetch("/api/create", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({
+      const { data: { session } } = await sb().auth.getSession();
+      const res = await fetch("/api/create", { method: "POST", headers: { "content-type": "application/json", ...(session ? { authorization: `Bearer ${session.access_token}` } : {}) }, body: JSON.stringify({
         name: st.name, occasion: st.occ, date: st.date, budget: st.budget, cur: st.cur, note, mode: st.mode,
         orgName: st.orgName.trim(), includeMe: st.includeMe, people, exclusions: st.mode === "draw" ? allExcl : [] }) });
       let out; try { out = await res.json(); } catch { throw new Error("The server had a problem. Please try again in a moment."); }

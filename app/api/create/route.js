@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { serverRpc } from "@/lib/serverDb";
+import { serverRpc, verifiedCreator } from "@/lib/serverDb";
 import { createHash } from "crypto";
 import { drawNames, rid } from "@/lib/core";
 
@@ -17,7 +17,10 @@ export async function POST(req) {
   try {
     // On Vercel, x-real-ip is set by the platform and can't be spoofed by the client.
     const ip = req.headers.get("x-real-ip") || (req.headers.get("x-forwarded-for") || "").split(",").pop().trim() || "anon";
-    if (limited(ip)) return NextResponse.json({ error: "You've created a lot of celebrations in a short time. Wait a few minutes and try again." }, { status: 429 });
+    // Verified accounts get their own allowance even when a whole office shares one IP.
+    const userId = await verifiedCreator(req.headers.get("authorization"));
+    const identity = userId ? `user:${userId}` : ip;
+    if (limited(identity)) return NextResponse.json({ error: "You've created a lot of celebrations in a short time. Wait a few minutes and try again." }, { status: 429 });
     const b = await req.json();
     // Trim and strip invisible bidi/control characters that could be used to disguise names.
     const clean = s => String(s ?? "").replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, "").trim();
@@ -36,16 +39,17 @@ export async function POST(req) {
     if (mode === "draw" && !drawNames(members.map(m => m.id), exclusions)) { return NextResponse.json({ error: "These exclusions leave no valid draw." }, { status: 400 }); }
     const orgMid = b.includeMe && clean(b.orgName) ? idOf(clean(b.orgName).slice(0, 40)) : null;
 
-    // A one-way hash of the creator's IP lets the database apply a per-person limit across all servers.
-    const ipHash = createHash("sha256").update("hatpull:" + ip).digest("hex").slice(0, 32);
+    // Hash the verified account (or anonymous IP) for the cross-server allowance.
+    const creatorHash = createHash("sha256").update("hatpull:" + identity).digest("hex").slice(0, 32);
     const out = await serverRpc("hp_create_group", { p: {
-      client: ipHash,
+      client: creatorHash,
       name: clean(b.name).slice(0, 80), occasion: clean(b.occasion).slice(0, 40), date: clean(b.date), budget: clean(b.budget).slice(0, 12), cur: clean(b.cur).slice(0, 4) || "$",
       note: clean(b.note).slice(0, 500), mode, settings: { wishVis: "all", mail: { on: false, vis: "drawn" }, venue: { type: "", address: "" } },
       exclusions, org_name: clean(b.orgName).slice(0, 40), members, org_mid: orgMid,
     } });
     return NextResponse.json(out);
   } catch (e) {
+    if (/invalid_session/.test(e.message)) return NextResponse.json({ error: "Your sign-in expired. Sign in again, or sign out to continue." }, { status: 401 });
     if (/no_valid_draw/.test(e.message)) return NextResponse.json({ error: "These exclusions leave no valid draw." }, { status: 400 });
     if (/slow_down/.test(e.message)) return NextResponse.json({ error: "You've created a lot of celebrations recently. Try again in a little while." }, { status: 429 });
     if (/busy/.test(e.message)) return NextResponse.json({ error: "We're very busy right now. Try again in a minute." }, { status: 503 });

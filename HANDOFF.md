@@ -69,7 +69,7 @@ Set `NEXT_PUBLIC_GOOGLE_CLIENT_ID` in Vercel (step 1) and redeploy. Test: Header
 - Sign in with email (link + 6-digit code arrive from reminders@send.secretsantageneratorapp.com).
 - Create a group dated 7 days out, claim a name while signed in, then:
   `curl -s -H "Authorization: Bearer $CRON_SECRET" https://secretsantageneratorapp.com/api/cron/reminders` → `{"due":1,"sent":1,...}`.
-- Cron schedule is in `vercel.json` (daily 15:00 UTC).
+- Cron schedule is in `vercel.json` (every five minutes). Due reminders enter a durable queue from 15:00 UTC onward; retries continue through that UTC day. Response counts are `enqueued`, `sent`, `retried`, `failed`, and `cancelled` (or `busy`). See `CAPACITY.md` for recovery and limits.
 
 ### 6. Optional / owner items
 - DMARC: Cloudflare TXT `_dmarc.secretsantageneratorapp.com` = `v=DMARC1; p=none;`.
@@ -88,6 +88,10 @@ Set `NEXT_PUBLIC_GOOGLE_CLIENT_ID` in Vercel (step 1) and redeploy. Test: Header
 - Optional owner items above remain separate. Supabase currently displays an organization billing grace-period warning; review billing to avoid quota-related interruption.
 
 ## Local dev
+Capacity changes, hosted load-test evidence, remaining limits and rollback instructions are in `CAPACITY.md`. For a fresh database, apply `supabase/schema.sql` followed by files in `supabase/migrations/` in filename order. The legacy dated SQL files outside that directory are already incorporated into `schema.sql`.
+
+Office sign-in limits saved and verified on 2026-10-22: email requests and code verifications 300 per five minutes per IP, token requests 600 per five minutes per IP. The 500 auth emails/hour project cap and 60-second per-address email cooldown remain in place.
+
 Work/school access improvements, validation commands and incomplete vendor classification checks are documented in `NETWORK_ACCESS.md`. Public IT help is at `/network-access` on either domain.
 
 ```

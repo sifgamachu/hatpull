@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useGroup } from "@/lib/useGroup";
 import { rpc } from "@/lib/db";
@@ -11,7 +11,21 @@ import XBanner from "./XBanner";
 import { Bow } from "./bits";
 
 export default function WishList({ gid, mid }) {
-  const { state, error, tokens, reload } = useGroup(gid);
+  const { state, error, tokens, reload } = useGroup(gid, mid);
+  const [older, setOlder] = useState([]), [more, setMore] = useState(false), [loadingOlder, setLoadingOlder] = useState(false);
+  useEffect(() => { setOlder([]); setMore(!!state?.questions_more); }, [state]);
+  async function loadOlder() {
+    if (loadingOlder) return;
+    const rows = [...(state?.questions || []), ...older], last = rows.at(-1);
+    if (!last) return;
+    setLoadingOlder(true);
+    try {
+      const page = await rpc("hp_questions_page", { p_gid: gid, p_mtok: tokens.mtok, p_atok: tokens.atok, p_target: mid, p_before: last.at, p_before_id: last.id });
+      setOlder(previous => [...previous, ...page.questions]); setMore(page.more);
+    } catch { toast("Couldn't load older questions. Try again."); }
+    finally { setLoadingOlder(false); }
+  }
+  const viewState = state ? { ...state, questions: [...state.questions, ...older] } : null;
   const [draft, setDraft] = useState(null); // optimistic items
   if (error && error !== "network") return <div className="mid panel stack"><p>{error === "not_found" ? "This celebration no longer exists." : "You don't have access to this wish list on this device."}</p><Link className="btn small ghost" href="/my">My celebrations</Link></div>;
   if (!state) return <div className="mid panel muted"><h1 className="sr-only">Wish list</h1>{error === "network" ? "Can't reach the server. Retrying…" : "Loading wish list…"}</div>;
@@ -35,8 +49,9 @@ export default function WishList({ gid, mid }) {
         </XBanner>
         : <div className="row between"><h1 style={{ fontSize: "clamp(28px,5vw,40px)" }}>{mineList ? (m.kid ? `${m.name}'s wish list` : "My wish list") : `Wish list of ${m.name}`}</h1><h2 className="sr-only">Gifts and details</h2><span className="pill">{items.length} gifts</span></div>}
       {iDrew && <div className="note">{xm ? `🎅 You're ${m.name}'s Secret Santa.` : `You drew ${m.name}.`} Reserve a gift so nobody else buys the same thing. {m.name} won't see it.</div>}
-      {mineList ? <Editor gid={gid} g={g} m={m} prof={prof} items={items} setDraft={setDraft} tokens={tokens} reload={reload} xm={xm} questions={state.questions.filter(q => q.to === m.id)} />
-        : <Viewer gid={gid} g={g} m={m} me={me} prof={prof} items={items} state={state} tokens={tokens} reload={reload} xm={xm} />}
+      {mineList ? <Editor gid={gid} g={g} m={m} prof={prof} items={items} setDraft={setDraft} tokens={tokens} reload={reload} xm={xm} questions={viewState.questions.filter(q => q.to === m.id)} />
+        : <Viewer gid={gid} g={g} m={m} me={me} prof={prof} items={items} state={viewState} tokens={tokens} reload={reload} xm={xm} />}
+      {more && <button className="btn ghost" disabled={loadingOlder} onClick={loadOlder}>{loadingOlder ? "Loading…" : "Load older questions"}</button>}
     </div>
   );
 }

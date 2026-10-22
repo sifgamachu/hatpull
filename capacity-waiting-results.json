@@ -1,0 +1,22 @@
+{
+  "testedAt": "2026-10-22T23:09:31.752Z",
+  "project": "disposable Micro staging branch",
+  "scenario": "200-person groups with large wishlists; staggered initial loads and 10–15s waiting-for-draw polling; no production traffic or emails",
+  "results": [
+    {
+      "users": 1000,
+      "seconds": 45,
+      "requests": 3489,
+      "statuses": {
+        "200": 3489
+      },
+      "p50Ms": 76,
+      "p95Ms": 277,
+      "p99Ms": 663,
+      "full": 1200,
+      "unchanged": 2289,
+      "totalBytes": 41823258,
+      "aborted": false
+    }
+  ]
+}

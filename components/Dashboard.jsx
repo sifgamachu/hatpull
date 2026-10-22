@@ -15,7 +15,7 @@ import { GOOGLE_CLIENT_ID, EMAIL_SIGNIN } from "@/lib/auth";
 const SIGNIN_ON = !!(GOOGLE_CLIENT_ID || EMAIL_SIGNIN);
 
 export default function Dashboard({ gid }) {
-  const { state, error, tokens, reload, setFast } = useGroup(gid);
+  const { state, error, tokens, reload } = useGroup(gid);
   const [sheet, setSheet] = useState(null);
   const [anim, setAnim] = useState(null); // name shown while spinning
   const [msg, setMsg] = useState("");
@@ -29,7 +29,6 @@ export default function Dashboard({ gid }) {
   const ppl = state?.members.filter(m => !m.kid) || [], kids = state?.members.filter(m => m.kid) || [];
   const liveMs = g?.live_at ? new Date(g.live_at).getTime() - now : null;
   const liveOn = g?.mode === "draw" && liveMs != null && liveMs > -120000;
-  useEffect(() => { setFast(!!(liveOn && liveMs > -5000)); }, [liveOn, liveMs, setFast]);
   useEffect(() => {
     if (adm && g?.date && daysUntil(g.date) < 0 && g.mode === "draw") rpc("hp_results", { p_gid: gid, p_atok: tokens.atok }).then(setResults).catch(() => {});
   }, [adm, g?.date, g?.mode, gid, tokens]);
@@ -57,7 +56,7 @@ export default function Dashboard({ gid }) {
   const joined = ppl.filter(m => m.claimed).length, drawnN = ppl.filter(m => m.drawn).length, wishN = state.members.filter(m => m.wishes > 0).length;
   const mine = me && state.members.find(m => m.id === me.id);
   const rec = me && state.members.find(m => m.id === me.receiver_id);
-  const myQs = me ? state.questions.filter(q => q.to === me.id && !q.answer).length : 0;
+  const myQs = state.unanswered_count || 0;
   const dleft = daysUntil(g.date);
   const step = (cls, title, body) => <div className={`stepv ${cls}`}><span className="dot">{cls === "done" ? "✓" : ""}</span><div><b>{title}</b>{body && <div className="small muted" style={{ marginTop: 4 }}>{body}</div>}</div></div>;
   const welcome = typeof window !== "undefined" && new URLSearchParams(location.search).get("welcome");
