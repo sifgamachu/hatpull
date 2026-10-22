@@ -8,6 +8,7 @@ export const metadata = {
   metadataBase: new URL("https://secretsantageneratorapp.com"),
   title: { default: "Secret Santa Generator & Online Name Picker | Hatpull", template: "%s | Hatpull" },
   description: "Draw names for Secret Santa online for free, share wish lists, and pick random names with a spinning wheel. No sign-up needed.",
+  robots: { index: true, follow: true, googleBot: { "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
   applicationName: "Hatpull",
   appleWebApp: { capable: true, title: "Hatpull", statusBarStyle: "default" },
   formatDetection: { telephone: false },

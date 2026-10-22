@@ -1,3 +1,4 @@
+import { siteIdentity } from "@/lib/search";
 import Link from "next/link";
 import Festive from "@/components/Festive";
 import Snow from "@/components/Snow";
@@ -12,7 +13,7 @@ export const metadata = {
   title: { absolute: "Secret Santa Generator: Draw Names Online Free | Hatpull" },
   description: "Free Secret Santa generator. Add names, set exclusions for couples, share one invite link, and let everyone draw a name and make a wish list. No sign-up needed.",
   alternates: { canonical: "https://secretsantageneratorapp.com/" },
-  openGraph: { title: "Secret Santa Generator: Draw Names Online Free", description: "Draw names, keep couples apart, share wish lists. Free and no sign-up.", url: "https://secretsantageneratorapp.com/", siteName: "Secret Santa Generator", type: "website" },
+  openGraph: { title: "Secret Santa Generator: Draw Names Online Free", description: "Draw names, keep couples apart, share wish lists. Free and no sign-up.", url: "https://secretsantageneratorapp.com/", siteName: "Hatpull", type: "website" },
 };
 export const revalidate = 3600;
 
@@ -38,7 +39,7 @@ export default function SantaLanding() {
           <div>
             <p className="kicker">🎄 Secret Santa {xmasYear()}</p>
             <h1>Free Secret Santa generator. <em>Draw names online.</em></h1>
-            <p className="lede">Add the family, keep the couples apart, share one link. Everyone draws a name, writes a wish list, and nobody buys the same gift twice.</p>
+            <p className="lede">Hatpull is a free Secret Santa generator for groups of 3 to 200 people. Add the family, keep the couples apart, share one link. Everyone draws a name, writes a wish list, and nobody buys the same gift twice.</p>
             <div className="row" style={{ marginTop: 24 }}>
               <Link className="btn" href="/new?occ=0">Start drawing names</Link>
               <Link className="btn ghost" href="/new?mode=wish">Share wish lists</Link>
@@ -62,7 +63,7 @@ export default function SantaLanding() {
       <section className="section">
         <h2>Everything your gift exchange needs</h2>
         <div className="feature-grid">
-          {[["🎩 Never draw yourself", "The draw always works the first time. No redraws, no awkward \"I got me.\""],
+          {[["🎩 Never draw yourself", "Valid draws never match a person with themselves. No awkward \"I got me.\""],
             ["💑 Exclusions", "Keep couples, siblings and housemates apart, or avoid last year's matches."],
             ["🔗 One invitation link", "Paste it in WhatsApp, a text or an email. Everyone picks their own name."],
             ["🎁 Wish lists", "Add gifts with links and prices. Reserve a gift secretly so there are no duplicates."],
@@ -100,6 +101,7 @@ export default function SantaLanding() {
 
       <section className="section faq">
         <h2>Secret Santa questions</h2>
+        <p>Optional Google or email sign-in saves your celebrations across devices and enables reminders a week and a day before the exchange. <Link href="/how-it-works">Read the setup guide and troubleshooting tips</Link>.</p>
         {FAQ.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}
       </section>
 
@@ -110,7 +112,8 @@ export default function SantaLanding() {
       </div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context": "https://schema.org", "@graph": [
-          { "@type": "WebApplication", name: "Secret Santa Generator", applicationCategory: "LifestyleApplication", operatingSystem: "Any", offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }, url: "https://secretsantageneratorapp.com/" },
+          ...siteIdentity(false),
+          { "@type": "WebApplication", "@id": "https://secretsantageneratorapp.com/#app", name: "Hatpull Secret Santa Generator", publisher: { "@id": "https://secretsantageneratorapp.com/#organization" }, applicationCategory: "LifestyleApplication", operatingSystem: "Any", offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }, url: "https://secretsantageneratorapp.com/" },
           { "@type": "FAQPage", mainEntity: FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) },
         ] }) }} />
     </div>

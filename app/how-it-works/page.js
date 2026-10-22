@@ -19,6 +19,19 @@ export default function Page() {
       <ol className="stack" style={{ paddingLeft: 20 }}>{steps.map(([t, d]) => <li key={t}><b>{t}.</b> {d}</li>)}</ol>
       <h2>Secret Santa rules that keep it fun</h2>
       <ul><li>Agree on a budget and stick to it.</li><li>Set a date and give people at least two weeks.</li><li>Fill in your wish list early so your Secret Santa isn't guessing.</li><li>Keep it secret until the exchange. Anonymous questions help.</li></ul>
+      <h2>Before you send the invitation</h2>
+      <ul><li>Check spelling and use a last initial for people with the same first name.</li><li>Agree on whether the budget includes shipping, and tell everyone the delivery or exchange date.</li><li>Check exclusions in both directions if two people should never draw each other.</li><li>Share the group invitation, not your private organizer or personal link.</li><li>Ask participants to pick only their own name and add a few affordable wishes.</li></ul>
+      <h2>When the draw needs attention</h2>
+      <h3>Too many exclusions</h3>
+      <p>Every person needs an eligible recipient, and every recipient must be assigned exactly once. In a three-person group, excluding both other people for one participant makes a draw impossible. Remove an exclusion or add another participant before trying again.</p>
+      <h3>Someone joins or leaves after the draw</h3>
+      <p>Adding or removing a participant redraws all names. Tell everyone to check their match again before buying gifts. If shopping has already started, discuss the change with the group first.</p>
+      <h3>Someone picked the wrong name</h3>
+      <p>The organizer can reset that name from the celebration settings. The match stays the same. If someone may have seen a match they should not know, use the redraw option and notify the group.</p>
+      <h3>Getting back on another device</h3>
+      <p>Save your personal link or sign in with Google or email to link your celebration to your account. Signed-in members can receive reminders a week and a day before the exchange, and can turn them off on the Account page. Marketing email is a separate opt-in.</p>
+      <h2>Secret Santa generator or name picker?</h2>
+      <p>Use the <Link href="/">Secret Santa generator</Link> when everyone gives and receives one gift and matches should stay private. Use the <a href="https://onlinenamepickertool.com/">name picker wheel</a> for a single winner, a classroom turn, or a random order. A wheel alone does not enforce Secret Santa exclusions or prevent self-matches across a whole group.</p>
       <p style={{ marginTop: 20 }}><Link className="btn" href="/new?occ=0">Start your Secret Santa</Link></p>
     </div>
   );

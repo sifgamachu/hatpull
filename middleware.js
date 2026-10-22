@@ -14,6 +14,16 @@ export function middleware(req) {
   if (host === "drawnamesonlinetool.com") {
     return NextResponse.redirect(`https://${SANTA_HOST}${url.pathname === "/" ? "" : url.pathname}${url.search}`, 301);
   }
+  // Consolidate public aliases while preserving query parameters and image routes.
+  if ([SANTA_HOST, PICKER_HOST].includes(host) && req.headers.get("host")?.startsWith("www.")) {
+    return NextResponse.redirect(`https://${host}${url.pathname}${url.search}`, 308);
+  }
+  if (url.pathname === "/name-picker" && [SANTA_HOST, PICKER_HOST].includes(host)) {
+    return NextResponse.redirect(`https://${PICKER_HOST}/${url.search}`, 308);
+  }
+  if (host === SANTA_HOST && url.pathname === "/secret-santa-generator") {
+    return NextResponse.redirect(`https://${SANTA_HOST}/${url.search}`, 308);
+  }
   // The picker domain serves only the picker; any Secret Santa page moves to its own domain (so invites and
   // "My celebrations" always live on one host).
   if (host === PICKER_HOST && !(url.pathname === "/" || url.pathname.startsWith("/name-picker") || /opengraph-image|robots\.txt|sitemap\.xml/.test(url.pathname))) {

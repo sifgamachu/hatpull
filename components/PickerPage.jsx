@@ -1,3 +1,4 @@
+import { siteIdentity } from "@/lib/search";
 import Link from "next/link";
 import NamePicker from "./NamePicker";
 import Festive from "./Festive";
@@ -39,7 +40,8 @@ export default function PickerPage() {
       </section>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context": "https://schema.org", "@graph": [
-          { "@type": "WebApplication", name: "Online Name Picker", applicationCategory: "UtilitiesApplication", operatingSystem: "Any", offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }, url: "https://onlinenamepickertool.com/" },
+          ...siteIdentity(true),
+          { "@type": "WebApplication", "@id": "https://onlinenamepickertool.com/#app", name: "Hatpull Online Name Picker", publisher: { "@id": "https://secretsantageneratorapp.com/#organization" }, applicationCategory: "UtilitiesApplication", operatingSystem: "Any", offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }, url: "https://onlinenamepickertool.com/" },
           { "@type": "FAQPage", mainEntity: FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) },
         ] }) }} />
     </div>
