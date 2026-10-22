@@ -5,6 +5,7 @@ import Link from "next/link";
 import { OCCASIONS, XMAS_OCC, CURRENCIES, BUDGETS, suggestDates, iso, fmtDate, money, xmasYear, canDraw } from "@/lib/core";
 import { setG } from "@/lib/store";
 import { toast } from "@/lib/ui";
+import { syncAccount } from "@/lib/auth";
 import Festive from "./Festive";
 import XBanner from "./XBanner";
 
@@ -64,6 +65,7 @@ export default function Wizard() {
       if (!res.ok) throw new Error(out.error || "Couldn't create the celebration.");
       try { sessionStorage.removeItem("hatpull.wizard"); } catch {}
       setG(out.id, { atok: out.admin_token, code: out.join_code, mtok: out.org_token || null, mid: out.org_mid || null, name: st.name, date: st.date, role: "organizer" });
+      await syncAccount();
       toast(`${st.name} created`);
       router.push(`/invite/${out.id}`);
     } catch (e) { setErr(e instanceof TypeError ? "Can't reach the server. Check your connection and try again." : e.message); setBusy(false); creating.current = false; }

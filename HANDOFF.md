@@ -30,10 +30,10 @@ Careful: the Teregna Supabase org and the Vercel team hold ~10 other projects (t
 - Resend: Pro plan, `send.secretsantageneratorapp.com` verified (DKIM + SPF via Cloudflare).
 - Google Auth Platform (project `hatpull`): branding (Hatpull, privacy/terms links, both domains authorized), scopes openid/email/profile, **published to production**, Web client "Hatpull web" with JS origins for both domains (+www) and redirect `https://rkpglmwjpwbrxbluvsqm.supabase.co/auth/v1/callback`.
   - Client ID (public): `615204645499-mm7lndspv5bc2s7k09e86utdjq1vb7j3.apps.googleusercontent.com`
-- Site: email sign-in is ON (`lib/auth.js` → `EMAIL_SIGNIN` defaults on). Google button is OFF until `GOOGLE_CLIENT_ID` is set.
+- Site: email sign-in is ON (`lib/auth.js` → `EMAIL_SIGNIN` defaults on). Google button is ON via `NEXT_PUBLIC_GOOGLE_CLIENT_ID` in Vercel Production.
 - Legal name "Teregna LLC" in `lib/core.js`. Privacy/terms rewritten.
 
-## Remaining — do in this order
+## Completed setup — reference steps (verified 2026-10-22 UTC)
 
 ### 1. Vercel environment variables (owner pastes values; Production)
 At the env-vars link above, add for **Production** (and Preview if wanted):
@@ -76,6 +76,16 @@ Set `NEXT_PUBLIC_GOOGLE_CLIENT_ID` in Vercel (step 1) and redeploy. Test: Header
 - Mailing address for email footers: set `NEXT_PUBLIC_MAILING_ADDRESS` in Vercel (required before any marketing email).
 - Resend account shows bot sign-ups ("Confirm your email address" to junk addresses, 1 complaint) from another app using this Resend account (elroicall/vidshook/scriptpin) — add bot protection there; complaints hurt Hatpull's deliverability too.
 - Supabase org has spend cap ON; scheduled reminders exist to upgrade compute Dec 1 and downgrade Jan 5.
+
+## Verification completed 2026-10-22 UTC
+- Production health: `ok`, `serverKey`, `email`, and `cron` all true.
+- Google provider enabled with nonce checks retained; live Google sign-in, account preferences, and JSON account export passed. Google consent displays the website domain rather than the Hatpull brand name. The previous Google client secret was left enabled.
+- Creation/redraw grants locked to `service_role`; live website creation passed and anonymous direct creation returned 401/permission denied. Lock SQL appended to `schema.sql`.
+- Resend keys are sending-only and restricted to `send.secretsantageneratorapp.com`: `Hatpull Production` for Vercel and `Hatpull Supabase SMTP` for Supabase SMTP. No secret values are stored here.
+- Repaired Supabase SMTP authentication. After settings propagated, the owner test email was delivered and code sign-in succeeded. Supabase currently sends eight-digit codes; the UI now says “one-time code” and accepts up to eight digits.
+- Created an isolated QA celebration seven days ahead using the database UTC date. Vercel Cron Jobs Run delivered one week reminder to the owner; the database recorded one send, zero remained due, and a second run did not add a duplicate.
+- Signed-in creation now syncs the new celebration to the account immediately, rather than waiting for an Account-page visit.
+- Optional owner items above remain separate. Supabase currently displays an organization billing grace-period warning; review billing to avoid quota-related interruption.
 
 ## Local dev
 ```

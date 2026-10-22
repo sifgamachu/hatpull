@@ -30,8 +30,8 @@ export default function SignIn({ close, next, why }) {
         {!sent && <label className="check small"><input type="checkbox" checked={mkt} onChange={e => setMkt(e.target.checked)} /> {CONSENT_TEXT.replace(/ \(v\d+\)$/, "")}</label>}
         {GOOGLE_CLIENT_ID && !sent && <div ref={gBox} className="gbtn" />}
         {EMAIL_SIGNIN && (sent ? <form className="stack" style={{ gap: 8 }} onSubmit={verify}>
-            <div role="status"><b>Check your email.</b> <span className="small muted">We sent a link and a 6-digit code to {email.trim()}. Tap the link, or enter the code here.</span></div>
-            <label htmlFor="siCode">6-digit code</label>
+            <div role="status"><b>Check your email.</b> <span className="small muted">We sent a link and a one-time code to {email.trim()}. Tap the link, or enter the code here.</span></div>
+            <label htmlFor="siCode">Sign-in code</label>
             <input id="siCode" inputMode="numeric" autoComplete="one-time-code" maxLength={8} value={code} onChange={e => setCode(e.target.value.replace(/\D/g, ""))} />
             <button className="btn block" type="submit" disabled={busy || code.length < 6}>{busy ? "Checking…" : "Sign in"}</button>
           </form> : <>
