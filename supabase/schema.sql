@@ -792,3 +792,8 @@ revoke execute on function public.hp_due_reminders(), public.hp_log_sent(uuid, t
 revoke execute on function public.hp_account(), public.hp_set_prefs(boolean, boolean, text, text), public.hp_link(text, text, text), public.hp_my(), public.hp_forget_me(), public.hp_export_me() from anon, public;
 grant execute on function public.hp_due_reminders(), public.hp_log_sent(uuid, text, text) to service_role;
 grant execute on function public.hp_account(), public.hp_set_prefs(boolean, boolean, text, text), public.hp_link(text, text, text), public.hp_my(), public.hp_forget_me(), public.hp_export_me() to authenticated;
+-- Run AFTER SUPABASE_SECRET_KEY is set in Vercel and deployed: only the website's server may create groups or redraw.
+revoke execute on function public.hp_create_group(jsonb) from anon, authenticated, public;
+revoke execute on function public.hp_admin_redraw(text, text, jsonb, jsonb, jsonb) from anon, authenticated, public;
+grant execute on function public.hp_create_group(jsonb) to service_role;
+grant execute on function public.hp_admin_redraw(text, text, jsonb, jsonb, jsonb) to service_role;
