@@ -10,7 +10,7 @@ async function get(host, path) {
 }
 (async () => {
   for (const [host, path, target] of [[santa,'/secret-santa-generator','https://'+santa+'/'],[santa,'/name-picker','https://'+picker+'/'],[picker,'/name-picker','https://'+picker+'/']]) {
-    const r=await get(host,path); assert.equal(r.status,308); assert.equal(r.headers.get('location'),target);
+    const r=await get(host,path); assert.equal(r.status,308); assert.equal(new URL(r.headers.get('location'),`https://${host}`).href,target);
   }
   for (const host of [santa,picker]) {
     const r=await get(host,'/'); assert.equal(r.status,200);

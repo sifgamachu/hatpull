@@ -2,7 +2,7 @@
 
 ## Verified baseline
 - Google Search Console has verified domain properties for secretsantageneratorapp.com and onlinenamepickertool.com.
-- URL Inspection says the Secret Santa homepage is on Google and indexed. This is not evidence of high ranking for non-brand searches.
+- URL Inspection says both homepages are on Google and indexed. This is not evidence of high ranking for non-brand searches.
 - The Secret Santa sitemap was successfully read on October 20 (10 discovered pages at that read). Overview reports zero clicks; page-indexing reports are still processing.
 - Bing Webmaster sign-in works. The Secret Santa domain has been added but ownership verification is pending owner authorization. Do not claim Bing indexing until verified.
 
@@ -18,7 +18,7 @@
 Run `npx next build` before publishing to main. Start the production server on port 3017, then `node scripts/check-search.cjs` for local routing, canonical, JSON-LD, robots and sitemap checks. Run `SEARCH_CHECK_BASE=live node scripts/check-search.cjs` after deployment. These checks inspect public pages only.
 
 ## Ongoing work
-- After deployment, request recrawling of the changed homepage and guide in Search Console and resubmit the sitemap.
+- Production search checks passed for both domains after deployment. Google accepted both homepage recrawl requests into its priority crawl queue and accepted both sitemap resubmissions. The /how-it-works guide was not yet indexed (unknown to Google); a first-indexing request was started.
 - Complete Bing verification after authorization, submit both domain sitemaps, and inspect Bing indexing reports.
 - Measure actual impressions, clicks, indexed URLs and query positions in Search Console; measure AI referral traffic separately. There is no guaranteed ChatGPT/Claude inclusion or ranking.
 - Add useful original guidance based on real customer questions, rather than mass-producing near-duplicate keyword pages.
