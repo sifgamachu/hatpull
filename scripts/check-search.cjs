@@ -25,5 +25,17 @@ async function get(host, path) {
     console.log(host+': canonical, schema, robots and sitemap pass');
   }
   assert.ok((await (await get(santa,'/how-it-works')).text()).includes('Too many exclusions'));
+  const guidePath='/random-name-picker-guide';
+  const guide=await get(picker,guidePath); assert.equal(guide.status,200);
+  const guideHtml=await guide.text();
+  assert.ok(guideHtml.includes(`rel="canonical" href="https://${picker}${guidePath}"`));
+  assert.ok(guideHtml.includes('Pick multiple winners without repeats'));
+  assert.ok(guideHtml.includes('What is saved, and where?'));
+  const duplicateGuide=await get(santa,guidePath);
+  assert.equal(duplicateGuide.status,308);
+  assert.equal(duplicateGuide.headers.get('location'),`https://${picker}${guidePath}`);
+  assert.ok((await (await get(picker,'/sitemap.xml')).text()).includes(`<loc>https://${picker}${guidePath}</loc>`));
+  assert.ok(!(await (await get(santa,'/sitemap.xml')).text()).includes(guidePath));
+  console.log('Picker guide: canonical host, duplicate redirect and sitemap pass');
   console.log('Public aliases and crawlable guide pass');
 })().catch(e=>{console.error(e);process.exitCode=1});

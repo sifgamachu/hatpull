@@ -11,6 +11,7 @@ export default function Footer() {
       <div className="footer-links">
         <Link href={SITE.santa + "/"}>Secret Santa Generator</Link>
         <Link href={SITE.picker + "/"}>Online Name Picker</Link>
+        <Link href={SITE.picker + "/random-name-picker-guide"}>Name-picker guide</Link>
         <Link href={SITE.santa + "/gift-finder"}>Gift Finder</Link>
         <Link href={SITE.santa + "/how-it-works"}>How it works</Link>
         <Link href={SITE.santa + "/faq"}>FAQ</Link>

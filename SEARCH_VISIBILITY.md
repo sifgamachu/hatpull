@@ -1,4 +1,13 @@
-# Search visibility — 2026-10-22
+# Search visibility — updated 2026-10-23
+
+## October 23 audit and changes
+- Google URL Inspection confirms the picker homepage is indexed. Both properties' Search Performance reports show zero impressions/clicks in the currently available October 19–20 data; this does not establish all traffic or future performance. Page-indexing aggregate reports are still processing.
+- Bing reports the Secret Santa homepage as **Discovered but not crawled** (discovered October 22). Its live URL test succeeds: **URL can be indexed by Bing**, with no SEO/GEO issues found. Successful live fetching is not evidence that Bing has indexed it.
+- Public production checks pass for canonical URLs, redirects, schema, robots and sitemaps. The general web-retrieval tool could not fetch either homepage even though production checks and Bing's live test succeeded; this is not enough evidence to identify an OpenAI crawler block. OAI-SearchBot and Claude-SearchBot remain allowed by robots.txt.
+- Improved picker title, description and visible explanation for the actual use case: picking from an existing list. Fixed the 500-name FAQ to match the tool's 1,000-entry limit and documented duplicate entries, local storage and the 20-result history limit.
+- Added `/random-name-picker-guide` on the picker domain with classroom, giveaway and meeting workflows, matching Article/Breadcrumb metadata, links from the homepage/footer, and sitemap inclusion. The Secret Santa-domain duplicate redirects to the picker-domain canonical URL.
+- Prepared the picker domain's Bing ownership tag for the existing account. Ownership verification requires the owner's confirmation and is not yet complete.
+- `LAUNCH_KIT.md` contains factual directory copy, a social introduction, a demonstration outline and an editor-message draft. None has been posted or sent. External editorial coverage and actual adoption remain necessary work; no ranking or AI recommendation is guaranteed.
 
 ## Verified baseline
 - Google Search Console has verified domain properties for secretsantageneratorapp.com and onlinenamepickertool.com.
@@ -27,7 +36,7 @@ Run `npx next build` before publishing to main. Start the production server on p
 
 ## Primary guidance
 - Google AI features: https://developers.google.com/search/docs/appearance/ai-features
-- OpenAI publisher discovery: https://help.openai.com/en/articles/12627856
+- OpenAI search crawlers: https://developers.openai.com/api/docs/bots
 - Anthropic search crawlers: https://privacy.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler
 
 Google states that ordinary SEO fundamentals apply to its AI features; special AI text files or schema are not required. Crawler access makes content eligible for discovery, not guaranteed placement.

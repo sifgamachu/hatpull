@@ -272,6 +272,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
 .picker-hero{padding-block:18px 6px}
 .picker-hero h1{font-size:clamp(32px,5.6vw,52px)}
 .picker-hero p{font-size:18px;color:var(--muted);margin-top:8px;max-width:60ch}
+.picker-hero p.eyebrow{font-size:12px;margin-bottom:10px}.picker-guide>nav{font-size:14px;margin-bottom:24px}.picker-guide>.eyebrow{font-size:12px}.picker-guide li{margin-bottom:10px}.picker-guide a:not(.btn){color:var(--pine);text-underline-offset:3px}
 .santa-promo{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:18px 22px;border-radius:16px;background:linear-gradient(135deg,#0F3328,#17493A);color:#F7F2E7;margin-top:28px}
 .santa-promo b{font-family:var(--f-display);font-weight:400;font-size:22px;display:block}
 .santa-promo .btn{background:#EDC25E;color:#2A1D04}
