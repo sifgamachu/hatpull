@@ -1,0 +1,50 @@
+"use client";
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useGiftContexts } from '@/lib/useGiftContexts';
+import { GIFT_CONTEXT_KEY, GIFT_DRAFT_KEY, chooseGiftContext, giftContextId, giftFromInput, readGiftDraft } from '@/lib/gift-intake.mjs';
+import { money } from '@/lib/core';
+import GiftBrowser from './GiftBrowser';
+import QuickWish from './QuickWish';
+import GiftInstall from './GiftInstall';
+import SignIn from './SignIn';
+
+export default function GiftFinderWorkspace({ incoming = false }) {
+  const { contexts, loading, failures, user, retry } = useGiftContexts();
+  const [selected, setSelected] = useState(null), [shared, setShared] = useState(null), [error, setError] = useState(''), [signIn, setSignIn] = useState(false), [busy, setBusy] = useState(false);
+  useEffect(() => {
+    if (selected !== null || loading) return;
+    let remembered = ''; try { remembered = localStorage.getItem(GIFT_CONTEXT_KEY); } catch {}
+    setSelected(chooseGiftContext(contexts, remembered));
+  }, [contexts, loading, selected]);
+  useEffect(() => {
+    if (!incoming) return;
+    const url = new URL(location.href), input = Object.fromEntries(['url', 'text', 'title'].map(k => [k, url.searchParams.get(k) || '']));
+    try {
+      if (input.url || input.text || input.title) {
+        const wish = giftFromInput(input); setShared(wish);
+        try { localStorage.setItem(GIFT_DRAFT_KEY, JSON.stringify({ at: Date.now(), input: { url: wish.u, title: wish.t } })); } catch {}
+      } else { try { setShared(readGiftDraft(localStorage)); } catch {} }
+    } catch (e) { setError(e.message); }
+    finally { ['url','text','title'].forEach(k => url.searchParams.delete(k)); history.replaceState(null, '', url.pathname + url.search); }
+  }, [incoming]);
+  const target = contexts.find(c => giftContextId(c) === selected);
+  function choose(value) { setSelected(value); try { localStorage.setItem(GIFT_CONTEXT_KEY, value); } catch {} }
+  return <div className="stack gift-workspace">
+    <section className="gift-context panel stack" aria-label="Choose your wish list">
+      <div className="row between"><div><p className="eyebrow">Your celebration, your budget</p><h2>Where should your gifts go?</h2></div>{target && <span className="pill">{target.budget ? `${money(target.cur, target.budget)} per gift` : 'No budget set'}</span>}</div>
+      {contexts.length > 0 && <div><label htmlFor="gift-celebration">Celebration & wish list</label><select id="gift-celebration" value={target ? selected : ''} disabled={busy} onChange={e => choose(e.target.value)}><option value="">Choose your wish list…</option>{contexts.map(c => <option key={giftContextId(c)} value={giftContextId(c)}>{c.name} · {c.person}{c.budget ? ` · ${money(c.cur, c.budget)}` : ''}</option>)}</select></div>}
+      {loading && <p className="small muted" role="status">Checking your celebrations and budgets…</p>}
+      {!loading && !contexts.length && <><p>Open your participant invitation to bring your celebration here.{!user && ' Already joined on another device? Sign in to restore your linked wish lists.'}</p><div className="row">{!user && <button className="btn small" onClick={() => setSignIn(true)}>Sign in to find my lists</button>}<Link className="btn small ghost" href="/my">My celebrations</Link></div></>}
+      {failures > 0 && <p className="small note" role="status">Some celebrations couldn’t load. <button className="link" onClick={retry}>Try again</button></p>}
+      {target && <p className="small muted">Your celebration’s current budget follows you here. <Link href={`/g/${target.gid}/w/${target.mid}`} className="link">Open this wish list →</Link></p>}
+    </section>
+    {error && <p className="note err" role="alert">{error}</p>}
+    <div className={`gift-flow-grid ${incoming ? 'gift-incoming' : ''}`}>
+      <div className="gift-browse-step stack"><div><p className="eyebrow">Explore</p><h2>Find your next favorite.</h2></div><GiftBrowser budget={target?.budget} currency={target?.cur}/><GiftInstall/></div>
+      <QuickWish key={shared?.u || 'new'} target={target} initial={shared} disabled={loading} onBusy={setBusy} onSaved={() => { try { localStorage.removeItem(GIFT_DRAFT_KEY); } catch {} }}/>
+    </div>
+    {incoming && !shared && !error && <p className="small muted">Share a product link to Hatpull from a supported installed browser, or paste a link above.</p>}
+    {signIn && <SignIn close={() => setSignIn(false)} next={incoming ? '/share-gift' : '/gift-finder'} why="Restore your linked wish lists and celebration budgets." onSignedIn={() => { setSignIn(false); setSelected(null); retry(); }}/>}
+  </div>;
+}

@@ -5,6 +5,7 @@ export default function SiteAnalytics() {
   return <Analytics beforeSend={e => {
     try {
       const u = new URL(e.url);
+      if (u.pathname === '/share-gift') return null;
       u.pathname = u.pathname.replace(/^\/(join|invite|g)\/[^/]+/, "/$1/[id]").replace(/\/w\/[^/]+/, "/w/[id]");
       u.search = "";
       return { ...e, url: u.toString() };

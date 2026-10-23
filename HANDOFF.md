@@ -2,6 +2,10 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Easier gift saving — 2026-10-23
+
+Gift Finder now uses the selected celebration’s current budget. Participants can paste and save a product link without a required name or price; size/color remain optional. Compatible installed browsers can share a product directly to Hatpull and confirm Save. See `GIFT_CATALOG.md` for behavior, limits and verification. Apply the additive `20261023182707_quick_wish_append.sql` migration before the corresponding app deployment. It deliberately retains private-token access for guest participants while restricting additions to their own or their child’s list.
+
 ## Organizer account rollout — 2026-10-23
 
 Organizers must sign in with Google or email before creating a celebration. The wizard preserves setup through sign-in. Participants still join by invitation without mandatory accounts. Existing owned groups require their owning account; an older unowned group can be connected once using its original private organizer link plus a verified account. Claiming rotates the old organizer key. New organizer links contain no access token.

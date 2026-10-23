@@ -9,6 +9,9 @@ import { toast, burst } from "@/lib/ui";
 import Festive from "./Festive";
 import XBanner from "./XBanner";
 import GiftBrowser from "./GiftBrowser";
+import QuickWish from "./QuickWish";
+import GiftInstall from "./GiftInstall";
+import { GIFT_CONTEXT_KEY, giftContextId } from "@/lib/gift-intake.mjs";
 import OrganizerAccess, { isOrganizerError } from "./OrganizerAccess";
 import { WishCard, WishComposer } from "./WishCards";
 import { useGiftProducts, AmazonPriceDetails } from "./GiftProducts";
@@ -54,7 +57,7 @@ export default function WishList({ gid, mid }) {
         </XBanner>
         : <div className="row between"><h1 style={{ fontSize: "clamp(28px,5vw,40px)" }}>{mineList ? (m.kid ? `${m.name}'s wish list` : "My wish list") : `Wish list of ${m.name}`}</h1><h2 className="sr-only">Gifts and details</h2><span className="pill">{items.length} gift{items.length === 1 ? "" : "s"}</span></div>}
       {iDrew && <div className="note">{xm ? `🎅 You're ${m.name}'s Secret Santa.` : `You drew ${m.name}.`} Reserve a gift so nobody else buys the same thing. {m.name} won't see it.</div>}
-      {mineList ? <Editor gid={gid} g={g} m={m} prof={prof} items={items} setDraft={setDraft} tokens={tokens} reload={reload} xm={xm} questions={viewState.questions.filter(q => q.to === m.id)} />
+      {mineList ? <Editor key={m.id} gid={gid} g={g} m={m} prof={prof} items={items} setDraft={setDraft} tokens={tokens} reload={reload} xm={xm} questions={viewState.questions.filter(q => q.to === m.id)} />
         : <Viewer gid={gid} g={g} m={m} me={me} prof={prof} items={items} state={viewState} tokens={tokens} reload={reload} xm={xm} />}
       {more && <button className="btn ghost" disabled={loadingOlder} onClick={loadOlder}>{loadingOlder ? "Loading…" : "Load older questions"}</button>}
     </div>
@@ -72,13 +75,16 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
   useEffect(() => {
     if (opened.current) return; opened.current = true;
     const url = new URL(location.href), idea = GIFT_IDEAS.find(i => i.id === url.searchParams.get("idea")), asin = productAsin(url.searchParams.get("asin") || "");
-    if (idea) choose(idea); else if (asin) choose({ kind: "product", asin });
-    if (url.searchParams.has("idea") || url.searchParams.has("asin")) { url.searchParams.delete("idea"); url.searchParams.delete("asin"); history.replaceState(null, "", url.pathname + url.search + url.hash); }
+    const edit = items.find(w => w.id === url.searchParams.get("edit"));
+    if (edit) setSelection({ ...edit, editing: true }); else if (idea) choose(idea); else if (asin) choose({ kind: "product", asin });
+    if (['idea','asin','edit'].some(k => url.searchParams.has(k))) { ['idea','asin','edit'].forEach(k => url.searchParams.delete(k)); history.replaceState(null, "", url.pathname + url.search + url.hash); }
   }, []);
+  useEffect(() => { try { localStorage.setItem(GIFT_CONTEXT_KEY, giftContextId({ gid, mid: m.id })); } catch {} }, [gid, m.id]);
+  const [quickSaving, setQuickSaving] = useState(false);
   const [about, setAbout] = useState({ hobbies: prof.hobbies || "", age: prof.age || "", who: prof.who || "", address: prof.address || "" });
   const [ans, setAns] = useState({});
   async function saveProfile(nextItems, extra = {}) {
-    if (writing.current) return false;
+    if (writing.current || quickSaving) return false;
     const profile = { ...prof, ...about, ...extra, items: nextItems };
     if (nextItems.length > MAX_WISHES || new TextEncoder().encode(JSON.stringify(profile)).length > MAX_PROFILE_BYTES) { toast("Your wish list is full. Shorten a few notes or remove an item first."); return false; }
     writing.current = true; setSaving(true); setDraft(nextItems);
@@ -106,7 +112,8 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
   return (
     <>
       <div className="wish-toolbar"><div><p className="eyebrow">Picked by you. A surprise from them.</p><h2>Your little wish collection</h2><p className="muted small">Add a few favorites and the details that make them yours.</p></div><div className="row"><button className="btn small ghost" disabled={saving} onClick={() => setBrowse(v => !v)}>{browse ? "Close gift finder" : "Browse gift ideas"}</button><button className="btn small" disabled={saving || items.length >= MAX_WISHES} onClick={() => setSelection({})}>+ Add a gift or link</button></div></div>
-      {browse && <div className="wish-discovery"><GiftBrowser budget={g.budget} currency={g.cur} age={about.age} compact/></div>}
+      {browse && <div className="wish-discovery"><GiftBrowser budget={g.budget} currency={g.cur} age={about.age} compact/><GiftInstall/></div>}
+      <QuickWish target={{ gid, mid: m.id, person: m.name, name: g.name }} disabled={saving} onBusy={setQuickSaving} onSaved={async () => { await reload(); setDraft(null); }}/>
       {items.length ? <div className="product-grid wish-grid">{items.map((w, i) => <WishCard key={w.id} wish={w} group={g} product={products[w.a]}><div className="row"><button className="btn small ghost" disabled={saving} onClick={() => setSelection({ ...w, editing: true })}>Edit wish</button><button className="btn small ghost" aria-label={`Move ${w.t} earlier`} disabled={!i || saving} onClick={() => { const next = [...items]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; saveProfile(next); }}>↑</button><button className="link tiny" disabled={saving} onClick={() => saveProfile(items.filter(item => item.id !== w.id))}>Remove</button></div></WishCard>)}</div> : <div className="wish-empty"><span aria-hidden="true">♡</span><h3>A good surprise starts with a little hint.</h3><p>Add an exact product link, describe something you’d love, or browse for inspiration. Three wishes give your gift-giver a good place to start.</p><button className="btn small" onClick={() => setBrowse(true)}>Find my first wish →</button></div>}
       <p className="tiny muted">{items.length}/{MAX_WISHES} wishes · Reservations stay hidden from you, so the surprise stays intact. {AMAZON_DISCLOSURE}</p>
       {Object.keys(products).length > 0 && <AmazonPriceDetails/>}

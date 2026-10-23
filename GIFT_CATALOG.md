@@ -1,5 +1,15 @@
 # Amazon browsing and wish lists
 
+## Quick gift saving — October 23, 2026
+
+The Gift Finder reads current budgets from the participant’s accessible celebrations. It remembers the last selected list and includes a USD maximum in the Amazon search URL. Other currencies are shown as the celebration budget without pretending to convert them into dollars. Amazon controls its results and checkout prices; tax and shipping still need checking.
+
+Participants can use **Paste & save gift**, or paste a link and save, without entering a title, price or options. Names come only from participant-shared text, a descriptive supplied URL slug, or a neutral placeholder. No retailer page scraping is performed. Size, color and notes can be added later. The new `hp_add_wish` RPC appends under a row lock and deduplicates retries, requiring the existing member token and ownership of the target list (including a parent’s child list). It preserves other profile fields.
+
+On compatible installed browsers, **Share → Hatpull** opens `/share-gift`, asks which wish list to use, and requires an explicit Save. The manifest includes a GET share target and PNG install icons; the service worker adds install support but caches no private content. Unsupported browsers use the same paste flow. Incoming product links are removed from the address bar after parsing, omitted from analytics, and kept locally for up to one hour to survive sign-in. This is a shared link, not a purchase, Amazon wish-list import, cart sync or automatic selection tracking.
+
+Deployment: apply `supabase/migrations/20261023182707_quick_wish_append.sql` before deploying the app. Verify wrong-member/null-token requests fail, duplicate saves return the existing wish, parent access works, the selected budget reaches the Amazon URL, and the gift is visible to its authorized gift-giver. Test the inbound share route and paste fallback; OS share-menu availability depends on installation/browser support.
+
 The public gift finder and the wish-list browsing panel now show one **Browse your gift on Amazon** link. The on-site search and product gallery were removed at the owner’s request. No catalog API request is made by this browsing component. In a US-dollar celebration, its link includes the group’s spending limit; for other currencies it explains that Amazon.com uses US dollars. The affiliate tag is supplied by `NEXT_PUBLIC_AMAZON_TAG`.
 
 Wish lists still support exact product links, size/color preferences, most-wanted flags, editing, and private reservations. No database migration is required. Existing illustrated wishes and old `?idea=` links remain compatible. No generated gallery images are used or deployed.
