@@ -2,6 +2,10 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Shopping partner verification — 2026-10-23
+
+The root layout includes Impact's public site-verification meta tag for the owner's Target affiliate application. This proves website ownership only; it does not mean Target has approved the application or granted product-feed access. No tracking script or retailer API credential is included.
+
 ## Amazon list setup — 2026-10-23
 
 Gift Finder and the participant editor now lead with one-time Amazon wish-list linking. Save a view-only sharing link once, keep selecting gifts on Amazon, and let the gift-giver open that same list from Hatpull. This reuses `hp_add_wish`; no new migration, privilege or Amazon credential is needed. The dedicated card opens Amazon and does not imply catalog import, budget enforcement or purchase tracking. Individual gifts remain available. See `GIFT_CATALOG.md` and the URL/privacy regression tests.

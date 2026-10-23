@@ -21,6 +21,9 @@ export const viewport = { width: "device-width", initialScale: 1, viewportFit: "
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="impact-site-verification" value="360a2dd2-b509-4941-a589-089eedb1e223" />
+      </head>
       <body>
         <a className="skip" href="#app">Skip to content</a>
         <div className="wrap">
