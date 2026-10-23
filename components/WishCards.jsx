@@ -5,8 +5,11 @@ import { ProductPicture, ProductPrice, useGiftProducts } from "./GiftProducts";
 import { AFF_REL, amazonUrl, cleanUserLink, money, rid } from "@/lib/core";
 import { normalizeWish, positiveMoney, productAsin, productUrl, safeGiftUrl } from "@/lib/gifts.mjs";
 import { giftFromInput } from "@/lib/gift-intake.mjs";
+import { amazonWishListUrl } from "@/lib/amazon-wish-list.mjs";
 
 export function WishCard({ wish: w, group: g, product, reserved, children }) {
+  const amazonList = amazonWishListUrl(w.u);
+  if (amazonList) return <article className="product-card wish-card amazon-list-card"><div className="product-visual"><div className="amazon-list-symbol" aria-hidden="true"><svg viewBox="0 0 80 80" width="80" height="80" fill="none"><rect x="18" y="9" width="45" height="61" rx="8" stroke="currentColor" strokeWidth="3"/><path d="m27 27 3 3 5-6m-8 19 3 3 5-6m-8 19 3 3 5-6M42 27h11M42 43h11M42 59h11" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg><span>One list. Every wish.</span></div></div><div className="product-body"><p className="eyebrow">Amazon wish list</p><h3>{w.t}</h3><p>Open the list on Amazon to see the latest gifts, photos and prices.</p>{w.n && <p className="wish-note">{w.n}</p>}<a className="btn small amazon-browse-button" href={amazonList} target="_blank" rel="noopener noreferrer nofollow">View Amazon wish list ↗</a><p className="tiny muted">Gift choices and purchases on this list are managed on Amazon.</p><div className="wish-actions">{children}</div></div></article>;
   const fresh = product?.expiresAt > Date.now() ? product : null;
   const usd = !g.cur || g.cur === "$", cap = positiveMoney(g.budget);
   const search = !w.u && w.q ? amazonUrl(w.q, 0, usd ? cap : 0) : "";

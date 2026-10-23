@@ -2,6 +2,10 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Amazon list setup — 2026-10-23
+
+Gift Finder and the participant editor now lead with one-time Amazon wish-list linking. Save a view-only sharing link once, keep selecting gifts on Amazon, and let the gift-giver open that same list from Hatpull. This reuses `hp_add_wish`; no new migration, privilege or Amazon credential is needed. The dedicated card opens Amazon and does not imply catalog import, budget enforcement or purchase tracking. Individual gifts remain available. See `GIFT_CATALOG.md` and the URL/privacy regression tests.
+
 ## Easier gift saving — 2026-10-23
 
 Gift Finder now uses the selected celebration’s current budget. Participants can paste and save a product link without a required name or price; size/color remain optional. Compatible installed browsers can share a product directly to Hatpull and confirm Save. See `GIFT_CATALOG.md` for behavior, limits and verification. Apply the additive `20261023182707_quick_wish_append.sql` migration before the corresponding app deployment. It deliberately retains private-token access for guest participants while restricting additions to their own or their child’s list.

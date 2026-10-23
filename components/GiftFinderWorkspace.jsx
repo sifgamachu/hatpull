@@ -8,10 +8,13 @@ import GiftBrowser from './GiftBrowser';
 import QuickWish from './QuickWish';
 import GiftInstall from './GiftInstall';
 import SignIn from './SignIn';
+import AmazonListSetup from './AmazonListSetup';
+import { amazonWishListUrl } from '@/lib/amazon-wish-list.mjs';
 
 export default function GiftFinderWorkspace({ incoming = false }) {
   const { contexts, loading, failures, user, retry } = useGiftContexts();
-  const [selected, setSelected] = useState(null), [shared, setShared] = useState(null), [error, setError] = useState(''), [signIn, setSignIn] = useState(false), [busy, setBusy] = useState(false);
+  const [selected, setSelected] = useState(null), [shared, setShared] = useState(null), [error, setError] = useState(''), [signIn, setSignIn] = useState(false), [listBusy, setListBusy] = useState(false), [giftBusy, setGiftBusy] = useState(false);
+  const busy = listBusy || giftBusy;
   useEffect(() => {
     if (selected !== null || loading) return;
     let remembered = ''; try { remembered = localStorage.getItem(GIFT_CONTEXT_KEY); } catch {}
@@ -29,6 +32,8 @@ export default function GiftFinderWorkspace({ incoming = false }) {
     finally { ['url','text','title'].forEach(k => url.searchParams.delete(k)); history.replaceState(null, '', url.pathname + url.search); }
   }, [incoming]);
   const target = contexts.find(c => giftContextId(c) === selected);
+  const sharedList = !!amazonWishListUrl(shared?.u);
+  function clearSharedDraft() { try { localStorage.removeItem(GIFT_DRAFT_KEY); } catch {} }
   function choose(value) { setSelected(value); try { localStorage.setItem(GIFT_CONTEXT_KEY, value); } catch {} }
   return <div className="stack gift-workspace">
     <section className="gift-context panel stack" aria-label="Choose your wish list">
@@ -40,10 +45,13 @@ export default function GiftFinderWorkspace({ incoming = false }) {
       {target && <p className="small muted">Your celebration’s current budget follows you here. <Link href={`/g/${target.gid}/w/${target.mid}`} className="link">Open this wish list →</Link></p>}
     </section>
     {error && <p className="note err" role="alert">{error}</p>}
+    {(!incoming || sharedList) && <AmazonListSetup key={sharedList ? shared.u : 'list-setup'} target={target} initial={sharedList ? shared : null} disabled={loading || giftBusy} onBusy={setListBusy} onSaved={clearSharedDraft}/>}
+    <details className="individual-gifts" open={(incoming && !sharedList) || undefined}><summary>{incoming && !sharedList ? 'Save this individual gift' : 'Or add individual gifts from any store'}</summary>
     <div className={`gift-flow-grid ${incoming ? 'gift-incoming' : ''}`}>
       <div className="gift-browse-step stack"><div><p className="eyebrow">Explore</p><h2>Find your next favorite.</h2></div><GiftBrowser budget={target?.budget} currency={target?.cur}/><GiftInstall/></div>
-      <QuickWish key={shared?.u || 'new'} target={target} initial={shared} disabled={loading} onBusy={setBusy} onSaved={() => { try { localStorage.removeItem(GIFT_DRAFT_KEY); } catch {} }}/>
+      <QuickWish key={shared?.u || 'new'} target={target} initial={sharedList ? null : shared} disabled={loading || listBusy} onBusy={setGiftBusy} onSaved={clearSharedDraft}/>
     </div>
+    </details>
     {incoming && !shared && !error && <p className="small muted">Share a product link to Hatpull from a supported installed browser, or paste a link above.</p>}
     {signIn && <SignIn close={() => setSignIn(false)} next={incoming ? '/share-gift' : '/gift-finder'} why="Restore your linked wish lists and celebration budgets." onSignedIn={() => { setSignIn(false); setSelected(null); retry(); }}/>}
   </div>;

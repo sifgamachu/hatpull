@@ -1,12 +1,20 @@
 # Amazon browsing and wish lists
 
+## One Amazon wish-list link — October 23, 2026
+
+The main Gift Finder flow is now **Use my Amazon wish list**. Participants save their view-only Amazon list sharing link once using the existing `hp_add_wish` endpoint. The link is stored as an ordinary wish with the title “My Amazon wish list”; no migration or new privilege is needed. Supported Amazon marketplace hosts and recognized list paths are validated and canonicalized, stripping tracking parameters. Product URLs, cart URLs, editing invitations, spoofed domains and unresolved short links are rejected in the list setup.
+
+After setup, the participant keeps using Amazon’s Add to List. Hatpull shows a clearly labeled **View Amazon wish list** card. Products, prices, updates and purchases remain on Amazon; Hatpull does not import list contents or connect an Amazon account. Amazon’s list sharing settings still control whether the recipient can open it. Whole-list cards do not offer a misleading reserve-this-gift button. Existing individual gifts and private reservations remain available through the secondary individual-gift flow.
+
+The chosen celebration’s budget remains visible and is included in USD Amazon gift-search links. It does not enforce spending on a linked Amazon list. Existing member-token ownership and the organizer’s wish-list visibility rules apply to the saved link. A list can be renamed or removed in the normal Hatpull wish-list editor.
+
 ## Quick gift saving — October 23, 2026
 
 The Gift Finder reads current budgets from the participant’s accessible celebrations. It remembers the last selected list and includes a USD maximum in the Amazon search URL. Other currencies are shown as the celebration budget without pretending to convert them into dollars. Amazon controls its results and checkout prices; tax and shipping still need checking.
 
 Participants can use **Paste & save gift**, or paste a link and save, without entering a title, price or options. Names come only from participant-shared text, a descriptive supplied URL slug, or a neutral placeholder. No retailer page scraping is performed. Size, color and notes can be added later. The new `hp_add_wish` RPC appends under a row lock and deduplicates retries, requiring the existing member token and ownership of the target list (including a parent’s child list). It preserves other profile fields.
 
-On compatible installed browsers, **Share → Hatpull** opens `/share-gift`, asks which wish list to use, and requires an explicit Save. The manifest includes a GET share target and PNG install icons; the service worker adds install support but caches no private content. Unsupported browsers use the same paste flow. Incoming product links are removed from the address bar after parsing, omitted from analytics, and kept locally for up to one hour to survive sign-in. This is a shared link, not a purchase, Amazon wish-list import, cart sync or automatic selection tracking.
+On compatible installed browsers, **Share → Hatpull** opens `/share-gift`, asks which wish list to use, and requires an explicit Save. The manifest includes a GET share target and PNG install icons; the service worker adds install support but caches no private content. Unsupported browsers use the same paste flow. Incoming product links are removed from the address bar after parsing, omitted from analytics, and restorable locally for up to one hour to survive sign-in. This is a shared link, not a purchase, Amazon wish-list import, cart sync or automatic selection tracking.
 
 Deployment: apply `supabase/migrations/20261023182707_quick_wish_append.sql` before deploying the app. Verify wrong-member/null-token requests fail, duplicate saves return the existing wish, parent access works, the selected budget reaches the Amazon URL, and the gift is visible to its authorized gift-giver. Test the inbound share route and paste fallback; OS share-menu availability depends on installation/browser support.
 

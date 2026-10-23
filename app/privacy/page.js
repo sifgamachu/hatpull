@@ -40,7 +40,7 @@ export default function Page() {
 
       <h2>Cookies and storage</h2>
       <p>We store your private celebration links and, if you sign in, your sign-in session in your browser's local storage. Setup drafts, including entered names and settings, are also saved in browser storage so they survive sign-in. Drafts can be restored for six hours and are cleared when creation succeeds; you can clear browser storage to remove them sooner. We don't set advertising cookies.</p>
-      <p>The Gift Finder remembers your selected wish list in browser storage. A product you explicitly share to Hatpull is held on this device for up to one hour while you choose a list or sign in, and is cleared after saving. We read the clipboard only when you press Paste &amp; save. Installing Hatpull adds sharing support on compatible devices; it does not cache private pages for offline access.</p>
+      <p>The Gift Finder remembers your selected wish list in browser storage. A product you explicitly share to Hatpull can be restored from storage on this device for up to one hour while you choose a list or sign in; its draft is cleared after saving. We read the clipboard only when you press Paste &amp; save. Installing Hatpull adds sharing support on compatible devices; it does not cache private pages for offline access.</p>
       <h2>Visitor statistics</h2>
       <p>We use Vercel Web Analytics to count page views. It doesn't use cookies and doesn't track you across other websites. Private celebration and invitation links are removed from the page addresses it records.</p>
 
