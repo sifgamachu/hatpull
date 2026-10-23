@@ -6,7 +6,8 @@
 - Public production checks pass for canonical URLs, redirects, schema, robots and sitemaps. The general web-retrieval tool could not fetch either homepage even though production checks and Bing's live test succeeded; this is not enough evidence to identify an OpenAI crawler block. OAI-SearchBot and Claude-SearchBot remain allowed by robots.txt.
 - Improved picker title, description and visible explanation for the actual use case: picking from an existing list. Fixed the 500-name FAQ to match the tool's 1,000-entry limit and documented duplicate entries, local storage and the 20-result history limit.
 - Added `/random-name-picker-guide` on the picker domain with classroom, giveaway and meeting workflows, matching Article/Breadcrumb metadata, links from the homepage/footer, and sitemap inclusion. The Secret Santa-domain duplicate redirects to the picker-domain canonical URL.
-- Prepared the picker domain's Bing ownership tag for the existing account. Ownership verification requires the owner's confirmation and is not yet complete.
+- The owner authorized Bing verification for the picker domain on October 23. Its homepage metadata now includes the existing account's public Bing ownership tag. Keep this tag after verification; it is a public ownership token, not an API secret.
+- Google accepted the new picker guide into its priority crawl queue and accepted the updated picker sitemap on October 23. This is submission confirmation, not proof the guide is indexed.
 - `LAUNCH_KIT.md` contains factual directory copy, a social introduction, a demonstration outline and an editor-message draft. None has been posted or sent. External editorial coverage and actual adoption remain necessary work; no ranking or AI recommendation is guaranteed.
 
 ## Verified baseline
@@ -28,7 +29,7 @@ Run `npx next build` before publishing to main. Start the production server on p
 
 ## Ongoing work
 - Production search checks passed for both domains after deployment. Google accepted both homepage recrawl requests into its priority crawl queue and accepted both sitemap resubmissions. The /how-it-works guide was not yet indexed (unknown to Google); Google accepted its first-indexing request.
-- Keep the public Bing ownership tag in the Secret Santa homepage metadata. Check Bing reports after the sitemap is processed. The picker domain has not been verified in Bing.
+- Keep the public Bing ownership tags in both homepage metadata records. Verify the picker domain in the existing Bing account after the tag is deployed, submit its sitemap and key public URLs, then check the resulting crawl/index reports. Acceptance of a sitemap or URL submission does not establish indexing.
 - Measure actual impressions, clicks, indexed URLs and query positions in Search Console; measure AI referral traffic separately. There is no guaranteed ChatGPT/Claude inclusion or ranking.
 - Add useful original guidance based on real customer questions, rather than mass-producing near-duplicate keyword pages.
 - Earn relevant mentions and links through genuine partnerships and useful resources. No fabricated testimonials, purchased ranking links, or unsolicited outreach was performed.
