@@ -4,6 +4,8 @@ The public gift finder and the wish-list browsing panel now show one **Browse yo
 
 Wish lists still support exact product links, size/color preferences, most-wanted flags, editing, and private reservations. No database migration is required. Existing illustrated wishes and old `?idea=` links remain compatible. No generated gallery images are used or deployed.
 
+The public Gift Finder includes an expandable “Sharing by text or social media” guide covering opt-in messaging, eligible public social accounts, disclosures, personal-contact purchases and support requests. It distinguishes sharing Hatpull for gift exchanges from Associates promoting affiliate links, links directly to Amazon’s official US policies, and records the verification date. Recheck those sources before changing the guidance.
+
 ## Current activation boundary
 
 The Hatpull Associates account has tracking ID `hatpull-20`. As checked during implementation, it has no qualifying sales and no Creators API credentials. Browsing is intentionally handled on Amazon, where customers see current product photos and prices. The site does not display a product gallery. People can still save exact product links from Amazon or another shop, write their preferences, and reserve gifts privately.
