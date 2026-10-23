@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useGroup } from "@/lib/useGroup";
-import { rpc } from "@/lib/db";
+import { rpc, sb } from "@/lib/db";
 import { getG, delG } from "@/lib/store";
 import { isXmas, fmtDate, daysUntil, daysLeftText, money, CURRENCIES, inviteText } from "@/lib/core";
 import { toast, copy, burst } from "@/lib/ui";
@@ -11,6 +11,7 @@ import XBanner from "./XBanner";
 import { Ornament, WishBar, Sheet } from "./bits";
 import { ExclusionGrid } from "./Wizard";
 import SignIn from "./SignIn";
+import OrganizerAccess, { isOrganizerError } from "./OrganizerAccess";
 import { GOOGLE_CLIENT_ID, EMAIL_SIGNIN } from "@/lib/auth";
 const SIGNIN_ON = !!(GOOGLE_CLIENT_ID || EMAIL_SIGNIN);
 
@@ -30,7 +31,10 @@ export default function Dashboard({ gid }) {
   const liveMs = g?.live_at ? new Date(g.live_at).getTime() - now : null;
   const liveOn = g?.mode === "draw" && liveMs != null && liveMs > -120000;
   useEffect(() => {
-    if (adm && g?.date && daysUntil(g.date) < 0 && g.mode === "draw") rpc("hp_results", { p_gid: gid, p_atok: tokens.atok }).then(setResults).catch(() => {});
+    let active = true;
+    setResults(null);
+    if (adm && g?.date && daysUntil(g.date) < 0 && g.mode === "draw") rpc("hp_results", { p_gid: gid, p_atok: tokens.atok }).then(value => { if (active) setResults(value); }).catch(() => {});
+    return () => { active = false; };
   }, [adm, g?.date, g?.mode, gid, tokens]);
 
   async function reveal() {
@@ -47,7 +51,7 @@ export default function Dashboard({ gid }) {
     if (liveOn && liveMs <= 0 && me && !me.drawn && me.receiver_id && !firedLive.current) { firedLive.current = true; reveal(); }
   }); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (error === "no_access") return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>You haven't joined this celebration on this device</h1><p className="muted">Open the invitation link from the organizer to pick your name, or open your personal link if you joined on another device.</p><p className="muted">If the organizer reset your name, open the invitation link and pick it again: your match is the same. If your name isn't on the list anymore, the organizer removed you from this celebration.</p></div>;
+  if (error === "no_access" || isOrganizerError(error)) return <OrganizerAccess gid={gid} error={error} reload={reload} />;
   if (error === "not_found") return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>We can't find this celebration</h1><p className="muted">It may have been deleted.</p><Link className="btn small ghost" href="/my">My celebrations</Link></div>;
   if (!state) return <div className="panel muted stack"><h1 className="sr-only">Your celebration</h1><p>{error === "network" ? "Can't reach the server. Retrying…" : "Loading celebration…"}</p>{error === "network" && <Link href="/network-access">Help with work or school networks</Link>}</div>;
   if (me === null && !adm) return <div className="narrow panel">You're no longer in this celebration.</div>;
@@ -195,7 +199,9 @@ function PersonalLink({ gid, first }) {
 }
 
 async function redraw(body) {
-  const r = await fetch("/api/redraw", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+  const { data: { session } } = await sb().auth.getSession();
+  if (!session) throw new Error("Sign in to the organizer account to manage this celebration.");
+  const r = await fetch("/api/redraw", { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${session.access_token}` }, body: JSON.stringify(body) });
   const out = await r.json(); if (!r.ok) throw new Error(out.error || "Couldn't save."); return out;
 }
 

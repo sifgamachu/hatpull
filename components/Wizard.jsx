@@ -5,18 +5,21 @@ import Link from "next/link";
 import { OCCASIONS, XMAS_OCC, CURRENCIES, BUDGETS, suggestDates, iso, fmtDate, money, xmasYear, canDraw } from "@/lib/core";
 import { setG } from "@/lib/store";
 import { toast } from "@/lib/ui";
-import { syncAccount } from "@/lib/auth";
+import { syncAccount, useUser } from "@/lib/auth";
+import { DRAFT_KEY, readWizardDraft } from "@/lib/wizard-draft.mjs";
 import { sb } from "@/lib/db";
 import Festive from "./Festive";
 import XBanner from "./XBanner";
+import SignIn from "./SignIn";
 
 const TOTAL = 8;
 
 export default function Wizard() {
   const router = useRouter(), q = useSearchParams();
+  const user = useUser();
+  const [signIn, setSignIn] = useState(false), [draftReady, setDraftReady] = useState(false);
   const [st, setSt] = useState(() => {
     const s = { step: 0, mode: "draw", orgName: "", includeMe: true, names: ["", "", ""], excl: {}, wantExcl: false, occ: "", name: "", date: "", budget: "", cur: "$", note: "" };
-    try { const saved = JSON.parse(sessionStorage.getItem("hatpull.wizard") || "null"); if (saved && Date.now() - saved.at < 6 * 3600e3 && saved.q === location.search && saved.st) return { ...s, ...saved.st }; } catch {}
     if (q.get("mode") === "wish") { s.mode = "wish"; s.step = 1; }
     const oi = q.get("occ");
     if (oi === "other") { s.occ = "Other"; s.step = 1; }
@@ -29,8 +32,19 @@ export default function Wizard() {
   const allExcl = useMemo(() => Object.entries(st.excl).flatMap(([a, bs]) => bs.map(b => ({ a, b }))).filter(x => people.includes(x.a) && people.includes(x.b)), [st.excl, people]);
   // Exact, fast feasibility check (bipartite matching), recomputed only when people or exclusions change.
   const feasible = useMemo(() => st.mode !== "draw" || people.length < 3 || canDraw(people, allExcl), [st.mode, people, allExcl]);
-  // Keep progress through refresh and browser Back/Forward (this tab only).
-  useEffect(() => { try { sessionStorage.setItem("hatpull.wizard", JSON.stringify({ at: Date.now(), q: location.search, st })); } catch {} }, [st]);
+  // Restore after hydration. The browser-local fallback also survives an email link opening a new tab.
+  useEffect(() => {
+    let saved;
+    try { saved = readWizardDraft(sessionStorage, location.search) || readWizardDraft(localStorage, location.search); } catch {}
+    if (saved) setSt(s => ({ ...s, ...saved }));
+    setDraftReady(true);
+  }, []);
+  useEffect(() => {
+    if (!draftReady) return;
+    const draft = JSON.stringify({ at: Date.now(), q: location.search, st });
+    try { sessionStorage.setItem(DRAFT_KEY, draft); } catch {}
+    try { localStorage.setItem(DRAFT_KEY, draft); } catch {}
+  }, [st, draftReady]);
   const festive = !st.occ || XMAS_OCC.includes(st.occ) || /christmas|xmas|santa/i.test(st.name);
   useEffect(() => { setErr(""); window.scrollTo(0, 0); }, [st.step]);
 
@@ -55,17 +69,21 @@ export default function Wizard() {
 
   async function create() {
     if (creating.current) return;
+    const namesError = validateNames();
+    if (namesError) return setErr(namesError);
     if (st.date && st.date < iso(new Date())) return setErr("That date has already passed. Go back and pick a date in the future.");
     creating.current = true; setBusy(true); setErr("");
     try {
       const note = st.note || (st.mode === "draw" ? `✨ You've been invited to make a wish list and draw a name for ${st.name}!` : `✨ You've been invited to share your wish list for ${st.name}!`);
       const { data: { session } } = await sb().auth.getSession();
+      if (!session || session.user.is_anonymous) { setSignIn(true); setBusy(false); creating.current = false; return; }
       const res = await fetch("/api/create", { method: "POST", headers: { "content-type": "application/json", ...(session ? { authorization: `Bearer ${session.access_token}` } : {}) }, body: JSON.stringify({
         name: st.name, occasion: st.occ, date: st.date, budget: st.budget, cur: st.cur, note, mode: st.mode,
         orgName: st.orgName.trim(), includeMe: st.includeMe, people, exclusions: st.mode === "draw" ? allExcl : [] }) });
       let out; try { out = await res.json(); } catch { throw new Error("The server had a problem. Please try again in a moment."); }
+      if (res.status === 401) setSignIn(true);
       if (!res.ok) throw new Error(out.error || "Couldn't create the celebration.");
-      try { sessionStorage.removeItem("hatpull.wizard"); } catch {}
+      try { sessionStorage.removeItem(DRAFT_KEY); localStorage.removeItem(DRAFT_KEY); } catch {}
       setG(out.id, { atok: out.admin_token, code: out.join_code, mtok: out.org_token || null, mid: out.org_mid || null, name: st.name, date: st.date, role: "organizer" });
       await syncAccount();
       toast(`${st.name} created`);
@@ -80,7 +98,7 @@ export default function Wizard() {
       <XBanner strip><p className="kicker">🎄 Let's get the gifting started</p></XBanner>
       <div className="panel stack">
         <h1 style={{ fontSize: 26 }}>Create a new celebration</h1>
-        <p className="muted">Draw names and make wish lists, or just create a group to share wish lists.</p>
+        <p className="muted">Draw names and make wish lists, or just create a group to share wish lists. You'll sign in before creating it; your participants can join by invitation link.</p>
         <div className="optlist">
           <button className="opt" onClick={() => up({ mode: "draw", step: 1 })}><span>Start drawing names</span><span aria-hidden="true">›</span></button>
           <button className="opt" onClick={() => up({ mode: "wish", step: 1 })}><span>Start sharing wish lists</span><span aria-hidden="true">›</span></button>
@@ -142,12 +160,13 @@ export default function Wizard() {
       <button className="link" type="button" style={{ alignSelf: "flex-start" }} onClick={() => up({ budget: "" })}>No budget</button>
     </Shell>);
   else body = (
-    <Shell ctx={ctx} title="What's your message for the group?" nextLabel="Create celebration" onNext={create}>
+    <Shell ctx={ctx} title="What's your message for the group?" nextLabel={user ? "Create celebration" : "Sign in and create celebration"} nextDisabled={!draftReady || user === undefined} onNext={create}>
       <textarea maxLength={400} value={st.note || (st.mode === "draw" ? `✨ You've been invited to make a wish list and draw a name for ${st.name}!` : `✨ You've been invited to share your wish list for ${st.name}!`)} onChange={e => up({ note: e.target.value })} />
       <div className="note small">Ready to create <b>{st.name}</b> with {people.length} people{st.date ? ` on ${fmtDate(st.date, { month: "long", day: "numeric" })}` : ""}{st.budget ? `, ${money(st.cur, st.budget)} each` : ""}.</div>
+      <p className="small muted">{user ? `Your celebration will be saved to ${user.email || "your account"}.` : "Sign in with Google or email to save and manage your celebration. Your setup will be kept while you sign in."}</p>
     </Shell>);
 
-  return <><Festive on={festive} />{body}</>;
+  return <><Festive on={festive} />{body}{signIn && <SignIn required close={() => setSignIn(false)} next={location.pathname + location.search} why="Save this celebration to your account. Your names, budget and settings are kept while you sign in." onSignedIn={() => { setSignIn(false); create(); }} />}</>;
 }
 
 function Shell({ ctx, title, children, nextLabel = "Continue", onNext, nextDisabled }) {

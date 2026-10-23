@@ -7,8 +7,16 @@ import { sendResend } from '../lib/resend-transport.mjs';
 import { authFailure } from '../lib/auth-errors.mjs';
 
 const query = async (db, sql, args=[]) => (await db.query(sql,args)).rows[0]?.result;
-const group = async (db,n=5) => query(db, 'select hp_create_group($1::jsonb) result', [JSON.stringify({name:'Synthetic capacity test',mode:'draw',members:Array.from({length:n},(_,i)=>({id:`m${i}`,name:`Test ${i}`}))})]);
-const delta = (db,g,token=null,profile=null,version=null,admin=g.admin_token) => query(db,'select hp_state_delta($1,$2,$3,$4,$5) result',[g.id,token,admin,profile,version]);
+const owner='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+const group = async (db,n=5) => {
+  await db.query('insert into auth.users(id,email_confirmed_at) values($1,now()) on conflict do nothing',[owner]);
+  await db.query("select set_config('test.uid',$1,false)",[owner]);
+  return query(db, 'select hp_create_owned_group($1::jsonb,$2) result', [JSON.stringify({name:'Synthetic capacity test',mode:'draw',members:Array.from({length:n},(_,i)=>({id:`m${i}`,name:`Test ${i}`}))}),owner]);
+};
+const delta = async (db,g,token=null,profile=null,version=null,admin=g.admin_token) => {
+  await db.query("select set_config('test.uid',$1,false)",[admin ? owner : '']);
+  return query(db,'select hp_state_delta($1,$2,$3,$4,$5) result',[g.id,token,admin,profile,version]);
+};
 
 test('database revisions, privacy, pagination and reminder recovery', async t => {
   const db=await testDatabase();

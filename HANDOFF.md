@@ -2,6 +2,20 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Organizer account rollout — 2026-10-23
+
+Organizers must sign in with Google or email before creating a celebration. The wizard preserves setup through sign-in. Participants still join by invitation without mandatory accounts. Existing owned groups require their owning account; an older unowned group can be connected once using its original private organizer link plus a verified account. Claiming rotates the old organizer key. New organizer links contain no access token.
+
+Rollout order (do not reverse):
+1. Apply `supabase/migrations/20261023172343_prepare_organizer_accounts.sql` to Hatpul. It adds ownership history and service-only account-verified creation/redraw entry points without interrupting the previous app.
+2. Run `npm test` and `npx next build`, deploy the new app, and wait for Vercel Ready.
+3. Apply `supabase/migrations/20261023172349_enforce_organizer_accounts.sql`. It enforces owner identity on organizer reads/actions, enables explicit legacy claiming, and revokes the previous anonymous/token-only server entry points.
+4. Verify live signed-out create/redraw return 401, signed-in creation saves the owner, management works for the owner, old organizer keys do not grant signed-out management, and guest invitations still work. Check security advisors against the baseline.
+
+Account deletion removes organizer access but preserves shared celebrations for participants. `owner_claimed_at` prevents an old key from claiming a deleted owner's group. Delete the celebration first if its shared data should be removed. Do not restore old token-only grants as a rollback; keep the ownership enforcement and fix the app forward.
+
+Validation: 27 automated tests pass, including database role permissions, wrong-account access, legacy claims, deleted owners, guest participation, wishlist privacy, and reminder/capacity regressions. The production build passes. Browser checks confirm the sign-in gate and setup recovery after reload and in a new tab. The historical setup and prior rollback notes below predate this ownership requirement.
+
 ## What Hatpull is
 Free Secret Santa / gift-exchange site (drawnames.com alternative), a Teregna LLC product.
 - Live: https://secretsantageneratorapp.com (main) · https://onlinenamepickertool.com (name picker) · drawnamesonlinetool.com 301-redirects

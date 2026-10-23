@@ -20,7 +20,7 @@ Short description (under 260 characters):
 
 Full description:
 
-> Hatpull Online Name Picker selects entries from a list you provide. Paste names, spin the wheel and reveal a winner. Use it for classroom turns, meeting order or a giveaway entry list you have already checked. The tool accepts up to 1,000 entries and can remove a selected entry after each draw. Your list stays in this browser's local storage; it is not uploaded to Hatpull. The latest 20 results can be copied before leaving the page. Hatpull also offers a separate Secret Santa tool for private gift-exchange assignments, exclusions and wish lists. Both tools are free to use without creating an account.
+> Hatpull Online Name Picker selects entries from a list you provide. Paste names, spin the wheel and reveal a winner. Use it for classroom turns, meeting order or a giveaway entry list you have already checked. The tool accepts up to 1,000 entries and can remove a selected entry after each draw. Your list stays in this browser's local storage; it is not uploaded to Hatpull. The latest 20 results can be copied before leaving the page. Hatpull also offers a separate Secret Santa tool for private gift-exchange assignments, exclusions and wish lists. Both tools are free. Secret Santa organizers sign in to create and manage groups; participants and name picker users do not need accounts.
 
 Platform: Web browser. Pricing: Free. Operator: Teregna LLC. Do not claim an open-source license, certified contest draws, independent reviews, customer numbers or endorsements that have not been established. It picks existing entries; it does not invent baby, fantasy or business names.
 

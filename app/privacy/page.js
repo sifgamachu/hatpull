@@ -8,7 +8,7 @@ export default function Page() {
     <div className="page prose">
       <Festive on={false} />
       <h1>Privacy Policy</h1>
-      <p className="muted">Last updated: October 21, 2026</p>
+      <p className="muted">Last updated: October 23, 2026</p>
       <p>Hatpull (the Secret Santa generator at secretsantageneratorapp.com and the name picker at onlinenamepickertool.com) is run by {who} ("we", "us"). This policy explains what we collect, why, and the choices you have. Contact us any time at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>{SITE.address ? "" : " (our mailing address is available on request)"}.</p>
 
       <h2>What we collect</h2>
@@ -16,19 +16,19 @@ export default function Page() {
         <li><b>Celebration details you enter:</b> the celebration name, occasion, date, budget, message, and the first names or nicknames of participants.</li>
         <li><b>Wish list content:</b> gift ideas, links, prices, notes, hobbies, age range, and, if the organizer turns it on, a mailing address.</li>
         <li><b>Messages and questions</b> posted inside a celebration.</li>
-        <li><b>Optional account:</b> if you choose to sign in with Google, we receive your name, email address and Google account ID. If you sign in with an email link, we receive your email address. We use these only to run your account, link your name in a celebration to you, let you get back in on any device, and send the emails described below. We don't use Google data for advertising and never sell or share it.</li>
+        <li><b>Organizer and optional participant accounts:</b> organizers must sign in to create and manage celebrations. Participants may choose to sign in. With Google sign-in, we receive your name, email address and Google account ID. If you sign in with an email link, we receive your email address. We use these only to run your account, link your name in a celebration to you, let you get back in on any device, and send the emails described below. We don't use Google data for advertising and never sell or share it.</li>
         <li><b>Email preferences and consent records:</b> whether you want reminders and marketing emails, and, if you opt in to marketing, when, where and the exact wording you agreed to.</li>
         <li><b>Name picker lists</b> stay in your own browser and are not sent to us.</li>
         <li><b>Technical data:</b> our hosting provider processes standard request data such as IP address and browser type to deliver and secure the service.</li>
-        <li><b>Abuse prevention:</b> when someone creates a celebration, we store a scrambled one-way code made from their IP address, so we can limit how many celebrations one person creates. It can't be turned back into the address.</li>
-        <li><b>Fonts:</b> our pages load fonts from Google Fonts, so your browser connects to Google, which receives your IP address and browser details.</li>
+        <li><b>Abuse prevention:</b> when someone creates a celebration, we store a one-way hash of their verified account ID, so we can limit how many celebrations one person creates. This is used for creation limits across servers.</li>
+        <li><b>Fonts:</b> fonts are served from our own website domain.</li>
       </ul>
-      <p>Signing in is optional. You can draw names, join and make wish lists without an account, email address or phone number.</p>
+      <p>Organizers sign in with Google or email before creating a celebration. Participants can join, draw a name and make wish lists through private links without accounts. The random name picker does not require sign-in.</p>
 
       <h2>How we use it, and our legal bases</h2>
       <ul>
         <li><b>Running celebrations</b> (the draw, showing each person their own result, wish lists, messages): to provide the service you asked for (contract).</li>
-        <li><b>Optional accounts</b> (recovering access, protecting your name, syncing across devices): to provide the service you asked for (contract).</li>
+        <li><b>Accounts</b> (recovering access, protecting your name, syncing across devices): to provide the service you asked for (contract).</li>
         <li><b>Reminder emails</b> about celebrations you're in (a week before and the day before): our legitimate interest in helping your exchange go smoothly. They're on by default when you sign in, and you can turn them off in your account or with one click in any reminder. Reminders contain no advertising.</li>
         <li><b>Marketing emails</b> (holiday gift ideas, an invitation to run Secret Santa again next year): only with your consent, given by ticking an unticked box. You can withdraw it any time.</li>
         <li><b>Security and abuse prevention:</b> our legitimate interest in keeping the service safe.</li>
@@ -36,10 +36,10 @@ export default function Page() {
       <p>We don't sell your information and don't use it to build advertising profiles.</p>
 
       <h2>Who can see what</h2>
-      <p>Each person's drawn name is visible only to them. The organizer can see the full results only after the celebration date, and moving the date earlier doesn't unlock them sooner. If you sign in, your name in a celebration is protected: only your account can open it again. If you don't sign in and the organizer resets your name, whoever picks that name next can see its match, and you'll be told your name was reset. Wish lists, messages and questions are visible to members of the same celebration, subject to the organizer's visibility settings. Access is controlled by private links, so keep your personal and organizer links private.</p>
+      <p>Each person's drawn name is visible only to them. The organizer can see the full results only after the celebration date, and moving the date earlier doesn't unlock them sooner. If you sign in, your participant name is linked to your account for recovery; its private personal link still grants participant access. If you don't sign in and the organizer resets your name, whoever picks that name next can see its match, and you'll be told your name was reset. Wish lists, messages and questions are visible to members of the same celebration, subject to the organizer's visibility settings. Organizer management requires the owning account. An older unowned group can be claimed once using its original private organizer link and a verified account. Participant access uses private links, so keep those links confidential.</p>
 
       <h2>Cookies and storage</h2>
-      <p>We store your private celebration links and, if you sign in, your sign-in session in your browser's local storage. These are needed for the service to work. We don't set advertising cookies.</p>
+      <p>We store your private celebration links and, if you sign in, your sign-in session in your browser's local storage. Setup drafts, including entered names and settings, are also saved in browser storage so they survive sign-in. Drafts can be restored for six hours and are cleared when creation succeeds; you can clear browser storage to remove them sooner. We don't set advertising cookies.</p>
       <h2>Visitor statistics</h2>
       <p>We use Vercel Web Analytics to count page views. It doesn't use cookies and doesn't track you across other websites. Private celebration and invitation links are removed from the page addresses it records.</p>
 
@@ -63,7 +63,7 @@ export default function Page() {
       <h2>How long we keep it</h2>
       <ul>
         <li>Celebrations: until the organizer deletes them. We may delete celebrations that have been inactive for more than 18 months.</li>
-        <li>Accounts: until you delete your account.</li>
+        <li>Accounts: until you delete your account. Account deletion removes organizer access but leaves shared celebrations available to participants. Delete a celebration first if you want its shared data removed.</li>
         <li>Consent records: for as long as you're subscribed, plus a reasonable period to show we had consent.</li>
         <li>Do-not-email list: if you unsubscribe or delete your account, we keep a one-way scrambled code of your email address so we never email you by mistake.</li>
       </ul>

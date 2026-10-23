@@ -5,12 +5,14 @@ import { inviteText, isXmas } from "@/lib/core";
 import { copy } from "@/lib/ui";
 import Festive from "./Festive";
 import XBanner from "./XBanner";
+import OrganizerAccess from "./OrganizerAccess";
 
 export default function Invite({ gid }) {
-  const { state, error } = useGroup(gid);
-  if (error) return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>Only the organizer can see this page</h1><p className="muted">Open the celebration from the browser you created it in.</p><Link className="btn small ghost" href={`/g/${gid}`}>Go to the celebration</Link></div>;
+  const { state, error, reload } = useGroup(gid);
+  if (error === "network") return <div className="narrow panel stack"><p>Can't reach the server. Retrying…</p></div>;
+  if (error) return <OrganizerAccess gid={gid} error={error} reload={reload} />;
   if (!state) return <div className="narrow panel muted">Loading…</div>;
-  if (!state.is_admin) return <div className="narrow panel stack"><p>Only the organizer can send invitations.</p><Link className="btn small ghost" href={`/g/${gid}`}>Go to the celebration</Link></div>;
+  if (!state.is_admin) return <OrganizerAccess gid={gid} />;
   const g = state.group, xm = isXmas(g);
   const link = `${location.origin}/join/${g.join_code}`;
   const text = inviteText(g, link, state.members.filter(m => !m.kid).map(m => m.name));
@@ -38,13 +40,11 @@ export default function Invite({ gid }) {
 
 export function OrganizerKey({ gid }) {
   if (typeof window === "undefined") return null;
-  const g = JSON.parse(localStorage.getItem("hatpull.v1") || "{}").groups?.[gid];
-  if (!g?.atok) return null;
-  const url = `${location.origin}/g/${gid}?a=${g.atok}${g.mtok ? `&t=${g.mtok}` : ""}`;
+  const url = `${location.origin}/g/${gid}`;
   return (
     <div className="panel stack">
-      <h3>🔑 Save your organizer link</h3>
-      <p className="small muted">This private link lets you manage the celebration from another phone or computer. Keep it to yourself. Anyone with it can manage the group.</p>
+      <h3>🔒 Your celebration is saved to your account</h3>
+      <p className="small muted">Sign in with the same Google or email account on another device, then open My celebrations or this link. Only your organizer account can manage the group. Use the invitation link above for participants.</p>
       <div className="row" style={{ flexWrap: "nowrap" }}><input readOnly value={url} onFocus={e => e.target.select()} aria-label="Organizer link" /><button className="btn small" onClick={() => copy(url)}>Copy</button></div>
     </div>
   );

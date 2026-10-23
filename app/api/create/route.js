@@ -3,11 +3,11 @@ import { serverRpc, verifiedCreator } from "@/lib/serverDb";
 import { createHash } from "crypto";
 import { drawNames, rid } from "@/lib/core";
 
-// Light per-IP limit (per server instance). The database also has a global circuit breaker.
+// Light per-account limit (per server instance). The database also has a global circuit breaker.
 const hits = new Map(); const WINDOW = 10 * 60 * 1000, LIMIT = 20;
-function limited(ip) {
-  const now = Date.now(), arr = (hits.get(ip) || []).filter(t => now - t < WINDOW);
-  arr.push(now); hits.set(ip, arr);
+function limited(identity) {
+  const now = Date.now(), arr = (hits.get(identity) || []).filter(t => now - t < WINDOW);
+  arr.push(now); hits.set(identity, arr);
   if (hits.size > 5000) for (const [k, v] of hits) if (now - v[v.length - 1] > WINDOW) hits.delete(k);
   return arr.length > LIMIT;
 }
@@ -15,11 +15,9 @@ function limited(ip) {
 // Creates a celebration. The draw runs here on the server so the organizer's browser never sees the results.
 export async function POST(req) {
   try {
-    // On Vercel, x-real-ip is set by the platform and can't be spoofed by the client.
-    const ip = req.headers.get("x-real-ip") || (req.headers.get("x-forwarded-for") || "").split(",").pop().trim() || "anon";
     // Verified accounts get their own allowance even when a whole office shares one IP.
     const userId = await verifiedCreator(req.headers.get("authorization"));
-    const identity = userId ? `user:${userId}` : ip;
+    const identity = `user:${userId}`;
     if (limited(identity)) return NextResponse.json({ error: "You've created a lot of celebrations in a short time. Wait a few minutes and try again." }, { status: 429 });
     const b = await req.json();
     // Trim and strip invisible bidi/control characters that could be used to disguise names.
@@ -39,9 +37,9 @@ export async function POST(req) {
     if (mode === "draw" && !drawNames(members.map(m => m.id), exclusions)) { return NextResponse.json({ error: "These exclusions leave no valid draw." }, { status: 400 }); }
     const orgMid = b.includeMe && clean(b.orgName) ? idOf(clean(b.orgName).slice(0, 40)) : null;
 
-    // Hash the verified account (or anonymous IP) for the cross-server allowance.
+    // Hash the verified account for the cross-server allowance.
     const creatorHash = createHash("sha256").update("hatpull:" + identity).digest("hex").slice(0, 32);
-    const out = await serverRpc("hp_create_group", { p: {
+    const out = await serverRpc("hp_create_owned_group", { p_owner: userId, p: {
       client: creatorHash,
       name: clean(b.name).slice(0, 80), occasion: clean(b.occasion).slice(0, 40), date: clean(b.date), budget: clean(b.budget).slice(0, 12), cur: clean(b.cur).slice(0, 4) || "$",
       note: clean(b.note).slice(0, 500), mode, settings: { wishVis: "all", mail: { on: false, vis: "drawn" }, venue: { type: "", address: "" } },
@@ -49,7 +47,7 @@ export async function POST(req) {
     } });
     return NextResponse.json(out);
   } catch (e) {
-    if (/invalid_session/.test(e.message)) return NextResponse.json({ error: "Your sign-in expired. Sign in again, or sign out to continue." }, { status: 401 });
+    if (/invalid_session|not_signed_in/.test(e.message)) return NextResponse.json({ error: "Sign in with Google or email to create your celebration.", code: "organizer_sign_in_required" }, { status: 401 });
     if (/no_valid_draw/.test(e.message)) return NextResponse.json({ error: "These exclusions leave no valid draw." }, { status: 400 });
     if (/slow_down/.test(e.message)) return NextResponse.json({ error: "You've created a lot of celebrations recently. Try again in a little while." }, { status: 429 });
     if (/busy/.test(e.message)) return NextResponse.json({ error: "We're very busy right now. Try again in a minute." }, { status: 503 });

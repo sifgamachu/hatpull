@@ -17,7 +17,7 @@ export default function NetworkAccess() {
     <h2>If a page will not open</h2>
     <p>Ask your IT team to review the block message and the addresses below. An organization may restrict new websites or particular categories. Access is subject to its policies; this guide does not change those policies.</p>
     <p>If the page opens but an invitation, celebration or sign-in does not load, the data service may be unavailable or blocked. A certificate warning should be investigated by IT before you continue.</p>
-    <p>Google sign-in is optional. If your organization restricts Google accounts, use the email sign-in option when permitted. You can use the name picker without signing in.</p>
+    <p>Organizers must sign in with Google or email. If your organization restricts Google accounts, use email sign-in when permitted. Participants and name picker users can continue without accounts.</p>
     <h2>For your IT team</h2>
     <p>Review outbound HTTPS on TCP port 443 for the exact hostnames needed below. Website scripts, styles and fonts are served from the website's own domain. The picker runs locally in the browser and saves its names in that browser.</p>
     <div style={{ overflowX: "auto" }}>

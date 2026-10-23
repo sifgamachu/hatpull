@@ -12,7 +12,7 @@ export default function Page() {
         <p className="muted small" style={{ margin: 0 }}>We usually reply within two business days, and faster in December.</p>
       </div>
       <h2>Need to delete a celebration?</h2>
-      <p>Organizers can delete a celebration and all its data from Manage settings on the celebration page. If you've lost your organizer link, email us the celebration name and date and we'll help.</p>
+      <p>Organizers can delete a celebration and all its data from Manage settings on the celebration page. To restore organizer access on another device, sign in with the account you used and open My celebrations. Older unclaimed groups need their original private organizer link before they can be connected to an account.</p>
     </div>
   );
 }

@@ -7,7 +7,7 @@ Free tools for picking random names and organizing gift exchanges, made by Tereg
 | Tool | Use it for | What it does |
 | --- | --- | --- |
 | [Random Name Picker](https://onlinenamepickertool.com/) | Classroom turns, meeting order and prepared giveaway entries | Spin a name wheel with up to 1,000 entries, optionally remove winners, and copy the latest 20 results. The name list stays in this browser; no account is needed. |
-| [Secret Santa Generator](https://secretsantageneratorapp.com/) | Family, friend and workplace gift exchanges | Draw names for 3–200 participants, set exclusions, share an invitation and add wish lists with private gift reservations. Accounts are optional. |
+| [Secret Santa Generator](https://secretsantageneratorapp.com/) | Family, friend and workplace gift exchanges | Draw names for 3–200 participants, set exclusions, share an invitation and add wish lists with private gift reservations. Organizers must sign in with Google or email; participant accounts are optional. |
 
 The picker selects from your existing list. It does not invent new baby, business or character names. For a gift exchange where everyone gives and receives, use the separate Secret Santa generator.
 

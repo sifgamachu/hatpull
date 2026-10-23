@@ -66,7 +66,8 @@ test('wishlist fields round-trip through real SQL while ownership and secret res
   const db = await testDatabase();
   const q = async (sql, args = []) => (await db.query(sql, args)).rows[0]?.result;
   try {
-    const g = await q('select hp_create_group($1::jsonb) result', [JSON.stringify({ name: 'Isolated wishlist test', mode: 'draw', members: [{ id: 'm0', name: 'Owner' }, { id: 'm1', name: 'Giver' }, { id: 'm2', name: 'Other' }] })]);
+    await db.query("insert into auth.users(id,email_confirmed_at) values ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',now())");
+    const g = await q("select hp_create_owned_group($1::jsonb,'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa') result", [JSON.stringify({ name: 'Isolated wishlist test', mode: 'draw', members: [{ id: 'm0', name: 'Owner' }, { id: 'm1', name: 'Giver' }, { id: 'm2', name: 'Other' }] })]);
     await db.query("update hp_members set token='test-'||id where group_id=$1", [g.id]);
     const wish = normalizeWish({ id: 'w1', t: 'My blue coffee mug', a: 'B000000001', u: 'https://www.amazon.com/dp/B000000001', size: '12 oz', color: 'Blue', priority: '1', n: 'Please choose the lid version', p: '25' });
     const profile = { hobbies: 'Coffee', items: [wish] };

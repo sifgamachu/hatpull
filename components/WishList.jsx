@@ -9,6 +9,7 @@ import { toast, burst } from "@/lib/ui";
 import Festive from "./Festive";
 import XBanner from "./XBanner";
 import GiftBrowser from "./GiftBrowser";
+import OrganizerAccess, { isOrganizerError } from "./OrganizerAccess";
 import { WishCard, WishComposer } from "./WishCards";
 import { useGiftProducts, AmazonPriceDetails } from "./GiftProducts";
 import { GIFT_IDEAS, MAX_WISHES, MAX_PROFILE_BYTES, productAsin, productUrl, wishMatches } from "@/lib/gifts.mjs";
@@ -30,6 +31,7 @@ export default function WishList({ gid, mid }) {
   }
   const viewState = state ? { ...state, questions: [...state.questions, ...older] } : null;
   const [draft, setDraft] = useState(null); // optimistic items
+  if (isOrganizerError(error)) return <OrganizerAccess gid={gid} error={error} reload={reload} />;
   if (error && error !== "network") return <div className="mid panel stack"><p>{error === "not_found" ? "This celebration no longer exists." : "You don't have access to this wish list on this device."}</p><Link className="btn small ghost" href="/my">My celebrations</Link></div>;
   if (!state) return <div className="mid panel muted"><h1 className="sr-only">Wish list</h1>{error === "network" ? "Can't reach the server. Retrying…" : "Loading wish list…"}</div>;
   const g = state.group, me = state.me, xm = isXmas(g);

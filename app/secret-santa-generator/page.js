@@ -11,10 +11,10 @@ import { xmasYear, upcomingOccasions, fmtDate, daysUntil, XMAS_OCC } from "@/lib
 
 export const metadata = {
   title: { absolute: "Secret Santa Generator: Draw Names Online Free | Hatpull" },
-  description: "Free Secret Santa generator. Add names, set exclusions for couples, share one invite link, and let everyone draw a name and make a wish list. No sign-up needed.",
+  description: "Free Secret Santa generator. Add names, set exclusions for couples, share one invite link, and let everyone draw a name and make a wish list. Participants join by invitation link.",
   alternates: { canonical: "https://secretsantageneratorapp.com/" },
   verification: { other: { "msvalidate.01": "F4861D58DE9F22DD604DD37B0F0CE192" } },
-  openGraph: { title: "Secret Santa Generator: Draw Names Online Free", description: "Draw names, keep couples apart, share wish lists. Free and no sign-up.", url: "https://secretsantageneratorapp.com/", siteName: "Hatpull", type: "website" },
+  openGraph: { title: "Secret Santa Generator: Draw Names Online Free", description: "Draw names, keep couples apart, share wish lists. Free, with easy participant invitations.", url: "https://secretsantageneratorapp.com/", siteName: "Hatpull", type: "website" },
 };
 export const revalidate = 3600;
 
@@ -22,7 +22,7 @@ const FAQ = [
   ["How does the Secret Santa generator work?", "Enter the names in your group, add any exclusions, and share one invitation link. Each person opens it, picks their own name, and draws someone. Only they can see who they drew."],
   ["Can someone draw their own name?", "No. The generator never lets anyone draw themselves, so you never have to start over."],
   ["Can I stop couples from drawing each other?", "Yes. Add exclusions for couples, siblings, housemates, or anyone who drew each other last year."],
-  ["Does everyone need an account?", "No. People join with the invitation link and pick their name. Nobody has to sign up or share an email address."],
+  ["Does everyone need an account?", "The organizer signs in with Google or email to create and manage the celebration. Participants can join with the invitation link and pick their name without an account."],
   ["Can the organizer see who drew whom?", "Not while the exchange is running. The organizer can view the full results after the celebration date, so you can set exclusions to avoid the same matches next year."],
   ["How do wish lists work?", "Each person adds gift ideas with links and prices. Whoever drew them can secretly reserve a gift, so nobody buys the same thing twice."],
   ["Is it free?", "Yes. Drawing names, wish lists and invitations are all free."],
@@ -102,13 +102,13 @@ export default function SantaLanding() {
 
       <section className="section faq">
         <h2>Secret Santa questions</h2>
-        <p>Optional Google or email sign-in saves your celebrations across devices and enables reminders a week and a day before the exchange. <Link href="/how-it-works">Read the setup guide and troubleshooting tips</Link>.</p>
+        <p>Organizers sign in with Google or email to save and manage their celebrations across devices. Participant sign-in is optional and enables account access and reminders. <Link href="/how-it-works">Read the setup guide and troubleshooting tips</Link>.</p>
         {FAQ.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}
       </section>
 
       <div className="cta-band">
         <h2>Ready to draw names?</h2>
-        <p className="muted" style={{ margin: "8px 0 16px" }}>It takes about a minute. Free, no sign-up.</p>
+        <p className="muted" style={{ margin: "8px 0 16px" }}>Free to use. Organizers sign in; participants join by link.</p>
         <Link className="btn" href="/new?occ=0">Start your Secret Santa</Link>
       </div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({

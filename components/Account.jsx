@@ -27,7 +27,7 @@ export default function Account() {
   if (user === undefined) return <div className="narrow panel muted"><h1 className="sr-only">Your account</h1>Loading…</div>;
   if (!user) return (
     <div className="narrow panel stack"><Festive on={false} /><h1 style={{ fontSize: 26 }}>Your account</h1>
-      <p className="muted">You're not signed in. Signing in is optional: it keeps your celebrations on every device and lets us send you reminders.</p>
+      <p className="muted">Sign in to create and manage celebrations and restore them on every device. Participants can choose to sign in for account access and reminders.</p>
       <button className="btn" style={{ alignSelf: "flex-start" }} onClick={() => setOpen(true)}>Sign in</button>{open && <SignIn close={() => setOpen(false)} next="/account" />}</div>
   );
   return (
@@ -56,7 +56,7 @@ export default function Account() {
       </div>
       <div className="panel stack">
         <h2 style={{ fontSize: 20 }}>Delete my account</h2>
-        <p className="small muted">This removes your sign-in, email preferences and email history. Your names stay in their celebrations (so the draw still works) but are no longer linked to you.</p>
+        <p className="small muted">This removes your sign-in, email preferences and email history. Your names stay in their celebrations (so the draw still works) but are no longer linked to you. You will lose organizer access to your groups, and their organizer links cannot be used to claim them again. Delete any groups you no longer want before deleting your account.</p>
         <button className="btn ghost" style={{ color: "var(--ribbon)", alignSelf: "flex-start" }} disabled={busy} onClick={del}>{armed ? "Tap again to delete my account" : "Delete my account"}</button>
       </div>
     </div>

@@ -123,7 +123,7 @@ export default async function Landing({ params }) {
 
       <div className="cta-band">
         <h2>Ready to draw names?</h2>
-        <p className="muted" style={{ margin: "8px 0 16px" }}>It takes about a minute. Free, no sign-up.</p>
+        <p className="muted" style={{ margin: "8px 0 16px" }}>Free to use. Organizers sign in; participants join by link.</p>
         <Link className="btn" href={href}>{cta}</Link>
       </div>
 

@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
-import { serverRpc } from "@/lib/serverDb";
+import { serverRpc, verifiedCreator } from "@/lib/serverDb";
 import { drawNames, rid } from "@/lib/core";
 
 // Organizer changes people or exclusions. The new draw itself is made inside the database (hp_draw);
 // the check here only gives a friendly error before saving.
-// Body: { gid, atok, add?: [name], remove?: [id], exclusions?: [{a,b}] (member ids) }
+// Body: { gid, add?: [name], remove?: [id], exclusions?: [{a,b}] (member ids) }
 export async function POST(req) {
   try {
+    const userId = await verifiedCreator(req.headers.get("authorization"));
     const b = await req.json();
-    const roster = await serverRpc("hp_admin_roster", { p_gid: b.gid, p_atok: b.atok });
+    const roster = await serverRpc("hp_owned_roster", { p_gid: b.gid, p_owner: userId });
     if (!roster) return NextResponse.json({ error: "Not allowed." }, { status: 403 });
     let members = roster.members.filter(m => !(b.remove || []).includes(m.id));
     for (const n of (b.add || []).map(s => String(s).replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, "").trim().slice(0, 40)).filter(Boolean)) {
@@ -23,9 +24,10 @@ export async function POST(req) {
       assignment = drawNames(members.map(m => m.id), exclusions);
       if (!assignment) return NextResponse.json({ error: "That change leaves no valid draw. Remove an exclusion first." }, { status: 400 });
     }
-    await serverRpc("hp_admin_redraw", { p_gid: b.gid, p_atok: b.atok, p_members: members, p_exclusions: exclusions, p_assignment: null });
+    await serverRpc("hp_redraw_owned_group", { p_gid: b.gid, p_owner: userId, p_members: members, p_exclusions: exclusions });
     return NextResponse.json({ ok: true });
   } catch (e) {
+    if (/invalid_session|not_signed_in/.test(e.message)) return NextResponse.json({ error: "Sign in to the organizer account to manage this celebration." }, { status: 401 });
     if (/no_valid_draw/.test(e.message)) return NextResponse.json({ error: "That change leaves no valid draw. Remove an exclusion first." }, { status: 400 });
     const msg = /forbidden/.test(e.message) ? "Not allowed." : "Couldn't save that change. Try again.";
     return NextResponse.json({ error: msg }, { status: /forbidden/.test(e.message) ? 403 : 500 });
