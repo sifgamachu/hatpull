@@ -7,7 +7,7 @@ const CSP = [
   "frame-src https://accounts.google.com",
   "style-src 'self' 'unsafe-inline' https://accounts.google.com",
   "font-src 'self' data:",
-  "img-src 'self' data: blob: https://*.googleusercontent.com",
+  "img-src 'self' data: blob: https://*.googleusercontent.com https://m.media-amazon.com https://images-na.ssl-images-amazon.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
