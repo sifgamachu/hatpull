@@ -363,3 +363,5 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
 @media(prefers-reduced-motion:reduce){.gift-list-dock,.gift-cart-sheet{scroll-behavior:auto}}
 
 .gift-cart-sheet .link{color:#007185}.gift-cart-sheet .link:hover{color:#c45500}
+
+.gift-cart-item .product-price{margin:4px 0 0;gap:3px}.gift-cart-item .product-price strong{font-size:19px}.gift-cart-item .product-price span{font-size:10px}

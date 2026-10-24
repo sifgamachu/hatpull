@@ -7,7 +7,7 @@ import { money } from '@/lib/core';
 import { ownedGiftItems, mergeSavedWish, giftListError } from '@/lib/gift-list.mjs';
 import { ebayItemId } from '@/lib/ebay-products.mjs';
 import { amazonWishListUrl } from '@/lib/amazon-wish-list.mjs';
-import { useGiftProducts, ProductPicture } from './GiftProducts';
+import { useGiftProducts, ProductPicture, ProductPrice, AmazonPriceDetails } from './GiftProducts';
 import { Sheet } from './Sheet';
 
 const Cart = createContext(null);
@@ -84,14 +84,14 @@ function GiftCartItems({items,target,recent,editing,setEditing,change,disabled,c
     const title=product&&w.t==='eBay gift'?product.title:w.t;
     return <article className="gift-cart-item" key={w.id}>
       <div className="gift-cart-picture">{list?<GiftListIcon/>:<ProductPicture product={product} art={w.art}/>}</div>
-      <div className="gift-cart-item-content"><h3>{title}</h3>{list?<p>One saved Amazon list. Open it to see its gifts.</p>:product?<p className="gift-cart-price">{money('$',product.price)} <small>{product.provider==='ebay'?'eBay':'Amazon'} · shipping & tax may be extra</small></p>:<p className="gift-cart-price-note">{w.p?`${money(target.cur,w.p)} · your estimate`:'Current price available at the store'}</p>}
+      <div className="gift-cart-item-content"><h3>{title}</h3>{list?<p>One saved Amazon list. Open it to see its gifts.</p>:product?<ProductPrice product={product}/>:<p className="gift-cart-price-note">{w.p?`${money(target.cur,w.p)} · your estimate`:'Current price available at the store'}</p>}
       {(w.size||w.color)&&<p className="gift-cart-preferences">{[w.size&&`Size: ${w.size}`,w.color&&`Color: ${w.color}`].filter(Boolean).join(' · ')}</p>}{w.n&&<p className="gift-cart-note">{w.n}</p>}
       {list&&<a className="link small" href={list} target="_blank" rel="noopener noreferrer nofollow">Open Amazon list ↗</a>}
       <div className="gift-cart-actions">{!list&&<button disabled={disabled} onClick={()=>setEditing(editing===w.id?null:w.id)}>{editing===w.id?'Cancel details':'Add size, color or a note'}</button>}<button disabled={disabled} onClick={()=>change('remove',{id:w.id})}>Remove</button></div>
       {editing===w.id&&<GiftDetails key={w.id} wish={w} disabled={disabled} onSave={patch=>change('edit',patch)}/>}
       </div>
     </article>;
-  })}</div>;
+  })}{Object.values(products).some(p=>p.provider!=='ebay')&&<AmazonPriceDetails/>}</div>;
 }
 function GiftDetails({wish,disabled,onSave}) {
   const [size,setSize]=useState(wish.size||''),[color,setColor]=useState(wish.color||''),[note,setNote]=useState(wish.n||'');
