@@ -39,3 +39,13 @@ test('expired edge data is revalidated, while failed responses never poison late
   await assert.rejects(recovering.load('q=coffee'),/catalog_unavailable/);assert.equal(recovering.peek('q=coffee'),null);
   fail=false;assert.equal((await recovering.load('q=coffee')).status,'ready');
 });
+
+test('a saved gift reuses its search photo without extending product expiry',async()=>{
+  let time=1000,calls=0;
+  const cache=createSearchCache({now:()=>time,fetcher:async()=>{calls++;return {ok:true,json:async()=>({status:'ready',checkedAt:1000,expiresAt:5000,items:[{itemId:'v1|123456789012|0',expiresAt:4000,image:'https://i.ebayimg.com/images/example.jpg'}]})};}});
+  await cache.load('q=coffee');
+  assert.equal(cache.peekProduct('v1|123456789012|0').image,'https://i.ebayimg.com/images/example.jpg');
+  assert.equal(calls,1);
+  time=4000;
+  assert.equal(cache.peekProduct('v1|123456789012|0'),null);
+});

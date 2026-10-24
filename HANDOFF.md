@@ -2,6 +2,12 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Cart-style gift list — 2026-10-24
+
+Gift Finder now has a persistent Your gift list button with saved-item count, an inline side panel, automatic add confirmations, size/color/notes editing, and Remove with Undo. Closing the panel preserves the active search. Private list data remains component memory only and is cleared when the account or participant changes. Product photos reuse unexpired public catalog data; the panel never stores catalog titles/prices in the database.
+
+Apply `supabase/migrations/20261024181207_gift_list_cart_actions.sql` before deploying this UI. `hp_change_wish` serializes edits/removal/undo on the same participant row as quick additions, preserving unrelated wishes and profile fields. Its anonymous execute grant is intentional for guest participants: `hp_me` and the owner/child check enforce the same private-token permissions as `hp_add_wish`. It returns only the editable participant’s items, never reservations or other profile fields. No table grants or authentication settings change.
+
 ## eBay catalog service — 2026-10-24
 
 Server-only `/api/gifts/ebay` supports US new fixed-price product search and single-item details using the basic Browse API scope. `EBAY_CLIENT_ID`, `EBAY_CLIENT_SECRET`, `EBAY_CAMPAIGN_ID`, and `EBAY_NOTIFICATION_TOKEN` belong only in Hatpull's Vercel Production environment. Prices/images expire after ten minutes; bounded per-instance caching and concurrency limits protect provider quota. Public eBay results additionally use a five-minute maximum edge cache bounded by original expiry, plus a bounded memory-only client cache. Retailer tabs preserve search state; only public catalog responses are cached. No buyer/seller identity fields are retained. Wishlist records use canonical product references and participant-authored preferences.

@@ -8,10 +8,12 @@ import { positiveMoney } from '@/lib/gifts.mjs';
 import { ebayWish } from '@/lib/ebay-products.mjs';
 import { ebaySearchCache, searchKey as catalogKey, catalogLifetime } from '@/lib/ebay-search-cache.mjs';
 import { ProductCard } from './GiftProducts';
+import { useGiftListCart } from './GiftListCart';
+import { ebayItemId } from '@/lib/ebay-products.mjs';
 
 const categories = [['gift set','All gifts'],['coffee gift set','Coffee & tea'],['board game','Games'],['throw blanket','Home & cozy'],['wireless headphones','Electronics'],['art supplies','Arts & crafts']];
 export default function EbayGiftCatalog({ target, budget, currency = '$', disabled = false, active = true, onBusy, onSaved }) {
-  const formId = useId(), writing = useRef(false);
+  const formId = useId(), writing = useRef(false), cart = useGiftListCart();
   const cap = (!currency || currency === '$') ? positiveMoney(budget) : null;
   const [term,setTerm] = useState('gift set'), [query,setQuery] = useState('gift set'), [maximum,setMaximum] = useState(cap ? String(cap) : '50'), [appliedMaximum,setAppliedMaximum]=useState(cap ? String(cap) : '50'), [sort,setSort] = useState('recommended'), [page,setPage] = useState(1), [retry,setRetry] = useState(0);
   const [result,setResult] = useState(null), [busy,setBusy] = useState(false), [saved,setSaved] = useState({}), [message,setMessage] = useState(null), [error,setError] = useState('');
@@ -37,12 +39,13 @@ export default function EbayGiftCatalog({ target, budget, currency = '$', disabl
   }
   function category(q) {setTerm(q);setQuery(q);setPage(1);}
   async function save(product) {
-    if(!target?.mid || disabled || writing.current)return;
+    if(!target?.mid){cart?.show();return;}
+    if(disabled || cart?.busy || writing.current)return;
     const destination=target; writing.current=true;setBusy(true);setError('');setMessage(null);
     try {
       const wish=ebayWish(product,rid(6)), tokens=getG(destination.gid);
       const value=await rpc('hp_add_wish',{p_gid:destination.gid,p_mtok:tokens?.mtok||null,p_target:destination.mid,p_wish:wish});
-      setSaved(v=>({...v,[product.itemId]:true}));setMessage({title:product.title,target:destination,id:value.wish.id});await onSaved?.(value);
+      cart?.saved(value,product);setSaved(v=>({...v,[product.itemId]:true}));setMessage({title:product.title,target:destination,id:value.wish.id});await onSaved?.(value);
     } catch(e) {setError(/forbidden/.test(e.message)?'Open your participant invitation or sign in again to save to this wish list.':/wish_list_full|too large/.test(e.message)?'Your wish list is full. Remove a gift before adding another.':'Couldn’t save that gift. Please try again.');}
     finally {writing.current=false;setBusy(false);}
   }
@@ -76,10 +79,10 @@ export default function EbayGiftCatalog({ target, budget, currency = '$', disabl
         {sort!=='recommended'&&<p className="tiny muted store-sort-note">Sorted by item price + estimated shipping. Final delivery charges may differ.</p>}
         {!ready&&<p className="store-save-hint">{disabled?'Checking your wish list…':'Choose your celebration above to save favorites. You can browse first.'}</p>}
         {error&&<p className="note err" role="alert">{error}</p>}
-        {message&&<div className="quick-saved" role="status"><b>✓ Saved to {message.target.person}’s wish list</b><span>{message.title}</span><Link className="link" href={'/g/'+message.target.gid+'/w/'+message.target.mid+'?edit='+encodeURIComponent(message.id)}>View gift or add size & color →</Link></div>}
+        {message&&!cart&&<div className="quick-saved" role="status"><b>✓ Saved to {message.target.person}’s wish list</b><span>{message.title}</span><Link className="link" href={'/g/'+message.target.gid+'/w/'+message.target.mid+'?edit='+encodeURIComponent(message.id)}>View gift or add size & color →</Link></div>}
         <div aria-busy={loading} data-search-key={searchKey} data-search-state={loading?'loading':current.status}>
           {loading?<div className="product-grid ebay-product-grid store-skeletons" aria-hidden="true">{Array.from({length:6},(_,i)=><div className="product-card store-skeleton" key={i}><div className="skeleton-photo"/><div className="skeleton-line"/><div className="skeleton-line short"/><div className="skeleton-price"/></div>)}</div>:current.status!=='ready'?<div className="store-empty"><h3>We couldn’t load these gifts.</h3><p>Please try again, or choose the Amazon tab to keep browsing.</p><button className="btn small ghost" onClick={()=>{setResult(null);setRetry(x=>x+1);}}>Try again</button></div>:!current.items.length?<div className="store-empty"><h3>No gifts matched this search.</h3><p>Try a different phrase or adjust your price filter.</p></div>:<>
-            <div className="product-grid ebay-product-grid">{current.items.map((product,index)=><ProductCard key={product.itemId} product={product} onSelect={save} saved={!!saved[product.itemId]} disabled={!ready||busy} priorityImage={index<3}/>)}</div>
+            <div className="product-grid ebay-product-grid">{current.items.map((product,index)=><ProductCard key={product.itemId} product={product} onSelect={save} saved={cart?.items?cart.items.some(w=>ebayItemId(w.u)===product.itemId):!!saved[product.itemId]} onViewSaved={cart?.show} disabled={disabled||busy||cart?.busy||(!target&&!cart)} priorityImage={index<3}/>)}</div>
             {(page>1||current.hasMore)&&<div className="row store-pagination"><button className="btn small ghost" disabled={page===1} onClick={()=>setPage(p=>p-1)}>← Previous</button><span className="small">Page {page}</span><button className="btn small ghost" disabled={!current.hasMore} onClick={()=>setPage(p=>p+1)}>Next gifts →</button></div>}
           </>}
         </div>

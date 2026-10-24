@@ -85,3 +85,9 @@ Wish lists permit up to 40 items and check the complete profile payload conserva
 Run `npm test` for catalog security/filter/cache checks, database save/ownership/privacy checks, and existing capacity/network regression tests. Run `npx next build` before every main push. Main deploys production automatically.
 
 To disable live catalog calls without removing wish-list improvements, remove the two server-only Creators API environment variables and redeploy. To roll back the full feature, revert the feature commit, run the production build, then deploy that revision. No schema rollback is needed.
+
+## Cart-style list review
+
+Your gift list opens a side panel from the store header or persistent bottom bar. Counts reflect confirmed saves, including linked Amazon lists (one saved entry per list, not its external contents). Participants can add size/color/notes, remove a wish, undo the most recent removal, and continue the same search. No checkout or extra Send step is required. Guest invitations and existing wish-list visibility rules are preserved.
+
+The `hp_change_wish` migration must precede UI deployment. It locks and changes only the chosen participant’s wish, so another addition or unrelated profile field is not replaced. Photo/price reuse is memory-only and bounded by provider expiry.

@@ -4,6 +4,7 @@ import GiftArtwork from "./GiftArtwork";
 import { safeProductImage } from "@/lib/gifts.mjs";
 import { EBAY_ITEM_ID, safeEbayImage } from "@/lib/ebay-products.mjs";
 import { AFF_REL } from "@/lib/core";
+import { ebaySearchCache } from "@/lib/ebay-search-cache.mjs";
 export function useGiftProducts(ids) {
   const key = [...new Set(ids.filter(Boolean))].sort().join(",");
   const [products, setProducts] = useState({});
@@ -21,18 +22,28 @@ export function useGiftProducts(ids) {
           for (const item of data.items) all[item.asin] = item;
           expires = Math.min(expires, data.expiresAt || expires);
         }
-        for (const id of ebay) {
-          const response = await fetch(`/api/gifts/ebay?id=${encodeURIComponent(id)}`, {signal:abort.signal,cache:'no-store'});
-          const data = await response.json(); if(data.status!=='ready')continue;
-          for(const item of data.items)all[item.itemId]=item;
-          expires=Math.min(expires,data.expiresAt||expires);
-          if(live)setProducts({...all});
-        }
+        let index = 0;
+        await Promise.all(Array.from({length:Math.min(3,ebay.length)},async()=>{
+          while(index<ebay.length) {
+            const id=ebay[index++];
+            try {
+              const cached=ebaySearchCache.peekProduct(id);
+              const data=cached?{items:[cached],expiresAt:cached.expiresAt}:await ebaySearchCache.load('id='+encodeURIComponent(id));
+              for(const item of data.items)all[item.itemId]=item;
+              expires=Math.min(expires,data.expiresAt||expires);
+              if(live)setProducts({...all});
+            } catch { /* One unavailable product must not hide the rest of the list. */ }
+            if(!live)return;
+          }
+        }));
         if (live) { setProducts(all); if (Object.keys(all).length) timer = setTimeout(() => { setProducts({}); load(); }, Math.max(1000, expires - Date.now())); }
       } catch { if (live) setProducts({}); }
     }
     load(); return () => { live = false; clearTimeout(timer); abort.abort(); };
-  }, [key]); return products;
+  }, [key]);
+  const fresh = Object.fromEntries(Object.entries(products).filter(([id,p])=>key.split(',').includes(id)&&p.expiresAt>Date.now()));
+  for(const id of key.split(','))if(EBAY_ITEM_ID.test(id)){const p=ebaySearchCache.peekProduct(id);if(p)fresh[id]=p;}
+  return fresh;
 }
 export function ProductPicture({ product, art = "gift", priority = false }) {
   const [broken, setBroken] = useState("");
@@ -47,7 +58,7 @@ export function ProductPrice({ product, provider }) {
 export function AmazonPriceDetails() {
   return <details className="tiny muted price-details"><summary>About Amazon prices and product information</summary><p>Product prices and availability are accurate as of the date/time indicated and are subject to change. Any price and availability information displayed on Amazon.com at the time of purchase will apply to the purchase of this product. Taxes and shipping may be additional.</p><p>CERTAIN CONTENT THAT APPEARS ON THIS SITE COMES FROM AMAZON. THIS CONTENT IS PROVIDED ‘AS IS’ AND IS SUBJECT TO CHANGE OR REMOVAL AT ANY TIME.</p></details>;
 }
-export function ProductCard({ product, onSelect, saved = false, disabled = false, priorityImage = false }) {
+export function ProductCard({ product, onSelect, saved = false, disabled = false, priorityImage = false, onViewSaved }) {
   const store=product.provider==='ebay'?'eBay':'Amazon';
-  return <article className="product-card"><a className="product-visual" href={product.url} target="_blank" rel={AFF_REL} aria-label={`View ${product.title} on ${store}`}><ProductPicture product={product} priority={priorityImage}/></a><div className="product-body"><span className="eyebrow">{product.provider==='ebay'?`eBay · ${product.condition}`:product.brand || 'Amazon find'}</span><h3><a href={product.url} target="_blank" rel={AFF_REL}>{product.title}</a></h3><ProductPrice product={product}/><button className="btn small block" onClick={() => onSelect(product)} disabled={saved||disabled}>{saved ? "✓ On your wish list" : "♡ Add to wish list"}</button><a className="product-shop" href={product.url} target="_blank" rel={AFF_REL}>View on {store} ↗</a></div></article>;
+  return <article className="product-card"><a className="product-visual" href={product.url} target="_blank" rel={AFF_REL} aria-label={`View ${product.title} on ${store}`}><ProductPicture product={product} priority={priorityImage}/></a><div className="product-body"><span className="eyebrow">{product.provider==='ebay'?`eBay · ${product.condition}`:product.brand || 'Amazon find'}</span><h3><a href={product.url} target="_blank" rel={AFF_REL}>{product.title}</a></h3><ProductPrice product={product}/><button className="btn small block" onClick={() => saved && onViewSaved ? onViewSaved() : onSelect(product)} disabled={disabled||(saved&&!onViewSaved)}>{saved ? "✓ On your list · View" : "♡ Add to gift list"}</button><a className="product-shop" href={product.url} target="_blank" rel={AFF_REL}>View on {store} ↗</a></div></article>;
 }
