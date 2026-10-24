@@ -4,9 +4,9 @@
 
 Gift Finder now starts with two available shops: eBay and Amazon. Selecting eBay opens its own white/blue catalog layout, rounded search, category navigation, budget filters and one-tap saving. Selecting Amazon opens a navy/gold browsing section with original illustrated departments. Every department opens Amazon, includes the selected USD celebration budget and carries the configured affiliate tag. Category illustrations are not product listings; no Amazon photos, prices, account connection or checkout are implied.
 
-All shops returns to the chooser. Switch to changes retailer without discarding the mounted eBay search, price filter or page. The eBay catalog is lazy-mounted after selection, so the shop lobby makes no product-search call. Store choice survives the initial participant-context resolution. Private list controls stay common to both stores, and the saved count remains server-confirmed. Pending retailers are omitted until an actual shopping integration is available.
+All shops returns to the chooser. Switch to changes retailer without discarding the mounted eBay search, price filter or page. The shop lobby requests the initial eBay `gift set` search once the participant context settles and previews up to three distinct product photos directly from `i.ebayimg.com` (one on small screens). It uses the selected USD budget or the catalog's default $50 maximum. The full catalog reuses the same cached/in-flight request on selection. No thumbnail image is downloaded into the repository or persisted in browser storage. Expired data is removed/refreshed, and empty results, errors and broken images retain a usable store button. Store choice survives the initial participant-context resolution. Private list controls stay common to both stores, and the saved count remains server-confirmed. Pending retailers are omitted until an actual shopping integration is available.
 
-Retailer patterns were checked against their public storefronts. Retailer names are plain text, all artwork is original, and the Hatpull identity and external purchase destinations remain visible. This update changes presentation only; no migration, new credential or provider permission is required.
+Retailer patterns were checked against their public storefronts. The supplied official retailer logos are documented in `STORE_LOGOS.md`. Amazon category artwork remains original; no Amazon product photos are scraped or substituted with eBay photos. Its Creators API dashboard still blocks access pending an approved Associates account, verified October 24. Hatpull identity and external purchase destinations remain visible. No migration, new credential or provider permission is required.
 
 ## eBay product catalog — October 24, 2026
 
@@ -50,7 +50,7 @@ The public Gift Finder includes an expandable “Sharing by text or social media
 
 ## Current activation boundary
 
-The Hatpull Associates account has tracking ID `hatpull-20`. As checked during implementation, it has no qualifying sales and no Creators API credentials. Browsing is intentionally handled on Amazon, where customers see current product photos and prices. The site does not display a product gallery. People can still save exact product links from Amazon or another shop, write their preferences, and reserve gifts privately.
+The Hatpull Associates account has tracking ID `hatpull-20`. Its Creators API dashboard was checked October 24 and still displays “Have an Approved Associates Account” as an unmet prerequisite. No Creators API credentials are configured. Amazon browsing is handled on Amazon, where customers see current product photos and prices. Hatpull's live catalog photos currently come from eBay only. People can still save exact product links from Amazon or another shop, write their preferences, and reserve gifts privately.
 
 Amazon currently requires an accepted Associates account and at least 10 qualifying sales in the preceding 30 days for Creators API access. Check the current requirements before activation:
 

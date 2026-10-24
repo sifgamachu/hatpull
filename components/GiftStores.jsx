@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import EbayGiftCatalog from './EbayGiftCatalog';
+import EbayStorePreview from './EbayStorePreview';
 import AmazonGiftShop from './AmazonGiftShop';
 import GiftArtwork from './GiftArtwork';
 import { GiftListButton } from './GiftListCart';
@@ -39,7 +40,7 @@ export default function GiftStores({target,budget,currency,disabled,onBusy,onSav
       <div className="shop-lobby-intro"><p className="eyebrow">Your favorite shops. One gift list.</p><h2 id={id+'-shops'}>Where would you like to shop?</h2><p>Pick a store to start exploring. Your celebration’s budget comes with you.</p></div>
       <div className="shop-choices">{shops.map(shop=><button type="button" key={shop.id} ref={el=>{shopButtons.current[shop.id]=el;}} className={`shop-choice shop-choice-${shop.id}`} aria-label={shop.action} aria-describedby={id+'-'+shop.id+'-description'} disabled={busy} onClick={()=>choose(shop.id)}>
         <span className="shop-choice-heading"><StoreLogo store={shop.id}/><span className="shop-open">Available now</span></span>
-        <span className="shop-choice-art" aria-hidden="true">{shop.art.map(art=><span key={art}><GiftArtwork kind={art}/></span>)}</span>
+        {shop.id==='ebay'?<EbayStorePreview budget={budget} currency={currency} disabled={disabled}/>:<span className="shop-choice-art" aria-hidden="true">{shop.art.map(art=><span key={art}><GiftArtwork kind={art}/></span>)}</span>}
         <span className="shop-choice-body" id={id+'-'+shop.id+'-description'}><b>{shop.label}</b><span>{shop.description}</span></span>
         <span className="shop-choice-action">{shop.action}<span aria-hidden="true">→</span></span>
       </button>)}</div>
