@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useGiftContexts } from '@/lib/useGiftContexts';
 import { GIFT_CONTEXT_KEY, GIFT_DRAFT_KEY, chooseGiftContext, giftContextId, giftFromInput, readGiftDraft } from '@/lib/gift-intake.mjs';
 import { money } from '@/lib/core';
-import GiftBrowser from './GiftBrowser';
+import GiftStores from './GiftStores';
 import QuickWish from './QuickWish';
 import GiftInstall from './GiftInstall';
 import SignIn from './SignIn';
@@ -13,8 +13,8 @@ import { amazonWishListUrl } from '@/lib/amazon-wish-list.mjs';
 
 export default function GiftFinderWorkspace({ incoming = false }) {
   const { contexts, loading, failures, user, retry } = useGiftContexts();
-  const [selected, setSelected] = useState(null), [shared, setShared] = useState(null), [error, setError] = useState(''), [signIn, setSignIn] = useState(false), [listBusy, setListBusy] = useState(false), [giftBusy, setGiftBusy] = useState(false);
-  const busy = listBusy || giftBusy;
+  const [selected, setSelected] = useState(null), [shared, setShared] = useState(null), [error, setError] = useState(''), [signIn, setSignIn] = useState(false), [listBusy, setListBusy] = useState(false), [giftBusy, setGiftBusy] = useState(false), [catalogBusy,setCatalogBusy]=useState(false);
+  const busy = listBusy || giftBusy || catalogBusy;
   useEffect(() => {
     if (selected !== null || loading) return;
     let remembered = ''; try { remembered = localStorage.getItem(GIFT_CONTEXT_KEY); } catch {}
@@ -45,11 +45,12 @@ export default function GiftFinderWorkspace({ incoming = false }) {
       {target && <p className="small muted">Your celebration’s current budget follows you here. <Link href={`/g/${target.gid}/w/${target.mid}`} className="link">Open this wish list →</Link></p>}
     </section>
     {error && <p className="note err" role="alert">{error}</p>}
-    {(!incoming || sharedList) && <AmazonListSetup key={sharedList ? shared.u : 'list-setup'} target={target} initial={sharedList ? shared : null} disabled={loading || giftBusy} onBusy={setListBusy} onSaved={clearSharedDraft}/>}
+    {!incoming && <GiftStores target={target} budget={target?.budget} currency={target?.cur} disabled={loading||listBusy||giftBusy} onBusy={setCatalogBusy} amazonPanel={<AmazonListSetup target={target} disabled={loading||giftBusy||catalogBusy} onBusy={setListBusy} onSaved={clearSharedDraft}/>}/>}
+    {incoming && sharedList && <AmazonListSetup key={shared.u} target={target} initial={shared} disabled={loading||giftBusy} onBusy={setListBusy} onSaved={clearSharedDraft}/>}
     <details className="individual-gifts" open={(incoming && !sharedList) || undefined}><summary>{incoming && !sharedList ? 'Save this individual gift' : 'Or add individual gifts from any store'}</summary>
-    <div className={`gift-flow-grid ${incoming ? 'gift-incoming' : ''}`}>
-      <div className="gift-browse-step stack"><div><p className="eyebrow">Explore</p><h2>Find your next favorite.</h2></div><GiftBrowser budget={target?.budget} currency={target?.cur}/><GiftInstall/></div>
-      <QuickWish key={shared?.u || 'new'} target={target} initial={sharedList ? null : shared} disabled={loading || listBusy} onBusy={setGiftBusy} onSaved={clearSharedDraft}/>
+    <div className="stack">
+      <QuickWish key={shared?.u || 'new'} target={target} initial={sharedList ? null : shared} disabled={loading || listBusy || catalogBusy} onBusy={setGiftBusy} onSaved={clearSharedDraft}/>
+      <GiftInstall/>
     </div>
     </details>
     {incoming && !shared && !error && <p className="small muted">Share a product link to Hatpull from a supported installed browser, or paste a link above.</p>}

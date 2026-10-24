@@ -1,3 +1,3 @@
 import GiftFinder from "@/components/GiftFinder";
-export const metadata = { title: "Gift Finder: Share Your Amazon Wish List Once", description: "Save your Amazon wish-list sharing link once, then keep choosing gifts on Amazon. Your gift-giver opens the same list from Hatpull. Individual gift links are welcome too.", alternates: { canonical: "https://secretsantageneratorapp.com/gift-finder" } };
+export const metadata = { title: "Gift Finder: eBay & Amazon Gifts for Your Budget", description: "Find new eBay gifts within your celebration budget and save them to your wish list. Browse Amazon, link an Amazon wish list, or add a gift from any store.", alternates: { canonical: "https://secretsantageneratorapp.com/gift-finder" } };
 export default function Page() { return <div className="page"><GiftFinder /></div>; }

@@ -8,7 +8,8 @@ import { isXmas, money, daysUntil, AGES, GIFT_CATS, amazonUrl, rid, AMAZON_DISCL
 import { toast, burst } from "@/lib/ui";
 import Festive from "./Festive";
 import XBanner from "./XBanner";
-import GiftBrowser from "./GiftBrowser";
+import GiftStores from "./GiftStores";
+import { ebayItemId } from "@/lib/ebay-products.mjs";
 import QuickWish from "./QuickWish";
 import AmazonListSetup from "./AmazonListSetup";
 import { amazonWishListUrl } from "@/lib/amazon-wish-list.mjs";
@@ -71,7 +72,7 @@ export default function WishList({ gid, mid }) {
 function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, questions }) {
   const writing = useRef(false), opened = useRef(false);
   const [saving, setSaving] = useState(false), [selection, setSelection] = useState(null), [browse, setBrowse] = useState(false);
-  const products = useGiftProducts(items.map(w => w.a));
+  const products = useGiftProducts(items.map(w => w.a || ebayItemId(w.u)));
   function choose(gift) {
     if (items.length >= MAX_WISHES) return toast("Your list has 40 wishes. Remove one before adding another.");
     setSelection(gift.kind === "product" ? { t: "Amazon pick", a: gift.asin, u: productUrl(gift.asin) } : { t: gift.title, art: gift.art, q: gift.query });
@@ -84,11 +85,11 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
     if (['idea','asin','edit'].some(k => url.searchParams.has(k))) { ['idea','asin','edit'].forEach(k => url.searchParams.delete(k)); history.replaceState(null, "", url.pathname + url.search + url.hash); }
   }, []);
   useEffect(() => { try { localStorage.setItem(GIFT_CONTEXT_KEY, giftContextId({ gid, mid: m.id })); } catch {} }, [gid, m.id]);
-  const [quickSaving, setQuickSaving] = useState(false), [listSaving, setListSaving] = useState(false);
+  const [quickSaving, setQuickSaving] = useState(false), [listSaving, setListSaving] = useState(false), [catalogSaving,setCatalogSaving]=useState(false);
   const [about, setAbout] = useState({ hobbies: prof.hobbies || "", age: prof.age || "", who: prof.who || "", address: prof.address || "" });
   const [ans, setAns] = useState({});
   async function saveProfile(nextItems, extra = {}) {
-    if (writing.current || quickSaving || listSaving) return false;
+    if (writing.current || quickSaving || listSaving || catalogSaving) return false;
     const profile = { ...prof, ...about, ...extra, items: nextItems };
     if (nextItems.length > MAX_WISHES || new TextEncoder().encode(JSON.stringify(profile)).length > MAX_PROFILE_BYTES) { toast("Your wish list is full. Shorten a few notes or remove an item first."); return false; }
     writing.current = true; setSaving(true); setDraft(nextItems);
@@ -115,15 +116,15 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
   }
   return (
     <>
-      <div className="wish-toolbar"><div><p className="eyebrow">Picked by you. A surprise from them.</p><h2>Your little wish collection</h2><p className="muted small">Add a few favorites and the details that make them yours.</p></div><div className="row"><button className="btn small ghost" disabled={saving} onClick={() => setBrowse(v => !v)}>{browse ? "Close gift finder" : "Browse gift ideas"}</button><button className="btn small" disabled={saving || items.length >= MAX_WISHES} onClick={() => setSelection({})}>+ Add a gift or link</button></div></div>
-      {browse && <div className="wish-discovery"><GiftBrowser budget={g.budget} currency={g.cur} age={about.age} compact/><GiftInstall/></div>}
-      <AmazonListSetup onListPage target={{ gid, mid: m.id, person: m.name, name: g.name, budget: g.budget, cur: g.cur }} items={items} disabled={saving || quickSaving} onBusy={setListSaving} onSaved={async () => { await reload(); setDraft(null); }}/>
-      <details className="individual-gifts" open={!items.some(w => amazonWishListUrl(w.u))}><summary>Paste a gift link from any store</summary><QuickWish target={{ gid, mid: m.id, person: m.name, name: g.name }} disabled={saving || listSaving} onBusy={setQuickSaving} onSaved={async () => { await reload(); setDraft(null); }}/></details>
-      {items.length ? <div className="product-grid wish-grid">{items.map((w, i) => <WishCard key={w.id} wish={w} group={g} product={products[w.a]}><div className="row"><button className="btn small ghost" disabled={saving} onClick={() => setSelection({ ...w, editing: true })}>Edit wish</button><button className="btn small ghost" aria-label={`Move ${w.t} earlier`} disabled={!i || saving} onClick={() => { const next = [...items]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; saveProfile(next); }}>↑</button><button className="link tiny" disabled={saving} onClick={() => saveProfile(items.filter(item => item.id !== w.id))}>Remove</button></div></WishCard>)}</div> : <div className="wish-empty"><span aria-hidden="true">♡</span><h3>A good surprise starts with a little hint.</h3><p>Save your Amazon wish-list link above, or add individual gifts from any store.</p><button className="btn small" onClick={() => setBrowse(true)}>Find my first wish →</button></div>}
-      <p className="tiny muted">{items.length}/{MAX_WISHES} wishes · Reservations for individual gifts stay hidden from you, so the surprise stays intact. {AMAZON_DISCLOSURE}</p>
-      {Object.keys(products).length > 0 && <AmazonPriceDetails/>}
-      {others.length > 0 && <div className="panel row"><select id="imp" aria-label="Copy wishes from" defaultValue=""><option value="" disabled>Copy wishes from another celebration…</option>{others.map(o => <option key={o.gid} value={o.gid}>{o.name}</option>)}</select><button className="btn small ghost" disabled={saving} onClick={() => { const v = document.getElementById("imp").value; if (v) importFrom(v); }}>Copy</button></div>}
-      {selection && <WishComposer key={selection.id || "new"} initial={selection} group={g} saving={saving || listSaving || quickSaving} onSave={saveWish} onClose={() => setSelection(null)}/>}
+      <div className="wish-toolbar"><div><p className="eyebrow">Picked by you. A surprise from them.</p><h2>Your little wish collection</h2><p className="muted small">Add a few favorites and the details that make them yours.</p></div><div className="row"><button className="btn small ghost" disabled={saving||catalogSaving} onClick={() => setBrowse(v => !v)}>{browse ? "Close gift finder" : "Browse gift ideas"}</button><button className="btn small" disabled={saving || catalogSaving || items.length >= MAX_WISHES} onClick={() => setSelection({})}>+ Add a gift or link</button></div></div>
+      {browse && <div className="wish-discovery"><GiftStores target={{gid,mid:m.id,person:m.name,name:g.name}} budget={g.budget} currency={g.cur} disabled={saving||quickSaving||listSaving} onBusy={setCatalogSaving} onSaved={async()=>{await reload();setDraft(null);}}/><GiftInstall/></div>}
+      <AmazonListSetup onListPage target={{ gid, mid: m.id, person: m.name, name: g.name, budget: g.budget, cur: g.cur }} items={items} disabled={saving || quickSaving || catalogSaving} onBusy={setListSaving} onSaved={async () => { await reload(); setDraft(null); }}/>
+      <details className="individual-gifts" open={!items.some(w => amazonWishListUrl(w.u))}><summary>Paste a gift link from any store</summary><QuickWish target={{ gid, mid: m.id, person: m.name, name: g.name }} disabled={saving || listSaving || catalogSaving} onBusy={setQuickSaving} onSaved={async () => { await reload(); setDraft(null); }}/></details>
+      {items.length ? <div className="product-grid wish-grid">{items.map((w, i) => <WishCard key={w.id} wish={w} group={g} product={products[w.a || ebayItemId(w.u)]}><div className="row"><button className="btn small ghost" disabled={saving||catalogSaving} onClick={() => setSelection({ ...w, editing: true })}>Edit wish</button><button className="btn small ghost" aria-label={`Move ${w.t} earlier`} disabled={!i || saving || catalogSaving} onClick={() => { const next = [...items]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; saveProfile(next); }}>↑</button><button className="link tiny" disabled={saving||catalogSaving} onClick={() => saveProfile(items.filter(item => item.id !== w.id))}>Remove</button></div></WishCard>)}</div> : <div className="wish-empty"><span aria-hidden="true">♡</span><h3>A good surprise starts with a little hint.</h3><p>Save your Amazon wish-list link above, or add individual gifts from any store.</p><button className="btn small" onClick={() => setBrowse(true)}>Find my first wish →</button></div>}
+      <p className="tiny muted">{items.length}/{MAX_WISHES} wishes · Reservations for individual gifts stay hidden from you, so the surprise stays intact. {AMAZON_DISCLOSURE} Hatpull may also earn a commission from eBay purchases.</p>
+      {Object.values(products).some(p=>p.provider!=="ebay") && <AmazonPriceDetails/>}
+      {others.length > 0 && <div className="panel row"><select id="imp" aria-label="Copy wishes from" defaultValue=""><option value="" disabled>Copy wishes from another celebration…</option>{others.map(o => <option key={o.gid} value={o.gid}>{o.name}</option>)}</select><button className="btn small ghost" disabled={saving||catalogSaving} onClick={() => { const v = document.getElementById("imp").value; if (v) importFrom(v); }}>Copy</button></div>}
+      {selection && <WishComposer key={selection.id || "new"} initial={selection} group={g} saving={saving || listSaving || quickSaving || catalogSaving} onSave={saveWish} onClose={() => setSelection(null)}/>}
       <div className="panel stack"><h3>About {m.kid ? m.name : "you"}</h3>
         <p className="small muted">Helps whoever drew {m.kid ? m.name : "you"} pick a gift.</p>
         <div className="grid2">
@@ -133,7 +134,7 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
         <label htmlFor="hob">Hobbies and interests</label>
         <textarea id="hob" maxLength={500} value={about.hobbies} onChange={e => setAbout({ ...about, hobbies: e.target.value })} placeholder="Running, coffee, sci-fi novels…" />
         {g.settings?.mail?.on && !m.kid && <><label htmlFor="addr">Mailing address</label><textarea id="addr" maxLength={300} value={about.address} onChange={e => setAbout({ ...about, address: e.target.value })} placeholder="Street, city, postal code" /><p className="tiny muted">{g.settings.mail.vis === "all" ? "Everyone in the group can see this." : "Only the person who drew you can see this."}</p></>}
-        <div><button className="btn small ghost" disabled={saving} onClick={async () => { if (await saveProfile(items)) toast("Saved"); }}>Save</button></div>
+        <div><button className="btn small ghost" disabled={saving||catalogSaving} onClick={async () => { if (await saveProfile(items)) toast("Saved"); }}>Save</button></div>
       </div>
       {!m.kid && <div className="panel stack"><h3>Questions for you</h3>
         {questions.length ? questions.map(q => <div className="msg stack" style={{ gap: 6 }} key={q.id}><div className="small"><b>Q:</b> {q.body}</div>
@@ -148,7 +149,7 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
 
 function Viewer({ gid, g, m, me, prof, items, state, tokens, reload, xm }) {
   const [q, setQ] = useState(""), [busy, setBusy] = useState(false), [favorites, setFavorites] = useState(false);
-  const products = useGiftProducts(items.map(w => w.a));
+  const products = useGiftProducts(items.map(w => w.a || ebayItemId(w.u)));
   const reserving = useRef(false);
   const res = Object.fromEntries(state.reservations.filter(r => r.owner === m.id).map(r => [r.item, r]));
   const qs = state.questions.filter(x => x.to === m.id);
@@ -168,12 +169,12 @@ function Viewer({ gid, g, m, me, prof, items, state, tokens, reload, xm }) {
   return (
     <>
       <div className="wish-toolbar"><div><p className="eyebrow">Chosen by {m.name}</p><h2>A gift they’ll love</h2>{g.budget && <p className="small muted">Group budget: {money(g.cur, g.budget)} per gift</p>}</div>{items.some(w => w.priority === "1") && <button className="btn small ghost" aria-pressed={favorites} onClick={() => setFavorites(v => !v)}>{favorites ? "Show all wishes" : "♥ Most wanted first"}</button>}</div>
-      {items.some(w => w.a || (!w.u && w.q)) && <p className="tiny muted">{AMAZON_DISCLOSURE}</p>}
-      {items.length ? <div className="product-grid wish-grid">{(favorites ? [...items].sort((a,b) => Number(b.priority === "1") - Number(a.priority === "1")) : items).map(w => { const r = res[w.id]; return <WishCard key={w.id} wish={w} group={g} product={products[w.a]} reserved={!!r}>
+      {items.some(w => w.a || ebayItemId(w.u) || (!w.u && w.q)) && <p className="tiny muted">{AMAZON_DISCLOSURE} Hatpull may also earn a commission from eBay purchases.</p>}
+      {items.length ? <div className="product-grid wish-grid">{(favorites ? [...items].sort((a,b) => Number(b.priority === "1") - Number(a.priority === "1")) : items).map(w => { const r = res[w.id]; return <WishCard key={w.id} wish={w} group={g} product={products[w.a || ebayItemId(w.u)]} reserved={!!r}>
         {me && !amazonWishListUrl(w.u) && (r ? (r.mine ? <button className="btn small ghost block" disabled={busy} onClick={() => reserve(w.id, false)}>✓ Reserved by you · undo</button> : <span className="pill">Already reserved</span>) : <button className="btn small block" disabled={busy} onClick={e => reserve(w.id, true, e.currentTarget)}>Reserve this gift privately</button>)}
       </WishCard>; })}</div> : <div className="wish-empty"><h3>No wishes just yet.</h3><p>Ask {m.name} to add a few favorites or share a helpful hint below.</p></div>}
-      <p className="tiny muted">{items.some(w => !amazonWishListUrl(w.u)) ? "Reserving a gift does not buy it. Complete your purchase at the store." : "Choose and purchase gifts on Amazon."} {AMAZON_DISCLOSURE}</p>
-      {Object.keys(products).length > 0 && <AmazonPriceDetails/>}
+      <p className="tiny muted">{items.some(w => !amazonWishListUrl(w.u)) ? "Reserving a gift does not buy it. Complete your purchase at the store." : "Choose and purchase gifts on Amazon."} {AMAZON_DISCLOSURE} Hatpull may also earn a commission from eBay purchases.</p>
+      {Object.values(products).some(p=>p.provider!=="ebay") && <AmazonPriceDetails/>}
       <div className="panel stack"><h3>{xm ? "🎄 " : ""}Hobbies and interests</h3><p className={prof.hobbies ? "" : "muted"} style={{ whiteSpace: "pre-wrap" }}>{prof.hobbies || `${m.name} hasn't added any hobbies or interests.`}</p></div>
       {prof.address && <div className="panel stack"><h3>Mailing address</h3><p style={{ whiteSpace: "pre-wrap" }}>{prof.address}</p></div>}
       {!m.kid && me && <div className="panel stack">

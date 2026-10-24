@@ -1,4 +1,20 @@
-# Amazon browsing and wish lists
+# Store browsing and wish lists
+
+## eBay product catalog — October 24, 2026
+
+Gift Finder and the participant's Browse gift ideas panel offer eBay and Amazon. eBay displays real new, fixed-price US listings with photos, timestamped prices, category/keyword search, pagination and a maximum item price. A selected USD celebration clamps the maximum to its current budget. Shipping and tax are explicitly additional; non-USD budgets are not silently converted. Search terms and budgets are submitted deliberately, not sent on every keystroke.
+
+Choosing Add to wish list uses the existing `hp_add_wish` RPC. It saves a neutral title, canonical eBay item/variation link, and participant-authored preferences only. The owner's and authorized gift-giver's cards fetch fresh product details; private reservation behavior remains unchanged. All eBay catalog content, images, seller/buyer identities and prices are excluded from stored profiles. No database migration is needed. Existing Amazon list linking and manual gift links remain available.
+
+Production application credentials, affiliate campaign ID and notification verification token are stored as server-only Vercel secrets. The notification endpoint was accepted by eBay and Send Test Notification succeeded. Real production search returned 24 coffee products at or below $25 with 24 images and 24 Hatpull affiliate links; single-item detail also succeeded. The adapter uses the basic application scope and search/single-item endpoints, not restricted bulk getItems or checkout APIs.
+
+`/api/gifts/ebay` validates bounded keywords, budgets, page numbers and item IDs. It allows only fixed eBay API origins, whitelists product fields and image/link origins, deduplicates requests, caches normalized results for ten minutes, and caps each server instance at three concurrent provider calls and 60 requests/minute. These are per-instance protections, not a distributed daily quota guarantee. Browser/CDN responses use no-store. Missing credentials/provider errors leave the other-store and manual-link flows working.
+
+Account deletion notifications use `/api/ebay/notifications`. Hatpull does not collect eBay personal identities or orders; notification payloads are acknowledged without storage or logging. Any future identity-data feature must implement signature validation and deletion processing before it collects that data.
+
+Configuration: `EBAY_CLIENT_ID`, `EBAY_CLIENT_SECRET`, `EBAY_CAMPAIGN_ID`, `EBAY_NOTIFICATION_TOKEN`. Keep all server-only. To stop API calls, remove the client credentials and redeploy; catalog fallback appears. Do not regenerate credentials unnecessarily.
+
+The Amazon-only notes below describe earlier iterations and Amazon's separate eligibility boundary.
 
 ## One Amazon wish-list link — October 23, 2026
 

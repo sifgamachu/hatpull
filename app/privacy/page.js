@@ -8,7 +8,7 @@ export default function Page() {
     <div className="page prose">
       <Festive on={false} />
       <h1>Privacy Policy</h1>
-      <p className="muted">Last updated: October 23, 2026</p>
+      <p className="muted">Last updated: October 24, 2026</p>
       <p>Hatpull (the Secret Santa generator at secretsantageneratorapp.com and the name picker at onlinenamepickertool.com) is run by {who} ("we", "us"). This policy explains what we collect, why, and the choices you have. Contact us any time at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>{SITE.address ? "" : " (our mailing address is available on request)"}.</p>
 
       <h2>What we collect</h2>
@@ -44,7 +44,9 @@ export default function Page() {
       <h2>Visitor statistics</h2>
       <p>We use Vercel Web Analytics to count page views. It doesn't use cookies and doesn't track you across other websites. Private celebration and invitation links are removed from the page addresses it records.</p>
 
-      <h2>Amazon Associates and affiliate links</h2>
+      <h2>Shopping catalogs and affiliate links</h2>
+      <p>The eBay gift finder sends search words, US-dollar price filters and saved product references through our server to eBay. It does not send your celebration ID, participant name, private access link or mailing address. Product images load directly from eBay's image servers, which receive standard web request information. Product details are kept in short-lived caches for up to ten minutes. Saved wishes contain a product link and your own preferences; eBay buyer and seller identity data, account details and orders are not stored by Hatpull.</p>
+      <p>Hatpull participates in eBay Partner Network and may earn commissions from qualifying purchases. Clicking an eBay product opens eBay with our affiliate campaign information, and eBay may use cookies to attribute purchases. Saving or reserving a gift in Hatpull does not place an order or synchronize purchases. See <a href="https://www.ebay.com/help/policies/member-behavior-policies/user-privacy-notice-privacy-policy?id=4260" target="_blank" rel="noopener noreferrer">eBay’s Privacy Notice</a>.</p>
       <p>When live Amazon catalog access is enabled, browsing gifts sends your search terms, budget filters or saved product IDs through our server to Amazon to retrieve product information. We do not include celebration IDs, member access tokens, participant names or mailing addresses in those catalog requests. Loading an Amazon product image connects your browser to Amazon’s image servers. We keep catalog results only in short-lived caches; wish lists store product IDs, links and the preferences you enter.</p>
       <p>Hatpull is a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com. As an Amazon Associate I earn from qualifying purchases.</p>
       <p>When you click a gift idea, you go to Amazon, and Amazon may set cookies in your browser so it can tell that the visit came from us and credit any qualifying purchase. We don't receive your name, address or what you bought. You can block or delete these cookies in your browser settings. To learn how Amazon uses cookies and interest-based ads, see <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=GX7NJQ4ZB8MHFRNJ" target="_blank" rel="noopener">Amazon's Privacy Notice</a> and <a href="https://www.amazon.com/adprefs" target="_blank" rel="noopener">Amazon's advertising preferences</a>.</p>
