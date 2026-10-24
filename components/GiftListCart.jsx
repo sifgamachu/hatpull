@@ -22,7 +22,7 @@ export function GiftListButton({ compact = false }) {
 }
 
 // Key this provider by account + celebration + participant to discard private state on a switch.
-export function GiftListCartProvider({ target, children, disabled = false, onBusy, onChanged, initialItems, request = rpc, contextLoading = false }) {
+export function GiftListCartProvider({ target, children, disabled = false, onBusy, onChanged, initialItems, request = rpc, contextLoading = false, showDock = true, browseHint }) {
   const [items,setItems]=useState(initialItems ?? null),[error,setError]=useState(''),[open,setOpen]=useState(false),[busy,setBusy]=useState(false),[notice,setNotice]=useState(null),[undo,setUndo]=useState(null),[editing,setEditing]=useState(null);
   const generation=useRef(0),writing=useRef(false),alive=useRef(true),recent=useRef({});
   const gid=target?.gid, mid=target?.mid;
@@ -63,7 +63,7 @@ export function GiftListCartProvider({ target, children, disabled = false, onBus
   const show=()=>{setOpen(true);refresh();},close=()=>{if(!busy){setOpen(false);setEditing(null);}};
   const value={target,items,busy,saved,show,contextLoading};
   return <Cart.Provider value={value}>{children}
-    {!open&&<div className={'gift-list-dock'+(notice?' has-notice':'')}><div className="gift-list-dock-copy" role="status">{notice?<><strong>✓ {notice.added?'Added to your gift list':'Already on your gift list'}</strong><span>{notice.title}</span></>:<><strong>{items?.length?`${items.length} saved · ready for your gift-giver`:'See something you love?'}</strong><span>{items?.length?'Everything saves automatically.':'Tap Add to gift list. We’ll keep it here.'}</span></>}</div><GiftListButton compact/></div>}
+    {showDock&&!open&&<div className={'gift-list-dock'+(notice?' has-notice':'')}><div className="gift-list-dock-copy" role="status">{notice?<><strong>✓ {notice.added?'Added to your gift list':'Already on your gift list'}</strong><span>{notice.title}</span></>:<><strong>{items?.length?`${items.length} saved · ready for your gift-giver`:(browseHint?.title||'See something you love?')}</strong><span>{items?.length?'Everything saves automatically.':(browseHint?.text||'Tap Add to gift list. We’ll keep it here.')}</span></>}</div><GiftListButton compact/></div>}
     {open&&<Sheet className="gift-cart-sheet" onClose={close}>
       <div className="gift-cart-heading"><div><p className="eyebrow">Your picks, all in one place</p><h2>Your gift list {items&&<span>({items.length})</span>}</h2></div><button className="gift-cart-close" onClick={close} disabled={busy} aria-label="Close your gift list">✕</button></div>
       {target?<><div className="gift-cart-destination"><strong>For {target.person}</strong><span>{target.name}{target.budget?` · ${money(target.cur,target.budget)} per gift`:''}</span></div><p className="gift-cart-explainer">Saved automatically for your gift-giver. No checkout or sending needed.</p></>:<div className="gift-cart-empty"><GiftListIcon/><h3>Let’s find your celebration.</h3><p>{'Choose your celebration above so we save gifts to the right person. If you haven’t joined yet, open your invitation first.'}</p><button className="btn" onClick={()=>{close();document.getElementById('gift-celebration')?.focus();}}>Choose my celebration</button><Link href="/my" className="link">Find my celebrations →</Link></div>}

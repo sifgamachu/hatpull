@@ -2,9 +2,9 @@ import Link from "next/link";
 import GiftFinderWorkspace from "./GiftFinderWorkspace";
 
 export default function GiftFinder() {
-  return <div className="gift-finder gift-link-page stack">
+  return <div className="gift-finder gift-link-page shop-finder-page stack">
     <p className="eyebrow">The Hatpull gift finder</p>
-    <h1>Find a gift they’ll love.</h1>
+    <h1>Great gifts start here.</h1>
     <GiftFinderWorkspace/>
     <details className="gift-sharing" id="sharing-rules">
       <summary>Sharing by text or social media</summary>

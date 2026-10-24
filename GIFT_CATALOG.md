@@ -1,5 +1,13 @@
 # Store browsing and wish lists
 
+## Shop selection — October 24, 2026
+
+Gift Finder now starts with two available shops: eBay and Amazon. Selecting eBay opens its own white/blue catalog layout, rounded search, category navigation, budget filters and one-tap saving. Selecting Amazon opens a navy/gold browsing section with original illustrated departments. Every department opens Amazon, includes the selected USD celebration budget and carries the configured affiliate tag. Category illustrations are not product listings; no Amazon photos, prices, account connection or checkout are implied.
+
+All shops returns to the chooser. Switch to changes retailer without discarding the mounted eBay search, price filter or page. The eBay catalog is lazy-mounted after selection, so the shop lobby makes no product-search call. Store choice survives the initial participant-context resolution. Private list controls stay common to both stores, and the saved count remains server-confirmed. Pending retailers are omitted until an actual shopping integration is available.
+
+Retailer patterns were checked against their public storefronts. Retailer names are plain text, all artwork is original, and the Hatpull identity and external purchase destinations remain visible. This update changes presentation only; no migration, new credential or provider permission is required.
+
 ## eBay product catalog — October 24, 2026
 
 Gift Finder and the participant's Browse gift ideas panel offer eBay and Amazon. eBay displays real new, fixed-price US listings with photos, timestamped prices, category/keyword search, pagination and a maximum item price. A selected USD celebration clamps the maximum to its current budget. Shipping and tax are explicitly additional; non-USD budgets are not silently converted. Search terms and budgets are submitted deliberately, not sent on every keystroke.

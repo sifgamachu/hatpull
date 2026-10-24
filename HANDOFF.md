@@ -2,6 +2,12 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Shop selection and retailer layouts — 2026-10-24
+
+Gift Finder opens with available eBay and Amazon shop cards. The eBay section uses white space, rounded search, blue actions and real catalog photos; Amazon uses a navy/gold department-browsing layout with original category illustrations and links to Amazon. Hatpull remains clearly identified, and no retailer logo or page asset is copied. Pending partner applications are not shown as active shops.
+
+All shops / Switch to controls preserve mounted searches and filters. eBay catalog calls begin only after the shop is selected. The celebration budget and private cart-style gift list continue across shops. The fixed list dock appears after entering a shop; the header list button also works in the shop lobby. Amazon remains an external browsing + shared-list-link flow, without product import, cart sync or checkout claims. No credentials, API permissions or database changes are needed.
+
 ## Cart-style gift list — 2026-10-24
 
 Gift Finder now has a persistent Your gift list button with saved-item count, an inline side panel, automatic add confirmations, size/color/notes editing, and Remove with Undo. Closing the panel preserves the active search. Private list data remains component memory only and is cleared when the account or participant changes. Product photos reuse unexpired public catalog data; the panel never stores catalog titles/prices in the database.
