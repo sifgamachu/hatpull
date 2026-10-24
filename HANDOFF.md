@@ -2,6 +2,12 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## eBay catalog service — 2026-10-24
+
+Server-only `/api/gifts/ebay` supports US new fixed-price product search and single-item details using the basic Browse API scope. `EBAY_CLIENT_ID`, `EBAY_CLIENT_SECRET`, `EBAY_CAMPAIGN_ID`, and `EBAY_NOTIFICATION_TOKEN` belong only in Hatpull's Vercel Production environment. Prices/images expire after ten minutes; bounded per-instance caching and concurrency limits protect provider quota. No buyer/seller identity fields are retained. Wishlist records use canonical product references and participant-authored preferences.
+
+Activate the production keyset by configuring account-deletion notifications at `https://secretsantageneratorapp.com/api/ebay/notifications` with the saved notification token, then send eBay's test notification. The callback acknowledges without persisting/logging the payload because the integration never stores eBay user identity data. If adding identity data later, implement signature validation and deletion processing before collecting it. API creation and credential storage do not by themselves prove Browse access; verify a real search before enabling the product interface. No database migration is needed.
+
 ## Shopping partner verification — 2026-10-23
 
 The root layout includes Impact's public site-verification meta tag for the owner's Target affiliate application. This proves website ownership only; it does not mean Target has approved the application or granted product-feed access. No tracking script or retailer API credential is included.
