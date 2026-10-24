@@ -94,7 +94,7 @@ Set `NEXT_PUBLIC_GOOGLE_CLIENT_ID` in Vercel (step 1) and redeploy. Test: Header
 ### 5. Test reminders
 - Sign in with email (link + 6-digit code arrive from reminders@send.secretsantageneratorapp.com).
 - Create a group dated 7 days out, claim a name while signed in, then:
-  `curl -s -H "Authorization: Bearer $CRON_SECRET" https://secretsantageneratorapp.com/api/cron/reminders` → `{"due":1,"sent":1,...}`.
+  `curl -s -H "Authorization: Bearer $CRON_SECRET" https://secretsantageneratorapp.com/api/cron/reminders` → `{"enqueued":1,"sent":1,...}` (on or after 15:00 UTC).
 - Cron schedule is in `vercel.json` (every five minutes). Due reminders enter a durable queue from 15:00 UTC onward; retries continue through that UTC day. Response counts are `enqueued`, `sent`, `retried`, `failed`, and `cancelled` (or `busy`). See `CAPACITY.md` for recovery and limits.
 
 ### 6. Optional / owner items

@@ -20,7 +20,12 @@ export default function Account() {
     try {
       await rpc("hp_forget_me", {});
       const { data } = await sb().auth.getSession();
-      await fetch("/api/account/delete", { method: "POST", headers: { authorization: `Bearer ${data.session?.access_token || ""}` } }).catch(() => {});
+      const r = await fetch("/api/account/delete", { method: "POST", headers: { authorization: `Bearer ${data.session?.access_token || ""}` } }).catch(() => null);
+      if (!r || !r.ok) {
+        const msg = r ? (await r.json().catch(() => ({}))).error : "";
+        toast(`Your celebrations were unlinked and your email settings removed, but the sign-in record couldn't be deleted. ${msg || "Try again, or email hello@secretsantageneratorapp.com."}`);
+        setBusy(false); return;
+      }
       await signOut(); toast("Your account has been deleted"); location.href = "/";
     } catch { toast("Couldn't delete. Try again or email us."); setBusy(false); }
   }

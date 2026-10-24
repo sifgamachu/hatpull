@@ -168,6 +168,7 @@ function Viewer({ gid, g, m, me, prof, items, state, tokens, reload, xm }) {
   return (
     <>
       <div className="wish-toolbar"><div><p className="eyebrow">Chosen by {m.name}</p><h2>A gift they’ll love</h2>{g.budget && <p className="small muted">Group budget: {money(g.cur, g.budget)} per gift</p>}</div>{items.some(w => w.priority === "1") && <button className="btn small ghost" aria-pressed={favorites} onClick={() => setFavorites(v => !v)}>{favorites ? "Show all wishes" : "♥ Most wanted first"}</button>}</div>
+      {items.some(w => w.a || (!w.u && w.q)) && <p className="tiny muted">{AMAZON_DISCLOSURE}</p>}
       {items.length ? <div className="product-grid wish-grid">{(favorites ? [...items].sort((a,b) => Number(b.priority === "1") - Number(a.priority === "1")) : items).map(w => { const r = res[w.id]; return <WishCard key={w.id} wish={w} group={g} product={products[w.a]} reserved={!!r}>
         {me && !amazonWishListUrl(w.u) && (r ? (r.mine ? <button className="btn small ghost block" disabled={busy} onClick={() => reserve(w.id, false)}>✓ Reserved by you · undo</button> : <span className="pill">Already reserved</span>) : <button className="btn small block" disabled={busy} onClick={e => reserve(w.id, true, e.currentTarget)}>Reserve this gift privately</button>)}
       </WishCard>; })}</div> : <div className="wish-empty"><h3>No wishes just yet.</h3><p>Ask {m.name} to add a few favorites or share a helpful hint below.</p></div>}

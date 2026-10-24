@@ -142,3 +142,15 @@ test('sending uses a stable idempotency key, timeout and structured rate-limit e
   assert.equal(seen.headers['idempotency-key'],'job-key');assert.ok(seen.signal);
   assert.equal(authFailure({status:429},'verify').seconds,60);assert.equal(authFailure({status:400},'verify').seconds,0);
 });
+
+test('a rejected email API key keeps the reminder queued and pauses sending',async()=>{
+  const calls=[];let claims=0;
+  const rpc=async(fn,args)=>{calls.push([fn,args]);if(fn==='hp_reminder_start')return true;if(fn==='hp_reminder_enqueue')return 2;if(fn==='hp_reminder_claim')return ++claims<=2?{job_id:'job'+claims,attempts:0}:null;if(fn==='hp_reminder_prepare')return args.p_payload;return true;};
+  const orig=console.error;console.error=()=>{};
+  try{
+    const result=await runReminders({rpc,prepare:()=>({to:['test@example.invalid']}),send:async()=>{throw Object.assign(new Error('bad key'),{status:401});},runId:'run',sleep:async()=>{}});
+    assert.equal(result.retried,1);assert.equal(result.failed,0);assert.equal(claims,1);
+    const fin=calls.find(c=>c[0]==='hp_reminder_finish')[1];
+    assert.equal(fin.p_status,'pending');assert.equal(fin.p_retry_seconds,1800);
+  }finally{console.error=orig;}
+});
