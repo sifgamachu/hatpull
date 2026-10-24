@@ -6,10 +6,10 @@ import { testDatabase } from './test-db.mjs';
 test('one-link gifts work with Amazon Share text, short links, ASINs and other stores', () => {
   const w = giftFromInput('https://www.amazon.com/Blue-Coffee-Mug/dp/B000000001?tag=other-20', 'w1');
   assert.equal(w.t, 'Blue Coffee Mug'); assert.equal(w.a, 'B000000001'); assert.equal(w.u, 'https://www.amazon.com/dp/B000000001');
-  assert.equal(giftFromInput('B000000001').t, 'My Amazon gift');
+  assert.equal(giftFromInput('B000000001').t, 'Amazon gift');
   assert.equal(giftFromInput('My cozy blanket https://a.co/d/abcdef').t, 'My cozy blanket');
   assert.equal(giftFromInput({ url: 'https://amzn.to/abcdef', title: 'A gift I love' }).t, 'A gift I love');
-  assert.equal(giftFromInput('https://a.co/d/abcdef').t, 'My Amazon gift');
+  assert.equal(giftFromInput('https://a.co/d/abcdef').t, 'Amazon gift');
   assert.equal(giftFromInput('https://store.example/gift').t, 'Gift from store.example');
   assert.equal(giftFromInput('https://www.amazon.com/gift?tag=old-20&ascsubtag=x').u, 'https://www.amazon.com/gift');
   assert.equal(giftFromInput({ url: 'https://store.example/gift', title: 'x'.repeat(200) }).t.length, 120);

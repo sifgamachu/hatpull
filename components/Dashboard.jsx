@@ -51,13 +51,14 @@ export default function Dashboard({ gid }) {
     if (liveOn && liveMs <= 0 && me && !me.drawn && me.receiver_id && !firedLive.current) { firedLive.current = true; reveal(); }
   }); // eslint-disable-line react-hooks/exhaustive-deps
 
+  if (error === "no_access" && getG(gid)?.role === "member" && !getG(gid)?.atok) return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>Your personal link has stopped working</h1><p className="muted">The organizer may have reset your name so you can pick it again, or removed you from this celebration. Open the invitation link they shared and choose your name. Your match and wish list are kept.</p><div className="row"><Link className="btn small ghost" href="/my">My celebrations</Link></div></div>;
   if (error === "no_access" || isOrganizerError(error)) return <OrganizerAccess gid={gid} error={error} reload={reload} />;
   if (error === "not_found") return <div className="narrow panel stack"><h1 style={{ fontSize: 24 }}>We can't find this celebration</h1><p className="muted">It may have been deleted.</p><Link className="btn small ghost" href="/my">My celebrations</Link></div>;
   if (!state) return <div className="panel muted stack"><h1 className="sr-only">Your celebration</h1><p>{error === "network" ? "Can't reach the server. Retrying…" : "Loading celebration…"}</p>{error === "network" && <Link href="/network-access">Help with work or school networks</Link>}</div>;
   if (me === null && !adm) return <div className="narrow panel">You're no longer in this celebration.</div>;
 
   const isDraw = g.mode === "draw";
-  const joined = ppl.filter(m => m.claimed).length, drawnN = ppl.filter(m => m.drawn).length, wishN = state.members.filter(m => m.wishes > 0).length;
+  const joined = ppl.filter(m => m.claimed).length, drawnN = ppl.filter(m => m.drawn).length, wishN = ppl.filter(m => m.wishes > 0).length;
   const mine = me && state.members.find(m => m.id === me.id);
   const rec = me && state.members.find(m => m.id === me.receiver_id);
   const myQs = state.unanswered_count || 0;
@@ -123,7 +124,7 @@ export default function Dashboard({ gid }) {
               {step(joined >= 1 ? "done" : "now", "Send your invitations", adm ? <><Link className="link" href={`/invite/${gid}`}>Share invitation</Link> · <button className="link" onClick={() => setSheet("remind")}>Send reminder</button></> : null)}
               {step(joined === ppl.length ? "done" : joined ? "now" : "", "Join", `${joined} of ${ppl.length} joined`)}
               {isDraw && step(drawnN === ppl.length ? "done" : drawnN ? "now" : "", "Draw names", `${drawnN} of ${ppl.length} drew a name`)}
-              {step(wishN === state.members.length ? "done" : wishN ? "now" : "", "Make wish lists", `${wishN} of ${state.members.length} have a wish list`)}
+              {step(wishN === ppl.length ? "done" : wishN ? "now" : "", "Make wish lists", `${wishN} of ${ppl.length} have a wish list`)}
             </div>
             {adm && isDraw && drawnN < ppl.length && (liveOn && liveMs > 0
               ? <div className="note small">Live draw starts in {Math.ceil(liveMs / 1000)} seconds for everyone on this page.</div>
@@ -211,6 +212,8 @@ function Settings({ gid, state, tokens, close, reload }) {
   const [add, setAdd] = useState(""), [busy, setBusy] = useState(false), [armed, setArmed] = useState(null);
   const up = p => setF(x => ({ ...x, ...p }));
   async function save() {
+    const today = new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+    if (f.date && f.date !== (g.date || "") && f.date < today) return toast("That date has already passed. Pick a date in the future.");
     setBusy(true);
     try { await rpc("hp_admin_update", { p_gid: gid, p_atok: tokens.atok, p: { name: f.name, date: f.date, budget: f.budget, cur: f.cur, note: f.note, settings: { ...g.settings, venue: f.venue, mail: f.mail, wishVis: f.wishVis } } }); toast("Settings saved"); await reload(); close(); }
     catch { toast("Couldn't save. Try again."); setBusy(false); }
@@ -245,7 +248,7 @@ function Settings({ gid, state, tokens, close, reload }) {
       <p className="eyebrow">Celebration details</p>
       <div><label htmlFor="sName">Name</label><input id="sName" maxLength={80} value={f.name} onChange={e => up({ name: e.target.value })} /></div>
       <div className="grid2">
-        <div><label htmlFor="sDate">Date</label><input id="sDate" type="date" value={f.date} onChange={e => up({ date: e.target.value })} /></div>
+        <div><label htmlFor="sDate">Date</label><input id="sDate" type="date" min={new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10)} value={f.date} onChange={e => up({ date: e.target.value })} />{f.date && f.date < new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10) && <p className="small" role="alert" style={{ color: "var(--ribbon)", marginTop: 6 }}>That date has already passed. Pick a date in the future.</p>}</div>
         <div><label htmlFor="sBudget">Gift amount</label><div className="row" style={{ flexWrap: "nowrap" }}><select aria-label="Currency" style={{ width: 80 }} value={f.cur} onChange={e => up({ cur: e.target.value })}>{CURRENCIES.map(c => <option key={c}>{c}</option>)}</select><input id="sBudget" value={f.budget} onChange={e => up({ budget: e.target.value.slice(0, 12) })} /></div></div>
       </div>
       <div><label>Venue</label><div className="choices">{[["", "Not set"], ["venue", "At a venue"], ["online", "Online"]].map(([v, l]) => <button key={v} type="button" className="choice" aria-pressed={f.venue.type === v} onClick={() => up({ venue: { ...f.venue, type: v } })}>{l}</button>)}</div>

@@ -243,3 +243,22 @@ grant execute on function public.hp_admin_update(text,text,jsonb) to authenticat
 -- Lint: fixed search_path on the remaining helpers.
 alter function public.hp_valid_members(jsonb) set search_path = public;
 alter function public.hp_clean_excl(jsonb, text[]) set search_path = public;
+
+-- 6. After a redraw, a reservation only stays if the person who made it still buys for that person
+--    (kids' lists are shared by everyone, so those stay).
+create or replace function public.hp_drop_stale_reservations() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if new.mode = 'draw' and new.round > old.round then
+    delete from hp_reservations r
+     using hp_members b, hp_members o
+     where r.group_id = new.id and b.group_id = new.id and b.id = r.by_member
+       and o.group_id = new.id and o.id = r.owner_id and not o.kid
+       and b.receiver_id is distinct from r.owner_id;
+  end if;
+  return new;
+end $$;
+drop trigger if exists hp_groups_drop_stale_reservations on public.hp_groups;
+create trigger hp_groups_drop_stale_reservations after update of round on public.hp_groups
+  for each row execute function public.hp_drop_stale_reservations();
+revoke all on function public.hp_drop_stale_reservations() from public, anon, authenticated;

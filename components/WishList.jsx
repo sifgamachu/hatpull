@@ -74,7 +74,7 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
   const products = useGiftProducts(items.map(w => w.a));
   function choose(gift) {
     if (items.length >= MAX_WISHES) return toast("Your list has 40 wishes. Remove one before adding another.");
-    setSelection(gift.kind === "product" ? { t: "My Amazon pick", a: gift.asin, u: productUrl(gift.asin) } : { t: gift.title, art: gift.art, q: gift.query });
+    setSelection(gift.kind === "product" ? { t: "Amazon pick", a: gift.asin, u: productUrl(gift.asin) } : { t: gift.title, art: gift.art, q: gift.query });
   }
   useEffect(() => {
     if (opened.current) return; opened.current = true;
@@ -117,8 +117,8 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
     <>
       <div className="wish-toolbar"><div><p className="eyebrow">Picked by you. A surprise from them.</p><h2>Your little wish collection</h2><p className="muted small">Add a few favorites and the details that make them yours.</p></div><div className="row"><button className="btn small ghost" disabled={saving} onClick={() => setBrowse(v => !v)}>{browse ? "Close gift finder" : "Browse gift ideas"}</button><button className="btn small" disabled={saving || items.length >= MAX_WISHES} onClick={() => setSelection({})}>+ Add a gift or link</button></div></div>
       {browse && <div className="wish-discovery"><GiftBrowser budget={g.budget} currency={g.cur} age={about.age} compact/><GiftInstall/></div>}
-      <AmazonListSetup target={{ gid, mid: m.id, person: m.name, name: g.name, budget: g.budget, cur: g.cur }} items={items} disabled={saving || quickSaving} onBusy={setListSaving} onSaved={async () => { await reload(); setDraft(null); }}/>
-      <details className="individual-gifts"><summary>Or paste an individual gift link</summary><QuickWish target={{ gid, mid: m.id, person: m.name, name: g.name }} disabled={saving || listSaving} onBusy={setQuickSaving} onSaved={async () => { await reload(); setDraft(null); }}/></details>
+      <AmazonListSetup onListPage target={{ gid, mid: m.id, person: m.name, name: g.name, budget: g.budget, cur: g.cur }} items={items} disabled={saving || quickSaving} onBusy={setListSaving} onSaved={async () => { await reload(); setDraft(null); }}/>
+      <details className="individual-gifts" open={!items.some(w => amazonWishListUrl(w.u))}><summary>Paste a gift link from any store</summary><QuickWish target={{ gid, mid: m.id, person: m.name, name: g.name }} disabled={saving || listSaving} onBusy={setQuickSaving} onSaved={async () => { await reload(); setDraft(null); }}/></details>
       {items.length ? <div className="product-grid wish-grid">{items.map((w, i) => <WishCard key={w.id} wish={w} group={g} product={products[w.a]}><div className="row"><button className="btn small ghost" disabled={saving} onClick={() => setSelection({ ...w, editing: true })}>Edit wish</button><button className="btn small ghost" aria-label={`Move ${w.t} earlier`} disabled={!i || saving} onClick={() => { const next = [...items]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; saveProfile(next); }}>↑</button><button className="link tiny" disabled={saving} onClick={() => saveProfile(items.filter(item => item.id !== w.id))}>Remove</button></div></WishCard>)}</div> : <div className="wish-empty"><span aria-hidden="true">♡</span><h3>A good surprise starts with a little hint.</h3><p>Save your Amazon wish-list link above, or add individual gifts from any store.</p><button className="btn small" onClick={() => setBrowse(true)}>Find my first wish →</button></div>}
       <p className="tiny muted">{items.length}/{MAX_WISHES} wishes · Reservations for individual gifts stay hidden from you, so the surprise stays intact. {AMAZON_DISCLOSURE}</p>
       {Object.keys(products).length > 0 && <AmazonPriceDetails/>}

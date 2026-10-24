@@ -9,8 +9,8 @@ test('Amazon list links normalize without confusing products, carts or editing i
   for (const input of [canonical+'?ref_=wl_share&tag=other-20', 'amazon.com/gp/registry/wishlist/TESTLIST123', 'https://smile.amazon.com/hz/wishlist/ls/TESTLIST123/ref=nav_wishlist_lists_1']) assert.equal(amazonWishListUrl(input), canonical);
   assert.equal(amazonWishListUrl('https://www.amazon.co.uk/hz/wishlist/ls/TESTLIST123'), 'https://www.amazon.co.uk/hz/wishlist/ls/TESTLIST123');
   const wish = amazonWishListFromInput('My gifts: '+canonical+'?ref_=wl_share', 'list1');
-  assert.equal(wish.u, canonical); assert.equal(wish.t, 'My Amazon wish list'); assert.equal(wish.a, ''); assert.equal(wish.id, 'list1');
-  assert.equal(giftFromInput(canonical).t, 'My Amazon wish list');
+  assert.equal(wish.u, canonical); assert.equal(wish.t, 'Amazon wish list'); assert.equal(wish.a, ''); assert.equal(wish.id, 'list1');
+  assert.equal(giftFromInput(canonical).t, 'Amazon wish list');
   for (const bad of ['https://amazon.com.evil.example/hz/wishlist/ls/TESTLIST123','https://amazon.evil/hz/wishlist/ls/TESTLIST123','https://user:pass@amazon.com/hz/wishlist/ls/TESTLIST123','javascript:alert(1)','https://amazon.com:8000/hz/wishlist/ls/TESTLIST123','https://amazon.com/hz/wishlist/dl/invite/TESTLIST123','https://amazon.com/hz/wishlist/ls/TESTLIST123/settings','https://amazon.com/dp/B000000001','https://amazon.com/gp/cart/view.html','https://a.co/d/unknown']) {
     assert.equal(amazonWishListUrl(bad),''); assert.throws(()=>amazonWishListFromInput(bad));
   }

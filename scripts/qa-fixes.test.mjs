@@ -103,3 +103,17 @@ test('QA fixes 2026-10-24', async t => {
     } finally { await db.close(); }
   });
 });
+
+test('redraw drops reservations from people who no longer buy for that person', async()=>{
+  const {db,g}=await setup({settings:{wishVis:'all'}});
+  try {
+    const rec=await db.query(`select id, receiver_id from hp_members where group_id=$1 and not kid`,[g.id]);
+    const giver=rec.rows[0], target=giver.receiver_id, other=rec.rows.find(r=>r.id!==giver.id && r.receiver_id!==target && r.id!==target);
+    await db.query(`update hp_members set profile='{"items":[{"id":"w1","t":"Socks"},{"id":"w2","t":"Mug"}]}' where group_id=$1 and id=$2`,[g.id,target]);
+    await db.query(`insert into hp_reservations(group_id,owner_id,item_id,by_member) values($1,$2,'w1',$3),($1,$2,'w2',$4)`,[g.id,target,giver.id,other.id]);
+    // Simulate a redraw where the giver keeps their person: only the other member's reservation goes.
+    await db.query(`update hp_groups set round=round+1 where id=$1`,[g.id]);
+    const left=(await db.query(`select item_id from hp_reservations where group_id=$1 order by 1`,[g.id])).rows.map(r=>r.item_id);
+    assert.deepEqual(left,['w1']);
+  } finally { await db.close(); }
+});

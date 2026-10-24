@@ -7,6 +7,10 @@ import { normalizeWish, positiveMoney, productAsin, productUrl, safeGiftUrl } fr
 import { giftFromInput } from "@/lib/gift-intake.mjs";
 import { amazonWishListUrl } from "@/lib/amazon-wish-list.mjs";
 
+// Older saves used first-person titles ("My Amazon wish list"), which read oddly to the gift-giver.
+const onAmazon = u => { try { const h = new URL(u).hostname; return /(^|\.)amazon\.[a-z.]+$/.test(h) || ["a.co", "amzn.to", "amzn.eu"].includes(h); } catch { return false; } };
+const displayTitle = t => ({ "My Amazon wish list": "Amazon wish list", "My Amazon gift": "Amazon gift", "My Amazon pick": "Amazon pick" })[t] || t;
+
 export function WishCard({ wish: w, group: g, product, reserved, children }) {
   const amazonList = amazonWishListUrl(w.u);
   if (amazonList) return <article className="product-card wish-card amazon-list-card"><div className="product-visual"><div className="amazon-list-symbol" aria-hidden="true"><svg viewBox="0 0 80 80" width="80" height="80" fill="none"><rect x="18" y="9" width="45" height="61" rx="8" stroke="currentColor" strokeWidth="3"/><path d="m27 27 3 3 5-6m-8 19 3 3 5-6m-8 19 3 3 5-6M42 27h11M42 43h11M42 59h11" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg><span>One list. Every wish.</span></div></div><div className="product-body"><p className="eyebrow">Amazon wish list</p><h3>{w.t}</h3><p>Open the list on Amazon to see the latest gifts, photos and prices.</p>{w.n && <p className="wish-note">{w.n}</p>}<a className="btn small amazon-browse-button" href={amazonList} target="_blank" rel="noopener noreferrer nofollow">View Amazon wish list ↗</a><p className="tiny muted">Gift choices and purchases on this list are managed on Amazon.</p><div className="wish-actions">{children}</div></div></article>;
@@ -17,13 +21,13 @@ export function WishCard({ wish: w, group: g, product, reserved, children }) {
   const amount = w.a ? (usd ? fresh?.price : null) : positiveMoney(w.p);
   return <article className={`product-card wish-card ${reserved ? "reserved" : ""}`}>
     <div className="product-visual"><ProductPicture product={fresh} art={w.art}/>{w.priority === "1" && <span className="favorite-label">♥ Most wanted</span>}{!fresh?.image && <span className="illustration-label">Illustration</span>}</div>
-    <div className="product-body"><h3>{w.t}</h3>{fresh && fresh.title !== w.t && <p className="wish-product-title">{fresh.title}</p>}
+    <div className="product-body"><h3>{displayTitle(w.t)}</h3>{fresh && fresh.title !== w.t && <p className="wish-product-title">{fresh.title}</p>}
       {w.a ? <ProductPrice product={fresh}/> : w.p && <p className="wish-estimate"><b>{money(g.cur, w.p)}</b><span>Participant’s estimate · check store price</span></p>}
       {w.a && w.p && <p className="tiny muted">Requested spending limit: {money(g.cur, w.p)}</p>}
       {cap && amount > 0 && <span className={`wish-budget ${amount <= cap ? "" : "over"}`}>{amount <= cap ? "Within group budget" : "Above group budget"}{!w.a ? " · estimate" : ""}</span>}
       {(w.size || w.color) && <dl className="wish-options">{w.size && <div><dt>Size</dt><dd>{w.size}</dd></div>}{w.color && <div><dt>Color</dt><dd>{w.color}</dd></div>}</dl>}
       {w.n && <p className="wish-note">“{w.n}”</p>}
-      {url && <a className="product-shop" href={url} target="_blank" rel={w.a || search ? AFF_REL : "noopener noreferrer nofollow"}>{search ? (cap && usd ? `Find options under $${cap} on Amazon` : "Find options on Amazon") : w.a ? "View exact gift on Amazon" : "View gift at store"} ↗</a>}
+      {url && <a className="product-shop" href={url} target="_blank" rel={w.a || search ? AFF_REL : "noopener noreferrer nofollow"}>{search ? (cap && usd ? `Find options under $${cap} on Amazon` : "Find options on Amazon") : w.a ? "View exact gift on Amazon" : onAmazon(url) ? "View gift on Amazon" : "View gift at store"} ↗</a>}
       <div className="wish-actions">{children}</div>
     </div>
   </article>;
