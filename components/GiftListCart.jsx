@@ -18,11 +18,11 @@ export function GiftListIcon() {
 export function GiftListButton({ compact = false }) {
   const cart = useGiftListCart();
   if (!cart) return null;
-  return <button className={'gift-list-button'+(compact?' compact':'')} onClick={cart.show} aria-haspopup="dialog" aria-label={'Your gift list'+(cart.items ? `, ${cart.items.length} saved` : '')}><span className="gift-list-icon"><GiftListIcon/><b aria-hidden="true">{cart.items?.length ?? '–'}</b></span><span><strong>Your gift list</strong>{!compact&&<small>{cart.target ? 'Saved for your gift-giver' : 'Start with your celebration'}</small>}</span></button>;
+  return <button className={'gift-list-button'+(compact?' compact':'')} onClick={cart.show} disabled={cart.contextLoading} aria-busy={cart.contextLoading} aria-haspopup="dialog" aria-label={'Your gift list'+(cart.items ? `, ${cart.items.length} saved` : '')}><span className="gift-list-icon"><GiftListIcon/><b aria-hidden="true">{cart.items?.length ?? '–'}</b></span><span><strong>Your gift list</strong>{!compact&&<small>{cart.contextLoading ? 'Finding your list…' : cart.target ? 'Saved for your gift-giver' : 'Start with your celebration'}</small>}</span></button>;
 }
 
 // Key this provider by account + celebration + participant to discard private state on a switch.
-export function GiftListCartProvider({ target, children, disabled = false, onBusy, onChanged, initialItems, request = rpc }) {
+export function GiftListCartProvider({ target, children, disabled = false, onBusy, onChanged, initialItems, request = rpc, contextLoading = false }) {
   const [items,setItems]=useState(initialItems ?? null),[error,setError]=useState(''),[open,setOpen]=useState(false),[busy,setBusy]=useState(false),[notice,setNotice]=useState(null),[undo,setUndo]=useState(null),[editing,setEditing]=useState(null);
   const generation=useRef(0),writing=useRef(false),alive=useRef(true),recent=useRef({});
   const gid=target?.gid, mid=target?.mid;
@@ -61,7 +61,7 @@ export function GiftListCartProvider({ target, children, disabled = false, onBus
     finally {writing.current=false;if(alive.current)setBusy(false);}
   }
   const show=()=>{setOpen(true);refresh();},close=()=>{if(!busy){setOpen(false);setEditing(null);}};
-  const value={target,items,busy,saved,show};
+  const value={target,items,busy,saved,show,contextLoading};
   return <Cart.Provider value={value}>{children}
     {!open&&<div className={'gift-list-dock'+(notice?' has-notice':'')}><div className="gift-list-dock-copy" role="status">{notice?<><strong>✓ {notice.added?'Added to your gift list':'Already on your gift list'}</strong><span>{notice.title}</span></>:<><strong>{items?.length?`${items.length} saved · ready for your gift-giver`:'See something you love?'}</strong><span>{items?.length?'Everything saves automatically.':'Tap Add to gift list. We’ll keep it here.'}</span></>}</div><GiftListButton compact/></div>}
     {open&&<Sheet className="gift-cart-sheet" onClose={close}>
