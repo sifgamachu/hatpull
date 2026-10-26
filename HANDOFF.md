@@ -157,3 +157,14 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_Y9Q8dkYGiw2iYCbKd5OTDA_PkIGjEuj npm
 npx next build   # must pass before pushing
 ```
 Key files: `lib/auth.js` (sign-in), `lib/email.js` + `app/api/cron/reminders` (reminders), `lib/serverDb.js` (secret-key client), `app/api/create` (creation), `middleware.js` (domain routing), `supabase/` (SQL). Commit small, push to `main`, confirm the Vercel deploy is READY, then verify live.
+
+
+## Gift preferences and quick look — 2026-10-25
+
+The eBay Gift Finder now offers an optional two-step flow: gender/age radio choices, then up to three interest checkboxes. Choices produce removable chips and change the existing public eBay query. Clearing preferences retains the price cap, and changing participant clears browsing preferences. This is keyword-based inspiration, not a guarantee of age suitability or a reconstruction of DrawNames' private recommendation algorithm.
+
+Product images and titles open a Hatpull quick-look sheet with the listing's gallery, price, selected specifications and plain-text short description. Saving uses the existing `hp_add_wish` flow and shared cart; the separate eBay button still opens the retailer. Closing the preview preserves the search and filters. Details share the existing bounded, expiring catalog cache; no catalog data is added to wish records. Amazon remains browse-and-link until product API access is approved.
+
+Public UX references: https://www.drawnames.com/gift-finder, https://www.drawnames.com/features and https://www.drawnames.com/help. Only public behavior was studied; no private wish lists or purchases were changed. eBay query syntax reference: https://www.edp.ebay.com/support/knowledge-base/2190.
+
+Validation: 61 tests passed, including query/budget bounds, cache freshness, catalog sanitization and existing wishlist SQL tests. Production build passed. Browser checks cover real public eBay results, multi-select controls, cancellation, removable chips, budget retention, quick look and unsigned wishlist selection. Responsive checks use a 390px viewport.

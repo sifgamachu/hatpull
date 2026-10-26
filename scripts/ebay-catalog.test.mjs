@@ -30,6 +30,13 @@ test('eBay query validation bounds budgets, pagination and search size', () => {
   for (const q of ['max=-1', 'max=10001', 'max=NaN', 'max=1e2', 'page=0', 'page=11', 'sort=__proto__', 'q=' + 'x'.repeat(101)]) assert.throws(() => ebayQuery(new URLSearchParams(q)));
 });
 
+test('preview details allow only retailer images and a bounded subset of public attributes', () => {
+  const p=normalizeEbayItem(item({additionalImages:[{imageUrl:'https://evil.test/image.jpg'},...Array.from({length:9},(_,i)=>({imageUrl:`https://i.ebayimg.com/images/g/photo${i}/s-l500.jpg`}))],localizedAspects:[{name:'Color',value:'Blue'},{name:'Size',value:'Medium'},{name:'Seller email',value:'private@example.test'}],shortDescription:'x'.repeat(1000)}));
+  assert.equal(p.images.length,6);assert.equal(p.images[0],p.image);assert.ok(p.images.every(url=>url.startsWith('https://i.ebayimg.com/images/')));
+  assert.deepEqual(p.aspects,[{name:'Color',value:'Blue'},{name:'Size',value:'Medium'}]);assert.equal(p.summary.length,800);
+  assert.ok(!JSON.stringify(p).includes('private@example'));assert.ok(!JSON.stringify(p).includes('do-not-retain'));
+});
+
 test('catalog uses read-only scope, affiliate context, exact budget filter and shared cache', async () => {
   const calls = []; let time = 1000000;
   const catalog = createEbayCatalog({ env, now: () => time, fetcher: async (url, options) => {
