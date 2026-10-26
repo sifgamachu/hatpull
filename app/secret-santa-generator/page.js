@@ -10,11 +10,11 @@ import { LANDINGS } from "@/lib/landings";
 import { xmasYear, upcomingOccasions, fmtDate, daysUntil, XMAS_OCC } from "@/lib/core";
 
 export const metadata = {
-  title: { absolute: "Secret Santa Generator: Draw Names Online Free | Hatpull" },
-  description: "Free Secret Santa generator. Add names, set exclusions for couples, share one invite link, and let everyone draw a name and make a wish list. Participants join by invitation link.",
+  title: { absolute: "Free Secret Santa Generator & Wish Lists | Hatpull" },
+  description: "Draw Secret Santa names for 3–200 people, exclude couples and share gift wish lists. Organizers sign in; participants join by link. Free to use.",
   alternates: { canonical: "https://secretsantageneratorapp.com/" },
   verification: { other: { "msvalidate.01": "F4861D58DE9F22DD604DD37B0F0CE192" } },
-  openGraph: { title: "Secret Santa Generator: Draw Names Online Free", description: "Draw names, keep couples apart, share wish lists. Free, with easy participant invitations.", url: "https://secretsantageneratorapp.com/", siteName: "Hatpull", type: "website" },
+  openGraph: { title: "Free Secret Santa Generator & Wish Lists | Hatpull", description: "Draw names, keep couples apart, share wish lists. Free, with easy participant invitations.", url: "https://secretsantageneratorapp.com/", siteName: "Hatpull", type: "website" },
 };
 export const revalidate = 3600;
 
@@ -24,7 +24,7 @@ const FAQ = [
   ["Can I stop couples from drawing each other?", "Yes. Add exclusions for couples, siblings, housemates, or anyone who drew each other last year."],
   ["Does everyone need an account?", "The organizer signs in with Google or email to create and manage the celebration. Participants can join with the invitation link and pick their name without an account."],
   ["Can the organizer see who drew whom?", "Not while the exchange is running. The organizer can view the full results after the celebration date, so you can set exclusions to avoid the same matches next year."],
-  ["How do wish lists work?", "Each person adds gift ideas with links and prices. Whoever drew them can secretly reserve a gift, so nobody buys the same thing twice."],
+  ["How do wish lists work?", "Open your participant invitation or sign in, then choose your celebration in Gift Finder. Save eBay products directly, link an Amazon wish list once, or add a gift link from another store. Your gift-giver opens your list from the celebration and can reserve individual gifts without showing you the reservation."],
   ["Is it free?", "Yes. Drawing names, wish lists and invitations are all free."],
 ];
 
@@ -75,6 +75,17 @@ export default function SantaLanding() {
             <div className="panel" key={t}><h3>{t}</h3><p className="muted small">{d}</p></div>
           ))}
         </div>
+      </section>
+
+      <section className="section">
+        <h2>Give your Secret Santa a wish list to shop from</h2>
+        <p>Choose your celebration in Gift Finder, then save gifts and add details such as size or color. Your gift-giver can open your wish list from their match.</p>
+        <div className="feature-grid">
+          <div className="panel"><h3>Save eBay gifts directly</h3><p>Search real products and add favorites to your Hatpull list. For US-dollar celebrations, item prices are filtered to your budget; allow for shipping and tax.</p></div>
+          <div className="panel"><h3>Link an Amazon wish list once</h3><p>Add a view-only Amazon list link, then keep choosing gifts on Amazon. Your gift-giver opens that same list. Amazon items stay on Amazon.</p></div>
+          <div className="panel"><h3>Add a gift from another store</h3><p>Save its product link and optional preferences. Reserving an individual gift in Hatpull helps the group avoid duplicate purchases; checkout happens at the store.</p></div>
+        </div>
+        <div className="row" style={{ marginTop: 20 }}><Link className="btn ghost" href="/gift-finder">Browse gifts for your budget</Link><Link className="link" href="/secret-santa-generator-with-wish-list">See how Secret Santa wish lists work</Link></div>
       </section>
 
       <section className="section">

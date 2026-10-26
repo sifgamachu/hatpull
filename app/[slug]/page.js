@@ -18,7 +18,7 @@ export async function generateMetadata({ params }) {
     title: { absolute: `${l.title} | Hatpull` },
     description: l.description,
     alternates: { canonical: url },
-    openGraph: { title: l.title, description: l.description, url, siteName: "Secret Santa Generator", type: "website" },
+    openGraph: { title: l.title, description: l.description, url, siteName: "Hatpull", type: "website" },
   };
 }
 

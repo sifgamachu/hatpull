@@ -9,7 +9,7 @@ export default function Page() {
     ["Sign in and create", "Sign in with Google or email to save the celebration to your organizer account. Your setup stays in place while you sign in. Participants do not need accounts."],
     ["Share one invitation link", "Copy the invitation into WhatsApp, a text or an email. It's the same link for the whole group."],
     ["Everyone picks their name and draws", "Each person opens the link, taps their own name, and reveals who they're buying for. Nobody else can see it. If the organizer ever resets your name, you'll be told."],
-    ["Make wish lists and reserve gifts", "People add gift ideas with links and prices. Others in the group can reserve a gift secretly so nothing gets bought twice."],
+    ["Make wish lists and reserve gifts", "Choose your celebration in Gift Finder. Save eBay products directly, link an Amazon wish list once, or add a gift link and optional preferences. Your gift-giver opens your wish list from their match. Reserve individual gifts in Hatpull before buying at the store."],
     ["Exchange gifts", "On the day, swap presents. After the date, the organizer can see who drew whom, which helps you avoid repeat matches next year."],
   ];
   return (
@@ -31,6 +31,7 @@ export default function Page() {
       <p>The organizer can reset that name from the celebration settings. The match stays the same. If someone may have seen a match they should not know, use the redraw option and notify the group.</p>
       <h3>Getting back on another device</h3>
       <p>Organizers sign in with the account that created or claimed the group, then open My celebrations. Participants can save their private personal link or optionally sign in to restore their celebration on another device. Signed-in members can receive reminders a week and a day before the exchange, and can turn them off on the Account page. Marketing email is a separate opt-in.</p>
+      <p>For the shopping steps, see <Link href="/secret-santa-generator-with-wish-list">how shared Secret Santa wish lists work</Link> or open <Link href="/gift-finder">Gift Finder</Link>. Amazon lists open on Amazon; their products and purchase status do not sync into Hatpull.</p>
       <h2>Secret Santa generator or name picker?</h2>
       <p>Use the <Link href="/">Secret Santa generator</Link> when everyone gives and receives one gift and matches should stay private. Use the <a href="https://onlinenamepickertool.com/">name picker wheel</a> for a single winner, a classroom turn, or a random order. A wheel alone does not enforce Secret Santa exclusions or prevent self-matches across a whole group.</p>
       <p style={{ marginTop: 20 }}><Link className="btn" href="/new?occ=0">Start your Secret Santa</Link></p>

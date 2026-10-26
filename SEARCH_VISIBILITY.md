@@ -1,4 +1,14 @@
-# Search visibility — updated 2026-10-23
+# Search visibility — updated 2026-10-25
+
+## October 25 audit and changes
+- Keep Hatpull as the brand and retain the existing canonical domains. No migration to hatpull.com was performed.
+- Google web-search performance for the available October 19–23 data: **39 impressions, 0 clicks, average position 57.8**. The homepage had 32 impressions at average position 69.8. Reported queries included “christmas name drawing generator” (3 impressions), “online secret santa draw” (2) and “secret santa random name generator” (2). These are site appearances, not market search-volume figures or unique visitors. The sample is too small for a reliable click-through-rate conclusion.
+- Google URL Inspection confirms the Secret Santa homepage is indexed, crawl/indexing are allowed, and Google's canonical matches the homepage. Last crawl shown: October 23 at 7:54 PM. The sitemap report separately shows Success, last read October 24, with 21 discovered pages. URL Inspection's sitemap field still reports a temporary processing error; do not equate that with a failed sitemap submission.
+- The wish-list landing page was unknown to Google before this update. The homepage and setup guide now link to it within explanatory copy. Its content now describes the actual eBay saving and Amazon list-linking workflows, recipient access, budget handling, and reservation limits. The homepage title now emphasizes the generator and wish lists; landing-page Open Graph site names consistently say Hatpull.
+- Bing still reports 0 impressions/clicks and the homepage as Discovered but not crawled (discovered October 22). It gives no specific crawl error in that report. This is not evidence that robots rules or the brand name are causing the delay.
+- Production build and local public routing, canonical, schema, robots and sitemap checks passed before publishing. No authentication, private-list, database, DNS or affiliate-account configuration changed.
+
+Earlier dated observations below are retained as history; the figures above supersede them.
 
 ## October 23 audit and changes
 - Google URL Inspection confirms the picker homepage is indexed. Both properties' Search Performance reports show zero impressions/clicks in the currently available October 19–20 data; this does not establish all traffic or future performance. Page-indexing aggregate reports are still processing.

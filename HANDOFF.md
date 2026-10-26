@@ -2,6 +2,12 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Search identity and wish-list discovery — 2026-10-25
+
+The owner confirmed Hatpull remains the brand. Keep the current Secret Santa and picker canonical domains; no migration to hatpull.com was made. The homepage title is “Free Secret Santa Generator & Wish Lists | Hatpull.” Its shopping explanation and the existing wish-list landing page describe direct eBay saving, one-time Amazon list linking, recipient access, and the limits of budget filtering and reservation sync. Landing-page Open Graph site names consistently use Hatpull. These public descriptions and internal links do not change private lists or account behavior.
+
+Search Console checked October 25: the Secret Santa domain had 39 web-search impressions, 0 clicks and average position 57.8 for the available October 19–23 data. Homepage: 32 impressions, average position 69.8. Google indexed the homepage with the expected canonical; the sitemap was read successfully October 24 and listed 21 discovered pages. The wish-list landing page was still unknown to Google before this update. Impressions are appearances in search results, not site visits or keyword search-volume estimates. A rename or domain move is not justified as a traffic fix by this report.
+
 ## Shop selection and retailer layouts — 2026-10-24
 
 Gift Finder opens with available eBay and Amazon shop cards. The eBay section uses white space, rounded search, blue actions and real catalog photos; Amazon uses a navy/gold department-browsing layout with original category illustrations and links to Amazon. Hatpull remains clearly identified. Store cards and headers use unaltered official logo downloads: eBay's multicolor heritage logo and Amazon's publisher-approved “Available at Amazon” lockup. See `STORE_LOGOS.md` for sources and usage notes. Pending partner applications are not shown as active shops.
