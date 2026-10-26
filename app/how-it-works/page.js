@@ -19,6 +19,7 @@ export default function Page() {
       <p className="muted">Running a gift exchange online takes about a minute to set up. Here's the whole process.</p>
       <ol className="stack" style={{ paddingLeft: 20 }}>{steps.map(([t, d]) => <li key={t}><b>{t}.</b> {d}</li>)}</ol>
       <h2>Secret Santa rules that keep it fun</h2>
+      <p>Use the <Link href="/secret-santa-rules">full rules and organizer checklist</Link> for a ready-to-edit invitation, spending-limit examples and answers for odd-sized groups.</p>
       <ul><li>Agree on a budget and stick to it.</li><li>Set a date and give people at least two weeks.</li><li>Fill in your wish list early so your Secret Santa isn't guessing.</li><li>Keep it secret until the exchange. Anonymous questions help.</li></ul>
       <h2>Before you send the invitation</h2>
       <ul><li>Check spelling and use a last initial for people with the same first name.</li><li>Agree on whether the budget includes shipping, and tell everyone the delivery or exchange date.</li><li>Check exclusions in both directions if two people should never draw each other.</li><li>Share the group invitation, not your private organizer or personal link.</li><li>Ask participants to pick only their own name and add a few affordable wishes.</li></ul>

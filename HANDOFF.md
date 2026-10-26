@@ -2,6 +2,12 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Public demo and organizer guide — 2026-10-25
+
+The homepage now has direct choices for a name draw, wish-list group and Gift Finder, plus a clearly labeled fictional sample at `/#try-a-draw`. `DrawPreview` uses the existing `drawNames` helper with Sam/Alex excluded in both directions, reveals Sam's recipient, and opens illustrative wishes. All sample state is component memory; it does not call an API, save a real group or touch private celebrations. Organizer sign-in requirements are retained.
+
+`/secret-santa-rules` provides original planning guidance, a checklist and a copyable group-message template. Clipboard failure has a manual-copy fallback. Its static content, article/breadcrumb/FAQ metadata, sitemap entry and homepage/footer/setup-guide links support discovery. Competitive observations and unimplemented opportunities are in `docs/drawnames-review-20261025.md`; no competitor account workflow, source code, reviews or artwork was reproduced.
+
 ## Search identity and wish-list discovery — 2026-10-25
 
 The owner confirmed Hatpull remains the brand. Keep the current Secret Santa and picker canonical domains; no migration to hatpull.com was made. The homepage title is “Free Secret Santa Generator & Wish Lists | Hatpull.” Its shopping explanation and the existing wish-list landing page describe direct eBay saving, one-time Amazon list linking, recipient access, and the limits of budget filtering and reservation sync. Landing-page Open Graph site names consistently use Hatpull. These public descriptions and internal links do not change private lists or account behavior.

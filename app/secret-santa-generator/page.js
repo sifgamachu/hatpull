@@ -5,6 +5,7 @@ import Snow from "@/components/Snow";
 import Lights from "@/components/Lights";
 import SantaHat from "@/components/SantaHat";
 import Countdown from "@/components/Countdown";
+import DrawPreview from "@/components/DrawPreview";
 import { Bow } from "@/components/bits";
 import { LANDINGS } from "@/lib/landings";
 import { xmasYear, upcomingOccasions, fmtDate, daysUntil, XMAS_OCC } from "@/lib/core";
@@ -45,9 +46,19 @@ export default function SantaLanding() {
               <Link className="btn" href="/new?occ=0">Start drawing names</Link>
               <Link className="btn ghost" href="/new?mode=wish">Share wish lists</Link>
             </div>
+            <p className="hero-preview-link"><a href="#try-a-draw">Try a sample draw first <span aria-hidden="true">↓</span></a></p>
             <Countdown />
           </div>
           <SantaHat />
+        </div>
+      </section>
+
+      <section className="section" aria-labelledby="start-choice-title">
+        <h2 id="start-choice-title">What would you like to do?</h2>
+        <div className="start-choices">
+          <Link className="start-choice" href="/new?occ=0"><span className="start-choice-icon" aria-hidden="true">🎩</span><h3>Organize a Secret Santa</h3><p>Draw names for 3–200 people, set a budget and keep couples apart.</p><span className="start-choice-action">Start a name draw <span aria-hidden="true">→</span></span></Link>
+          <Link className="start-choice" href="/new?mode=wish"><span className="start-choice-icon" aria-hidden="true">🎁</span><h3>Share wish lists</h3><p>Create a group for birthdays or any occasion. Share wishes without drawing names.</p><span className="start-choice-action">Start a wish-list group <span aria-hidden="true">→</span></span></Link>
+          <Link className="start-choice" href="/gift-finder"><span className="start-choice-icon" aria-hidden="true">🛍️</span><h3>Find a gift</h3><p>Explore eBay gifts in your budget or browse Amazon. You can browse before joining a group.</p><span className="start-choice-action">Open Gift Finder <span aria-hidden="true">→</span></span></Link>
         </div>
       </section>
 
@@ -60,6 +71,8 @@ export default function SantaLanding() {
           <div><strong>Make wish lists</strong>Reserve gifts secretly so nobody wraps the same sweater twice.</div>
         </div>
       </section>
+
+      <DrawPreview/>
 
       <section className="section">
         <h2>Everything your gift exchange needs</h2>
@@ -113,6 +126,7 @@ export default function SantaLanding() {
 
       <section className="section faq">
         <h2>Secret Santa questions</h2>
+        <p>Planning your first exchange? Use our <Link href="/secret-santa-rules">Secret Santa rules, organizer checklist and invitation template</Link>.</p>
         <p>Organizers sign in with Google or email to save and manage their celebrations across devices. Participant sign-in is optional and enables account access and reminders. <Link href="/how-it-works">Read the setup guide and troubleshooting tips</Link>.</p>
         {FAQ.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}
       </section>

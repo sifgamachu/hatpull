@@ -37,5 +37,18 @@ async function get(host, path) {
   assert.ok((await (await get(picker,'/sitemap.xml')).text()).includes(`<loc>https://${picker}${guidePath}</loc>`));
   assert.ok(!(await (await get(santa,'/sitemap.xml')).text()).includes(guidePath));
   console.log('Picker guide: canonical host, duplicate redirect and sitemap pass');
+  const rulesPath='/secret-santa-rules';
+  const rules=await get(santa,rulesPath); assert.equal(rules.status,200);
+  const rulesHtml=await rules.text();
+  assert.ok(rulesHtml.includes(`rel="canonical" href="https://${santa}${rulesPath}"`));
+  assert.ok(rulesHtml.includes('Copy organizer message'));
+  const rulesGraphs=[...rulesHtml.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap(m=>JSON.parse(m[1])['@graph']||[]);
+  assert.ok(rulesGraphs.some(x=>x['@type']==='Article' && x.url===`https://${santa}${rulesPath}`));
+  assert.ok(rulesGraphs.some(x=>x['@type']==='FAQPage' && x.mainEntity.some(q=>q.name==='Can Secret Santa work with an odd number of people?')));
+  const rulesAlias=await get(picker,rulesPath); assert.equal(rulesAlias.status,308);
+  assert.equal(rulesAlias.headers.get('location'),`https://${santa}${rulesPath}`);
+  assert.ok((await (await get(santa,'/sitemap.xml')).text()).includes(`<loc>https://${santa}${rulesPath}</loc>`));
+  assert.ok(!(await (await get(picker,'/sitemap.xml')).text()).includes(rulesPath));
+  console.log('Secret Santa rules: crawlable guide, schema, canonical host and sitemap pass');
   console.log('Public aliases and crawlable guide pass');
 })().catch(e=>{console.error(e);process.exitCode=1});
