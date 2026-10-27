@@ -1,14 +1,11 @@
+import StartHero from '@/components/StartHero';
 import { siteIdentity } from "@/lib/search";
 import Link from "next/link";
 import Festive from "@/components/Festive";
-import Snow from "@/components/Snow";
-import Lights from "@/components/Lights";
-import SantaHat from "@/components/SantaHat";
-import Countdown from "@/components/Countdown";
 import DrawPreview from "@/components/DrawPreview";
 import { Bow } from "@/components/bits";
 import { LANDINGS } from "@/lib/landings";
-import { xmasYear, upcomingOccasions, fmtDate, daysUntil, XMAS_OCC } from "@/lib/core";
+import { upcomingOccasions, fmtDate, daysUntil, XMAS_OCC } from "@/lib/core";
 
 export const metadata = {
   title: { absolute: "Free Secret Santa Generator & Wish Lists | Hatpull" },
@@ -32,26 +29,9 @@ const FAQ = [
 export default function SantaLanding() {
   const upcoming = upcomingOccasions().slice(0, 3);
   return (
-    <div className="page">
-      <Festive on />
-      <section className="xmas" aria-label="Secret Santa generator">
-        <Snow />
-        <Lights n={14} />
-        <div className="inner">
-          <div>
-            <p className="kicker">🎄 Secret Santa {xmasYear()}</p>
-            <h1>Free Secret Santa generator. <em>Draw names online.</em></h1>
-            <p className="lede">Hatpull is a free Secret Santa generator for groups of 3 to 200 people. Add the family, keep the couples apart, share one link. Everyone draws a name, writes a wish list, and nobody buys the same gift twice.</p>
-            <div className="row" style={{ marginTop: 24 }}>
-              <Link className="btn" href="/new?occ=0">Start drawing names</Link>
-              <Link className="btn ghost" href="/new?mode=wish">Share wish lists</Link>
-            </div>
-            <p className="hero-preview-link"><a href="#try-a-draw">Try a sample draw first <span aria-hidden="true">↓</span></a></p>
-            <Countdown />
-          </div>
-          <SantaHat />
-        </div>
-      </section>
+    <div className="page journey-surface">
+      <Festive on={false} />
+      <StartHero/>
 
       <section className="section" aria-labelledby="start-choice-title">
         <h2 id="start-choice-title">What would you like to do?</h2>

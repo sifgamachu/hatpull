@@ -7,12 +7,13 @@ import { getG, delG } from "@/lib/store";
 import { isXmas, fmtDate, daysUntil, daysLeftText, money, CURRENCIES, inviteText } from "@/lib/core";
 import { toast, copy, burst } from "@/lib/ui";
 import Festive from "./Festive";
-import XBanner from "./XBanner";
 import { Ornament, WishBar, Sheet } from "./bits";
 import { ExclusionGrid } from "./Wizard";
 import SignIn from "./SignIn";
 import OrganizerAccess, { isOrganizerError } from "./OrganizerAccess";
 import { GOOGLE_CLIENT_ID, EMAIL_SIGNIN } from "@/lib/auth";
+import {CelebrationNav,JourneyHeading} from './JourneyUI';
+import {celebrationNextStep} from '@/lib/celebration-journey.mjs';
 const SIGNIN_ON = !!(GOOGLE_CLIENT_ID || EMAIL_SIGNIN);
 
 export default function Dashboard({ gid }) {
@@ -42,7 +43,7 @@ export default function Dashboard({ gid }) {
     const names = ppl.map(m => m.name), rec = state.members.find(m => m.id === me.receiver_id);
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!reduce) for (let i = 0; i < 22; i++) { setAnim(names[(Math.random() * names.length) | 0]); await new Promise(r => setTimeout(r, 60 + i * i * 0.9)); }
-    try { await rpc("hp_mark_drawn", { p_gid: gid, p_mtok: tokens.mtok }); } catch {}
+    try { await rpc("hp_mark_drawn", { p_gid: gid, p_mtok: tokens.mtok }); } catch { setAnim(null); toast("Couldn’t save your reveal. Please try again."); return; }
     setAnim(null); await reload();
     setTimeout(() => { if (xm) burst(document.querySelector(".slot.done")); }, 50);
     toast(xm ? `You're ${rec?.name}'s Secret Santa 🎅` : `You drew ${rec?.name}`);
@@ -74,25 +75,20 @@ export default function Dashboard({ gid }) {
     try { await rpc("hp_admin_live", { p_gid: gid, p_atok: tokens.atok }); firedLive.current = false; toast("Live draw in 30 seconds"); reload(); } catch { toast("Couldn't start the live draw."); }
   }
 
+  const nextStep=celebrationNextStep(state);
   return (
-    <>
-      <Festive on={xm} />
-      {xm && <div style={{ marginBottom: 16 }}><XBanner>
-        <p className="kicker">{me ? `🎄 Merry Christmas, ${me.name}` : "🎄 You're the organizer"}</p>
-        <h1>{g.name}</h1>
-        <div className="meta-x">
-          {g.date && <span>📅 {fmtDate(g.date, { weekday: "short", month: "long", day: "numeric" })}</span>}
-          {dleft != null && dleft >= 0 && <span><b>{dleft === 0 ? "Today!" : dleft === 1 ? "Tomorrow" : `${dleft} sleeps`}</b>{dleft > 1 ? " to go" : ""}</span>}
-          {g.budget && <span>💸 <b>{money(g.cur, g.budget)}</b></span>}
-          <span>👥 {ppl.length} people</span>
-        </div>
-      </XBanner></div>}
-      {welcome && me && <PersonalLink gid={gid} first />}
+    <div className="journey-surface celebration-page">
+      <Festive on={false}/>
+      <JourneyHeading eyebrow={isDraw?'Your Secret Santa':'Your wish-list group'} title={g.name} action={adm?<Link className="btn" href={`/invite/${gid}`}>Invite people →</Link>:null}><p>{[g.date&&fmtDate(g.date),g.budget&&money(g.cur,g.budget)+' per gift',ppl.length+' people'].filter(Boolean).join(' · ')}</p></JourneyHeading>
+      <CelebrationNav gid={gid} mid={me?.id} admin={adm}/>
+      <section className="journey-next"><span className="journey-next-symbol" aria-hidden="true">✦</span><div><p className="eyebrow">Your next step</p><h2>{nextStep.label}</h2><p>{nextStep.detail}</p></div><Link className="btn" href={nextStep.href}>{nextStep.action} →</Link></section>
+      <div className="celebration-counts"><div><strong>{joined}/{ppl.length}</strong><span>people joined</span></div><div><strong>{wishN}/{ppl.length}</strong><span>wish lists started</span></div>{isDraw&&<div><strong>{drawnN}/{ppl.length}</strong><span>names revealed</span></div>}</div>
+      {welcome&&me&&<p className="note">You’re in, {me.name}. Your wish list and drawn name are saved here. Keep your personal link below for your next visit.</p>}
       <div className="dash">
-        {xm && <h2 className="sr-only">Celebration details</h2>}
+
         <div>
           <div className="panel stack">
-            {xm ? <h3>Celebration details</h3> : <><h1 style={{ fontSize: 28 }}>{g.name}</h1><h2 className="sr-only">Details</h2></>}
+            <h3>Celebration details</h3>
             {me ? <p>Hi {me.name}! {dleft != null && dleft >= 0 && <span className="muted">{daysLeftText(dleft)}</span>}</p> : <p className="muted">You're organizing but not in the draw.</p>}
             <div className="meta">
               {g.date && <div>📅 {fmtDate(g.date)}</div>}
@@ -107,7 +103,7 @@ export default function Dashboard({ gid }) {
             <Link className="btn small" href={`/g/${gid}/w/${me.id}`}>{mine?.wishes ? "Edit my wish list" : "Add gifts to wish list"}</Link>
             {myQs > 0 && <Link className="note small" href={`/g/${gid}/w/${me.id}`} style={{ textDecoration: "none" }}>You have {myQs} anonymous question{myQs > 1 ? "s" : ""} to answer.</Link>}
           </div>}
-          {me && isDraw && <div className="panel stack gift">
+          {me && isDraw && <div className="panel stack gift" id="my-drawn-name">
             <h3>{xm ? "Your Secret Santa pick" : "My drawn name"}</h3>
             {!me.receiver_id ? <p className="muted small">Names are being drawn. Check back in a moment.</p>
               : me.drawn && !anim ? <><div className="slot done"><span>{rec?.name}</span></div><Link className="btn small ghost" href={`/g/${gid}/w/${rec?.id}`}>See {rec?.name}'s wish list</Link></>
@@ -130,8 +126,8 @@ export default function Dashboard({ gid }) {
               ? <div className="note small">Live draw starts in {Math.ceil(liveMs / 1000)} seconds for everyone on this page.</div>
               : <div className="stack" style={{ gap: 6, borderTop: "1px solid var(--line)", paddingTop: 12 }}><button className="btn small" onClick={startLive}>Start a live draw</button><p className="tiny muted">Get everyone on this page (on a call or in the same room), then start. Each person sees only their own name, all at once.</p></div>)}
           </div>
-          <div className="panel stack">
-            <h3>Wish lists</h3>
+          <div className="panel stack" id="celebration-people">
+            <h3>Everyone’s wishes</h3>
             <p className="eyebrow">{isDraw ? "Members drawing names" : "Members"}</p>
             <div className="list">{ppl.map(m => <PersonRow key={m.id} gid={gid} g={g} m={m} me={me} xm={xm} />)}</div>
             {kids.length > 0 && <><p className="eyebrow" style={{ marginTop: 6 }}>Children's wish lists</p><div className="list">{kids.map(m => <PersonRow key={m.id} gid={gid} g={g} m={m} me={me} xm={xm} parent={state.members.find(x => x.id === m.parent_id)?.name} />)}</div></>}
@@ -144,7 +140,7 @@ export default function Dashboard({ gid }) {
             <div className="row between"><h3>Exclusions</h3>{adm && <button className="link" onClick={() => setSheet("excl")}>Manage</button>}</div>
             <div className="row">{g.exclusions?.length ? <ExclusionChips g={g} members={state.members} /> : <span className="muted small">No exclusions are set.</span>}</div>
           </div>}
-          <div className="panel stack">
+          <div className="panel stack" id="celebration-messages">
             <h3>Group messages</h3>
             <p className="small muted">Send a message to everyone. Your name is shown with it.</p>
             {me && <form onSubmit={postMsg} className="row" style={{ flexWrap: "nowrap" }}><input value={msg} onChange={e => setMsg(e.target.value)} maxLength={500} placeholder="Write a message" aria-label="Message" /><button className="btn small" type="submit">Send</button></form>}
@@ -155,7 +151,7 @@ export default function Dashboard({ gid }) {
           </div>
           {me?.reset_count > 0 && <p className="tiny muted panel" role="note">ℹ️ Your name was reset by the organizer {me.reset_count === 1 ? "once" : `${me.reset_count} times`}. A reset lets whoever picks the name next see its match, so if you didn't ask for this, tell the organizer and ask them to redraw names.</p>}
           {me && !me.linked && SIGNIN_ON && <div className="panel stack"><h3>🔒 Keep your spot</h3><p className="small muted">Sign in {GOOGLE_CLIENT_ID ? "with Google or email" : "with your email"} so you can open this on any device, nobody else can ever pick your name, and you get a reminder before the exchange. Optional.</p><button className="btn small" style={{ alignSelf: "flex-start" }} onClick={() => setSheet("signin")}>Sign in</button></div>}
-          {me && !welcome && <PersonalLink gid={gid} />}
+          {me && <details className="panel personal-link-details"><summary>Save my personal access link</summary><PersonalLink gid={gid}/></details>}
         </div>
       </div>
       {sheet === "signin" && <SignIn close={() => setSheet(null)} next={`/g/${gid}`} />}
@@ -163,7 +159,7 @@ export default function Dashboard({ gid }) {
       {sheet === "excl" && <Exclusions gid={gid} state={state} tokens={tokens} close={() => setSheet(null)} reload={reload} />}
       {sheet === "remind" && <Reminder state={state} close={() => setSheet(null)} />}
       {sheet === "kid" && <AddKid gid={gid} tokens={tokens} close={() => setSheet(null)} />}
-    </>
+    </div>
   );
 }
 

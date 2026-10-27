@@ -10,10 +10,11 @@ export default function Header() {
         Hatpull
       </Link>
       <nav className="row" style={{ gap: 6, justifyContent: "flex-end" }} aria-label="Main">
-        <Link className="navlink" href={SITE.picker + "/"}>Name Picker</Link>
-        <Link className="navlink" href={SITE.santa + "/"}>Secret Santa</Link>
+        <Link className="navlink picker-nav" href={SITE.picker + "/"}>Name picker</Link>
+        <Link className="navlink" href={SITE.santa + "/"}>Home</Link>
         <Link className="navlink" href={SITE.santa + "/my"}>My celebrations</Link>
-        <Link className="navlink" href={SITE.santa + "/gift-finder"}>Gift Finder</Link>
+        <Link className="navlink" href={SITE.santa + "/wish-lists"}>My wish lists</Link>
+        <Link className="navlink" href={SITE.santa + "/gift-finder"}>Find gifts</Link>
         <AccountButton />
         <Link className="btn small" href={SITE.santa + "/new"}>Draw names</Link>
       </nav>

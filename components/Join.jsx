@@ -7,9 +7,10 @@ import { allG, setG } from "@/lib/store";
 import { fmtDate, money, isXmas } from "@/lib/core";
 import { toast } from "@/lib/ui";
 import Festive from "./Festive";
-import XBanner from "./XBanner";
 import { Sheet } from "./bits";
 import SignIn from "./SignIn";
+
+import {JourneyHeading} from './JourneyUI';
 
 export default function Join({ code }) {
   const router = useRouter();
@@ -44,12 +45,13 @@ export default function Join({ code }) {
   if (!info) return <div className="narrow panel muted">Opening your invitation…</div>;
   const xm = isXmas(info), ppl = info.members;
   return (
-    <div className="narrow stack">
-      <Festive on={xm} />
-      {xm && <XBanner><p className="kicker">✉️ You're invited</p><h1>{info.name}</h1><div className="meta-x">{info.date && <span>📅 {fmtDate(info.date, { month: "long", day: "numeric" })}</span>}{info.budget && <span>💸 <b>{money(info.cur, info.budget)}</b></span>}<span>👥 {ppl.length} people</span></div></XBanner>}
+    <div className="journey-surface join-page narrow stack">
+      <Festive on={false}/>
+      <JourneyHeading eyebrow="You’re invited" title={info.name}><p>{[info.date&&fmtDate(info.date),info.budget&&money(info.cur,info.budget)+' per gift'].filter(Boolean).join(' · ')}</p></JourneyHeading>
+      <ol className="join-steps" aria-label="Joining your celebration"><li aria-current="step"><span>1</span>Choose your name</li><li><span>2</span>Make your wish list</li><li><span>3</span>{info.mode==='draw'?'Reveal your match':'Explore wishes'}</li></ol>
       <div className="panel stack">
         {!xm && <p className="eyebrow">{info.occasion || "Celebration"}</p>}
-        {xm ? <h2>Who are you joining as?</h2> : <h1 style={{ fontSize: 26 }}>Who are you joining as?</h1>}
+        <h2>Which one is you?</h2>
         <p className="muted">{info.org_name} invited you to <b>{info.name}</b>{info.date ? ` on ${fmtDate(info.date, { month: "long", day: "numeric" })}` : ""}. Pick your name. Each name can only be picked once.</p>
         <div className="optlist">{ppl.map(m => <button key={m.id} className="opt" disabled={m.claimed && !m.protected} onClick={() => m.protected && !m.mine ? setSignIn(m) : setPick(m)}><span>{m.name}</span><span className={`pill ${m.claimed && !m.protected ? "" : "ok"}`}>{m.mine ? "You" : m.protected ? "🔒 Sign in" : m.claimed ? "Joined" : "Pick"}</span></button>)}</div>
         <p className="muted small">Not on the list? Ask {info.org_name} to add you.</p>

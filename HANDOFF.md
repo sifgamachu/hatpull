@@ -2,6 +2,14 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Full celebration journey — 2026-10-26
+
+The homepage, setup wizard, invitations, participant joining, dashboard and wish lists now share one responsive design. Setup runs through organizer → people → exclusions → celebration details → review; wish-only groups skip exclusions. Review sections can be edited directly and old setup drafts migrate to the new stages. Organizer sign-in and the existing authenticated creation API remain required.
+
+New `/wish-lists` and `/friends` hubs accompany `/my`, using a shared loader with four-request concurrency and account-change guards. Celebration navigation and next-action prompts lead to invitations, wishes or the user's own reveal as appropriate. Optional age/gender choices still populate budget-aware eBay products directly in the wish list. No database, credentials or live group data were changed for this release.
+
+Validation: 71 tests passed and `npx next build` passed. Local browser checks used a disposable database with fictional participants: full setup, review edits, saved draft recovery, sign-in gate, invitation joining, product saving, hub counts, and 390px mobile layouts. See `docs/celebration-journey-20261026.md` for architecture, scope and rollback. This implements the core public journey; reusable standalone lists and full cross-celebration reservations remain separate future work.
+
 ## Wish list → gender/age → automatic products — 2026-10-26
 
 The editable wish list now starts with optional gender cards and an age range, followed directly by live eBay product suggestions. Changes save automatically and refresh the catalog without a wizard, store choice or Search click. The cart-style list remains available throughout; an eBay gift still saves with one tap. Existing saved profile choices also seed the standalone Gift Finder. Amazon remains the existing external shared-list flow.

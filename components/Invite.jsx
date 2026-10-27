@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
 import { useGroup } from "@/lib/useGroup";
-import { inviteText, isXmas } from "@/lib/core";
+import { inviteText } from "@/lib/core";
 import { copy } from "@/lib/ui";
 import Festive from "./Festive";
-import XBanner from "./XBanner";
 import OrganizerAccess from "./OrganizerAccess";
+
+import {JourneyHeading,CelebrationNav} from './JourneyUI';
 
 export default function Invite({ gid }) {
   const { state, error, reload } = useGroup(gid);
@@ -13,14 +14,16 @@ export default function Invite({ gid }) {
   if (error) return <OrganizerAccess gid={gid} error={error} reload={reload} />;
   if (!state) return <div className="narrow panel muted">Loading…</div>;
   if (!state.is_admin) return <OrganizerAccess gid={gid} />;
-  const g = state.group, xm = isXmas(g);
+  const g = state.group;
   const link = `${location.origin}/join/${g.join_code}`;
   const text = inviteText(g, link, state.members.filter(m => !m.kid).map(m => m.name));
   return (
-    <div className="narrow stack">
-      <Festive on={xm} />
-      {xm ? <XBanner><p className="kicker">🎁 {g.name} is ready</p><h1>Time to invite the family.</h1></XBanner> : <div className="progress"><span style={{ width: "100%" }} /></div>}
-      <div className="panel stack">
+    <div className="journey-surface invite-page stack">
+      <Festive on={false} />
+      <JourneyHeading eyebrow="Your celebration is ready" title="Bring everyone together."><p>{g.name} is saved. Share one invitation, then start your own wish list.</p></JourneyHeading>
+      <CelebrationNav gid={gid} mid={state.me?.id} active="invite" admin/>
+      <div className="invite-layout"><section className="panel stack invite-share">
+        <p className="eyebrow">1 · Invite your group</p>
         <h2>How do you want to send the invitations?</h2>
         <p className="muted">It's one link for the whole group. Each person opens it, picks their own name{g.mode === "draw" ? " and draws someone" : ""}.</p>
         <div className="code">{text}</div>
@@ -31,9 +34,7 @@ export default function Invite({ gid }) {
           <a className="btn ghost" href={`mailto:?subject=${encodeURIComponent(g.name)}&body=${encodeURIComponent(text)}`}>Email</a>
           <button className="btn ghost" onClick={() => copy(link)}>Copy link only</button>
         </div>
-      </div>
-      <OrganizerKey gid={gid} />
-      <Link className="btn ghost" href={`/g/${gid}`}>Go to your celebration</Link>
+      </section><aside className="stack"><section className="panel stack"><p className="eyebrow">2 · Make a little wish</p><h2>Give your gift-giver a head start.</h2><p>Choose your preferences and save gifts in your celebration’s budget.</p>{state.me&&<Link className="btn" href={`/g/${gid}/w/${state.me.id}`}>Start my wish list →</Link>}<Link className="btn ghost" href={`/g/${gid}`}>Open celebration</Link></section><OrganizerKey gid={gid}/></aside></div>
     </div>
   );
 }

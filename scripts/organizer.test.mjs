@@ -26,7 +26,7 @@ test('organizer identity is verified by Auth and cannot be anonymous or unconfir
 test('draft survives sign-in, expires, and belongs to the requested setup',()=>{
   const st={step:7,mode:'draw',orgName:'Sample',includeMe:true,names:['B','C'],excl:{Sample:['B']},occ:'Christmas',name:'Test',date:'2026-12-25',budget:'25',cur:'$',note:'Hello'};
   const storage=draft=>({getItem:()=>JSON.stringify(draft)});
-  assert.deepEqual(readWizardDraft(storage({at:1000,q:'?occ=0',st}),'?occ=0',2000),st);
+  assert.deepEqual(readWizardDraft(storage({at:1000,q:'?occ=0',st}),'?occ=0',2000),{...st,step:5});
   assert.equal(readWizardDraft(storage({at:1000,q:'?occ=0',st}),'?mode=wish',2000),null);
   assert.equal(readWizardDraft(storage({at:1000,q:'?occ=0',st}),'?occ=0',1000+6*3600e3),null);
   assert.equal(readWizardDraft(storage({at:1000,q:'?occ=0',st:{...st,names:[42]}}),'?occ=0',2000),null);

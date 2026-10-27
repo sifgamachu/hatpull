@@ -2,7 +2,7 @@ import Link from "next/link";
 import GiftFinderWorkspace from "./GiftFinderWorkspace";
 
 export default function GiftFinder() {
-  return <div className="gift-finder gift-link-page shop-finder-page stack">
+  return <div className="journey-surface gift-finder gift-link-page shop-finder-page stack">
     <p className="eyebrow">The Hatpull gift finder</p>
     <h1>Great gifts start here.</h1>
     <GiftFinderWorkspace/>
@@ -19,6 +19,6 @@ export default function GiftFinder() {
         <p className="tiny muted">US Amazon Associates guidance · checked October 22, 2026. Consult the linked policies for the current requirements.</p>
       </div>
     </details>
-    <Link href="/my" className="link">Back to my wish lists →</Link>
+    <Link href="/wish-lists" className="link">Back to my wish lists →</Link>
   </div>;
 }

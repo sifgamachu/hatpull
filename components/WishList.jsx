@@ -4,10 +4,9 @@ import Link from "next/link";
 import { useGroup } from "@/lib/useGroup";
 import { rpc } from "@/lib/db";
 import { allG } from "@/lib/store";
-import { isXmas, money, daysUntil, GIFT_CATS, amazonUrl, rid, AMAZON_DISCLOSURE, AFF_REL, normState } from "@/lib/core";
+import { isXmas, money, GIFT_CATS, amazonUrl, rid, AMAZON_DISCLOSURE, AFF_REL, normState } from "@/lib/core";
 import { toast, burst } from "@/lib/ui";
 import Festive from "./Festive";
-import XBanner from "./XBanner";
 import EbayGiftCatalog from "./EbayGiftCatalog";
 import WishProfileChoices from "./WishProfileChoices";
 import { cleanWishDemographics } from "@/lib/gift-preferences.mjs";
@@ -21,6 +20,8 @@ import OrganizerAccess, { isOrganizerError } from "./OrganizerAccess";
 import { WishCard, WishComposer } from "./WishCards";
 import { useGiftProducts, AmazonPriceDetails } from "./GiftProducts";
 import { GIFT_IDEAS, MAX_WISHES, MAX_PROFILE_BYTES, productAsin, productUrl, wishMatches } from "@/lib/gifts.mjs";
+
+import {CelebrationNav,JourneyHeading} from './JourneyUI';
 
 export default function WishList({ gid, mid }) {
   const { state, error, tokens, reload } = useGroup(gid, mid);
@@ -49,20 +50,15 @@ export default function WishList({ gid, mid }) {
   if (!m.visible) return <div className="mid panel stack"><h3>This wish list is private</h3><p className="muted">The organizer set wish lists so only the person who drew {m.name} can see them.</p><Link className="btn small ghost" href={`/g/${gid}`}>Back to {g.name}</Link></div>;
   const prof = m.profile || {}, items = draft ?? prof.items ?? [];
   const iDrew = me && me.receiver_id === m.id && state.me.drawn;
-  const d = daysUntil(g.date);
   const listCount = items.filter(w => amazonWishListUrl(w.u)).length, giftCount = items.length - listCount;
   const collectionCount = [listCount && `${listCount} Amazon list${listCount === 1 ? "" : "s"}`, (giftCount || !listCount) && `${giftCount} gift${giftCount === 1 ? "" : "s"}`].filter(Boolean).join(" · ");
 
   return (
-    <div className="wishlist-page stack">
-      <Festive on={xm} />
+    <div className="journey-surface wishlist-page stack">
+      <Festive on={false} />
       <Link href={`/g/${gid}`} className="link crumb">← {g.name}</Link>
-      {xm ? <XBanner>
-          <p className="kicker">{mineList ? (m.kid ? `✉️ ${m.name}'s letter to Santa` : "✉️ Dear Santa…") : iDrew ? "🎅 You're their Secret Santa" : "🎁 Wish list"}</p>
-          <h1>{mineList ? (m.kid ? `${m.name}'s wish list` : "My wish list") : `${m.name}'s wish list`}</h1><h2 className="sr-only">Gifts and details</h2>
-          <div className="meta-x"><span>🎁 {collectionCount}</span>{g.budget && <span>💸 <b>{money(g.cur, g.budget)}</b> budget</span>}{d != null && d >= 0 && <span>{d} sleeps to go</span>}</div>
-        </XBanner>
-        : <div className="row between"><h1 style={{ fontSize: "clamp(28px,5vw,40px)" }}>{mineList ? (m.kid ? `${m.name}'s wish list` : "My wish list") : `Wish list of ${m.name}`}</h1><h2 className="sr-only">Gifts and details</h2><span className="pill">{collectionCount}</span></div>}
+      <JourneyHeading eyebrow={mineList?'A few hints for a lovely surprise':iDrew?'Your drawn name':'Shared with your celebration'} title={mineList?(m.kid?`${m.name}’s wish list`:'My wish list'):`${m.name}’s wish list`}><p>{collectionCount}{g.budget?` · ${money(g.cur,g.budget)} celebration budget`:''}</p></JourneyHeading>
+      <CelebrationNav gid={gid} mid={me?.id} active={mineList?'wishes':'recipient'} admin={state.is_admin}/>
       {iDrew && <div className="note">{xm ? `🎅 You're ${m.name}'s Secret Santa.` : `You drew ${m.name}.`} {listCount > 0 ? (giftCount > 0 ? "Open their Amazon wish list or reserve an individual gift below." : "Open their Amazon wish list to choose a gift.") : `Reserve a gift so nobody else buys the same thing. ${m.name} won't see it.`}</div>}
       {mineList ? <Editor key={m.id} gid={gid} g={g} m={m} prof={prof} items={items} setDraft={setDraft} tokens={tokens} reload={reload} xm={xm} questions={viewState.questions.filter(q => q.to === m.id)} />
         : <Viewer gid={gid} g={g} m={m} me={me} prof={prof} items={items} state={viewState} tokens={tokens} reload={reload} xm={xm} />}
