@@ -2,6 +2,14 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Exact ages, date choices and varied gifts — 2026-10-27
+
+Exclusions now require four draw participants in setup, organizer editing and creation/redraw APIs. Three-person setup ignores stale draft exclusions. Secret Santa 2026 offers December 19, 24 and 25 plus Other/custom date. Exact-age dropdowns (0–120, optional) replace ranges while preserving legacy choices.
+
+Default gift inspiration replaces “gift set men” with a varied, age-appropriate catalog mix. The Men/adult pool includes Stanley mugs, AUXITO inflators, DEERC drones, JBL speakers, SWANLAKE socket sets and DeWalt bits. Compact image cards offer one-tap heart saving. Results progressively load with two-request concurrency, shared public caches and the existing item-price cap. Stock and prices remain eBay’s, so exact DrawNames inventory is not guaranteed. Cold inspiration pages use up to six searches; monitor provider usage as traffic grows.
+
+Migration `20261027220613_exact_wish_age.sql` is applied and verified on Hatpul with a rolled-back test. No real celebration was changed. 78 tests and the production build pass. See `docs/gift-matching-20261027.md` for verification, architecture, limitations and rollback.
+
 ## Full celebration journey — 2026-10-26
 
 The homepage, setup wizard, invitations, participant joining, dashboard and wish lists now share one responsive design. Setup runs through organizer → people → exclusions → celebration details → review; wish-only groups skip exclusions. Review sections can be edited directly and old setup drafts migrate to the new stages. Organizer sign-in and the existing authenticated creation API remain required.

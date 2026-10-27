@@ -55,10 +55,13 @@ test('demographic updates preserve wishes, notes and addresses and enforce owner
     await db.exec('set role anon');
     const save=(patch,token='profile-m0',target='m0')=>q('select hp_set_wish_demographics($1,$2,$3,$4::jsonb) result',[g.id,token,target,JSON.stringify(patch)]);
     for(const token of [null,'wrong','profile-m1'])await assert.rejects(save({who:'women'},token),/forbidden/);
-    for(const bad of [null,[],{who:null},{who:'other'},{age:27},{age:'not an age'},{items:[]},{address:'No'},{hobbies:'No'}])await assert.rejects(save(bad),/invalid_preferences/);
+    for(const bad of [null,[],{who:null},{who:'other'},{age:27},{age:'not an age'},{age:'121'},{age:'01'},{age:'-1'},{age:'1.5'},{items:[]},{address:'No'},{hobbies:'No'}])await assert.rejects(save(bad),/invalid_preferences/);
     assert.deepEqual(await save({who:'women'}),{age:'18–29',who:'women'});
     await q('select hp_add_wish($1,$2,$3,$4::jsonb) result',[g.id,'profile-m0','m0',JSON.stringify({...wish,id:'two',u:'https://example.com/second'})]);
     assert.deepEqual(await save({age:'65+'}),{age:'65+',who:'women'});
+    assert.deepEqual(await save({age:'40'}),{age:'40',who:'women'});
+    assert.equal((await save({age:'0'})).age,'0');
+    assert.equal((await save({age:'120'})).age,'120');
     const s=await q('select hp_state_delta($1,$2,null,$3,null) result',[g.id,'profile-m0','m0']);
     const profile=s.state.members.find(m=>m.id==='m0').profile;
     assert.equal(profile.items.length,2);assert.equal(profile.hobbies,'Keep hobbies');assert.equal(profile.address,'Keep address');

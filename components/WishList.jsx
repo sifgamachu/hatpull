@@ -164,7 +164,8 @@ function Viewer({ gid, g, m, me, prof, items, state, tokens, reload, xm }) {
   }
   const b = parseFloat(g.budget) || 0, lo = b ? Math.round(b * 0.7) : 0, hi = b ? Math.round(b) : 0;
   const hob = (prof.hobbies || "").split(/[,;\n]+/).map(s => s.trim()).filter(Boolean).slice(0, 4);
-  const kid = ["Under 5", "5–11"].includes(prof.age), teen = prof.age === "12–17";
+  const numericAge = /^(0|[1-9]\d{0,2})$/.test(prof.age||'') ? Number(prof.age) : null;
+  const kid = numericAge!==null ? numericAge<12 : ["Under 5", "5–11"].includes(prof.age), teen = numericAge!==null ? numericAge>=12&&numericAge<18 : prof.age === "12–17";
   const pool = kid ? GIFT_CATS.Kids : xm ? GIFT_CATS["Stocking stuffers"].slice(0, 2).concat(["cozy blanket", "coffee gift set", "board game", "bluetooth speaker", "scented candle set", "cookbook"]) : ["cozy blanket", "coffee gift set", "board game", "bluetooth speaker", "scented candle set", "cookbook", "skincare set", "desk plant"];
   const suffix = kid ? "" : teen ? " for teens" : prof.who ? ` for ${prof.who}` : "";
   const terms = hob.map(h => `${h} gift`).concat(pool.map(t => t + suffix)).slice(0, 10);

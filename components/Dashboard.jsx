@@ -280,7 +280,7 @@ function Exclusions({ gid, state, tokens, close, reload }) {
   const [busy, setBusy] = useState(false);
   async function save() {
     setBusy(true);
-    try { await redraw({ gid, atok: tokens.atok, exclusions: Object.entries(excl).flatMap(([a, bs]) => bs.map(b => ({ a, b }))) }); toast("Exclusions saved. Names redrawn."); await reload(); close(); }
+    try { await redraw({ gid, atok: tokens.atok, exclusions: ppl.length<4 ? [] : Object.entries(excl).flatMap(([a, bs]) => bs.map(b => ({ a, b }))) }); toast("Exclusions saved. Names redrawn."); await reload(); close(); }
     catch (e) { toast(e.message); setBusy(false); }
   }
   return (
@@ -288,7 +288,7 @@ function Exclusions({ gid, state, tokens, close, reload }) {
       <div className="row between"><h3>Set exclusions</h3><button className="link" onClick={close}>Close</button></div>
       <p className="muted small">An exclusion says who may <b>not</b> draw whom. Saving redraws all names.</p>
       <ExclusionGrid people={ppl.map(m => m.id)} idName={nameOf} excl={excl} onChange={setExcl} />
-      <button className="btn" onClick={save} disabled={busy}>{busy ? "Saving…" : "Save & redraw"}</button>
+      <button className="btn" onClick={save} disabled={busy||(ppl.length<4&&!state.group.exclusions?.length)}>{busy ? "Saving…" : ppl.length<4&&state.group.exclusions?.length ? "Clear exclusions & redraw" : "Save & redraw"}</button>
     </Sheet>
   );
 }

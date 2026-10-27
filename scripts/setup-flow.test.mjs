@@ -46,3 +46,24 @@ test('next actions respect unrevealed matches and server-provided wish-list visi
   assert.equal(celebrationNextStep({...state,me:{...state.me,drawn:true},members:state.members.map(m=>({...m,visible:true}))}).href,'/g/demo/w/alex');
   assert.equal(celebrationNextStep({...state,members:state.members.map(m=>({...m,wishes:0}))}).href,'/g/demo/w/sam');
 });
+
+test('three-person groups ignore stale draft exclusions; four-person groups retain valid pairs',async()=>{
+  const {setupExclusions,exclusionsAllowed}=await import('../lib/setup-flow.mjs');
+  const state={...base,wantExcl:true,excl:{Sam:['Alex','Absent']}};
+  assert.deepEqual(setupExclusions(state),[]);
+  assert.equal(exclusionsAllowed(setupPeople(state),[{a:'Sam',b:'Alex'}]),false);
+  assert.equal(exclusionsAllowed(setupPeople(state),[]),true);
+  const four={...state,names:['Alex','Taylor','Jordan']};
+  assert.deepEqual(setupExclusions(four),[{a:'Sam',b:'Alex'}]);
+  assert.equal(exclusionsAllowed(setupPeople(four),setupExclusions(four)),true);
+  assert.deepEqual(setupExclusions({...four,includeMe:false}),[]);
+});
+test('Secret Santa suggests the requested full dates and accepts custom dates',async()=>{
+  const {suggestDates,fmtDate}=await import('../lib/core.js');
+  const dates=suggestDates('Secret Santa',new Date(2026,9,27));
+  assert.deepEqual(dates,['2026-12-19','2026-12-24','2026-12-25']);
+  assert.deepEqual(dates.map(d=>fmtDate(d)),['Saturday, December 19, 2026','Thursday, December 24, 2026','Friday, December 25, 2026']);
+  assert.deepEqual(suggestDates('Secret Santa',new Date(2026,11,20)),['2026-12-24','2026-12-25']);
+  assert.ok(suggestDates('Secret Santa',new Date(2026,11,26)).every(d=>d.startsWith('2027')));
+  assert.equal(validateSetup({...base,date:'2026-12-20',customDate:true},4,'2026-10-27'),'');
+});

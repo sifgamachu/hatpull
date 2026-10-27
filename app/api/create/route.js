@@ -1,3 +1,4 @@
+import { exclusionsAllowed } from "@/lib/setup-flow.mjs";
 import { NextResponse } from "next/server";
 import { serverRpc, verifiedCreator } from "@/lib/serverDb";
 import { createHash } from "crypto";
@@ -33,6 +34,7 @@ export async function POST(req) {
     const members = people.map(name => ({ id: rid(6), name }));
     const idOf = n => members.find(m => m.name === n)?.id;
     const exclusions = mode === "draw" ? (b.exclusions || []).map(x => ({ a: idOf(clean(x.a)), b: idOf(clean(x.b)) })).filter(x => x.a && x.b && x.a !== x.b) : [];
+    if (!exclusionsAllowed(members, exclusions)) return NextResponse.json({ error: "Exclusions require at least 4 people." }, { status: 400 });
     // Feasibility check only, for a friendly message; the real draw happens inside the database.
     if (mode === "draw" && !drawNames(members.map(m => m.id), exclusions)) { return NextResponse.json({ error: "These exclusions leave no valid draw." }, { status: 400 }); }
     const orgMid = b.includeMe && clean(b.orgName) ? idOf(clean(b.orgName).slice(0, 40)) : null;

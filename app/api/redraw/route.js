@@ -1,3 +1,4 @@
+import { exclusionsAllowed } from "@/lib/setup-flow.mjs";
 import { NextResponse } from "next/server";
 import { serverRpc, verifiedCreator } from "@/lib/serverDb";
 import { drawNames, rid } from "@/lib/core";
@@ -21,6 +22,7 @@ export async function POST(req) {
     let assignment = null;
     if (roster.mode === "draw") {
       if (members.length < 3) return NextResponse.json({ error: "A draw needs at least 3 people." }, { status: 400 });
+      if (!exclusionsAllowed(members, exclusions)) return NextResponse.json({ error: "Exclusions require at least 4 people. Remove exclusions before reducing the group to three." }, { status: 400 });
       assignment = drawNames(members.map(m => m.id), exclusions);
       if (!assignment) return NextResponse.json({ error: "That change leaves no valid draw. Remove an exclusion first." }, { status: 400 });
     }
