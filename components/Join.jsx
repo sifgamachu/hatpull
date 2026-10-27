@@ -46,7 +46,7 @@ export default function Join({ code }) {
   const xm = isXmas(info), ppl = info.members;
   return (
     <div className="journey-surface join-page narrow stack">
-      <Festive on={false}/>
+      <Festive on={xm}/>
       <JourneyHeading eyebrow="You’re invited" title={info.name}><p>{[info.date&&fmtDate(info.date),info.budget&&money(info.cur,info.budget)+' per gift'].filter(Boolean).join(' · ')}</p></JourneyHeading>
       <ol className="join-steps" aria-label="Joining your celebration"><li aria-current="step"><span>1</span>Choose your name</li><li><span>2</span>Make your wish list</li><li><span>3</span>{info.mode==='draw'?'Reveal your match':'Explore wishes'}</li></ol>
       <div className="panel stack">

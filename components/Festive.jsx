@@ -5,6 +5,7 @@ export default function Festive({ on = true }) {
   useEffect(() => {
     document.documentElement.classList.toggle("xmas-on", !!on);
     window.dispatchEvent(new Event("hp:festive"));
+    return () => { document.documentElement.classList.remove("xmas-on"); window.dispatchEvent(new Event("hp:festive")); };
   }, [on]);
   return null;
 }

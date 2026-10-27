@@ -21,7 +21,7 @@ import { WishCard, WishComposer } from "./WishCards";
 import { useGiftProducts, AmazonPriceDetails } from "./GiftProducts";
 import { GIFT_IDEAS, MAX_WISHES, MAX_PROFILE_BYTES, productAsin, productUrl, wishMatches } from "@/lib/gifts.mjs";
 
-import {CelebrationNav,JourneyHeading} from './JourneyUI';
+import {CelebrationNav,JourneyHeading,HolidayGiftBanner} from './JourneyUI';
 
 export default function WishList({ gid, mid }) {
   const { state, error, tokens, reload } = useGroup(gid, mid);
@@ -55,7 +55,8 @@ export default function WishList({ gid, mid }) {
 
   return (
     <div className="journey-surface wishlist-page stack">
-      <Festive on={false} />
+      <Festive on={xm} />
+      {xm&&<HolidayGiftBanner/>}
       <Link href={`/g/${gid}`} className="link crumb">← {g.name}</Link>
       <JourneyHeading eyebrow={mineList?'A few hints for a lovely surprise':iDrew?'Your drawn name':'Shared with your celebration'} title={mineList?(m.kid?`${m.name}’s wish list`:'My wish list'):`${m.name}’s wish list`}><p>{collectionCount}{g.budget?` · ${money(g.cur,g.budget)} celebration budget`:''}</p></JourneyHeading>
       <CelebrationNav gid={gid} mid={me?.id} active={mineList?'wishes':'recipient'} admin={state.is_admin}/>

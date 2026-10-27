@@ -78,7 +78,7 @@ export default function Dashboard({ gid }) {
   const nextStep=celebrationNextStep(state);
   return (
     <div className="journey-surface celebration-page">
-      <Festive on={false}/>
+      <Festive on={xm}/>
       <JourneyHeading eyebrow={isDraw?'Your Secret Santa':'Your wish-list group'} title={g.name} action={adm?<Link className="btn" href={`/invite/${gid}`}>Invite people →</Link>:null}><p>{[g.date&&fmtDate(g.date),g.budget&&money(g.cur,g.budget)+' per gift',ppl.length+' people'].filter(Boolean).join(' · ')}</p></JourneyHeading>
       <CelebrationNav gid={gid} mid={me?.id} admin={adm}/>
       <section className="journey-next"><span className="journey-next-symbol" aria-hidden="true">✦</span><div><p className="eyebrow">Your next step</p><h2>{nextStep.label}</h2><p>{nextStep.detail}</p></div><Link className="btn" href={nextStep.href}>{nextStep.action} →</Link></section>

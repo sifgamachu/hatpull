@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useGroup } from "@/lib/useGroup";
-import { inviteText } from "@/lib/core";
+import { inviteText, isXmas } from "@/lib/core";
 import { copy } from "@/lib/ui";
 import Festive from "./Festive";
 import OrganizerAccess from "./OrganizerAccess";
@@ -19,7 +19,7 @@ export default function Invite({ gid }) {
   const text = inviteText(g, link, state.members.filter(m => !m.kid).map(m => m.name));
   return (
     <div className="journey-surface invite-page stack">
-      <Festive on={false} />
+      <Festive on={isXmas(g)} />
       <JourneyHeading eyebrow="Your celebration is ready" title="Bring everyone together."><p>{g.name} is saved. Share one invitation, then start your own wish list.</p></JourneyHeading>
       <CelebrationNav gid={gid} mid={state.me?.id} active="invite" admin/>
       <div className="invite-layout"><section className="panel stack invite-share">

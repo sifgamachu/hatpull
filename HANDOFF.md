@@ -2,6 +2,12 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Christmas styling and photo-first product preview — 2026-10-27
+
+The Secret Santa homepage has its Christmas look again: Santa-hat branding, evergreen/red/gold colors, lights, snowfall and wrapped-gift artwork. Setup, invitations, joining, dashboards and wish lists use the festive theme for Christmas celebrations; the finder and personal hub are festive too. The theme cleans up on navigation, leaving unrelated picker pages unchanged. Existing reduced-motion handling is retained. December 19/24/25, Other/custom date, exact ages and four-person exclusion rules remain unchanged.
+
+Product previews now follow a vertical photo-first layout with a large contained photo, thumbnail gallery, prominent Add to wish list pill, clear retailer/price panel, description and expandable details. The current in-page catalog remains eBay; Amazon's external shared-list flow is unchanged. No fabricated Amazon products, prices, ratings or popularity counts. Existing product expiry, one-tap saves, private-list authorization and provider attribution remain intact. No database or environment changes. See `docs/christmas-product-preview-20261027.md` for validation and rollback.
+
 ## Exact ages, date choices and varied gifts — 2026-10-27
 
 Exclusions now require four draw participants in setup, organizer editing and creation/redraw APIs. Three-person setup ignores stale draft exclusions. Secret Santa 2026 offers December 19, 24 and 25 plus Other/custom date. Exact-age dropdowns (0–120, optional) replace ranges while preserving legacy choices.

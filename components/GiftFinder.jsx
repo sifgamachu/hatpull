@@ -1,8 +1,11 @@
 import Link from "next/link";
+import Festive from "./Festive";
+import {HolidayGiftBanner} from "./JourneyUI";
 import GiftFinderWorkspace from "./GiftFinderWorkspace";
 
 export default function GiftFinder() {
   return <div className="journey-surface gift-finder gift-link-page shop-finder-page stack">
+    <Festive/><HolidayGiftBanner/>
     <p className="eyebrow">The Hatpull gift finder</p>
     <h1>Great gifts start here.</h1>
     <GiftFinderWorkspace/>

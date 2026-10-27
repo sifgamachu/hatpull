@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export function JourneyHeading({eyebrow,title,children,action}){
-  return <header className="journey-heading"><div>{eyebrow&&<p className="eyebrow">{eyebrow}</p>}<h1>{title}</h1>{children&&<div className="journey-heading-copy">{children}</div>}</div>{action}</header>;
+  return <header className="journey-heading"><div><span className="holiday-heading-note" aria-hidden="true">✦ A little Christmas magic ✦</span>{eyebrow&&<p className="eyebrow">{eyebrow}</p>}<h1>{title}</h1>{children&&<div className="journey-heading-copy">{children}</div>}</div>{action}</header>;
 }
 export function HubNav({active='celebrations'}){
   return <nav className="journey-nav" aria-label="Your Hatpull"><Link href="/my" aria-current={active==='celebrations'?'page':undefined}>My celebrations</Link><Link href="/wish-lists" aria-current={active==='wishes'?'page':undefined}>My wish lists</Link><Link href="/friends" aria-current={active==='friends'?'page':undefined}>People I’m gifting</Link><Link href="/gift-finder">Find gifts ↗</Link></nav>;
@@ -11,4 +11,8 @@ export function CelebrationNav({gid,mid,active='overview',admin=false}){
 }
 export function JourneyArtwork(){
   return <div className="journey-art" aria-hidden="true"><div className="journey-orbit orbit-one"/><div className="journey-orbit orbit-two"/><span className="journey-spark spark-one">✦</span><span className="journey-spark spark-two">✧</span><div className="journey-present present-tall"><i/><b/></div><div className="journey-present present-wide"><i/><b/></div><div className="journey-art-note"><span>♡</span><div><strong>A little wish.<br/>A lovely surprise.</strong><small>Made personal with Hatpull</small></div></div></div>;
+}
+
+export function HolidayGiftBanner(){
+  return <div className="holiday-gift-banner"><span aria-hidden="true">✦</span><div><strong>Little wishes. Christmas magic.</strong><p>Find something they’ll love to unwrap.</p></div><span className="holiday-gift-symbol" aria-hidden="true">🎁</span></div>;
 }

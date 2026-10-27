@@ -19,7 +19,7 @@ export const revalidate = 3600;
 const FAQ = [
   ["How does the Secret Santa generator work?", "Enter the names in your group, add any exclusions, and share one invitation link. Each person opens it, picks their own name, and draws someone. Only they can see who they drew."],
   ["Can someone draw their own name?", "No. The generator never lets anyone draw themselves, so you never have to start over."],
-  ["Can I stop couples from drawing each other?", "Yes. Add exclusions for couples, siblings, housemates, or anyone who drew each other last year."],
+  ["Can I stop couples from drawing each other?", "Yes. With at least four people, add exclusions for couples, siblings, housemates, or anyone who drew each other last year."],
   ["Does everyone need an account?", "The organizer signs in with Google or email to create and manage the celebration. Participants can join with the invitation link and pick their name without an account."],
   ["Can the organizer see who drew whom?", "Not while the exchange is running. The organizer can view the full results after the celebration date, so you can set exclusions to avoid the same matches next year."],
   ["How do wish lists work?", "Open your participant invitation or sign in, then choose your celebration in Gift Finder. Save eBay products directly, link an Amazon wish list once, or add a gift link from another store. Your gift-giver opens your list from the celebration and can reserve individual gifts without showing you the reservation."],
@@ -30,7 +30,7 @@ export default function SantaLanding() {
   const upcoming = upcomingOccasions().slice(0, 3);
   return (
     <div className="page journey-surface">
-      <Festive on={false} />
+      <Festive />
       <StartHero/>
 
       <section className="section" aria-labelledby="start-choice-title">
@@ -46,7 +46,7 @@ export default function SantaLanding() {
         <h2>How it works</h2>
         <div className="how">
           <div><strong>Enter the names</strong>Grandma, the cousins, the whole office. Three or more.</div>
-          <div><strong>Add exclusions</strong>Keep couples, siblings or housemates from drawing each other.</div>
+          <div><strong>Add exclusions</strong>With four or more people, keep couples, siblings or housemates from drawing each other.</div>
           <div><strong>Share one link</strong>Drop it in the family chat. Everyone picks their name and draws.</div>
           <div><strong>Make wish lists</strong>Reserve gifts secretly so nobody wraps the same sweater twice.</div>
         </div>
