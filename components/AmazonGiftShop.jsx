@@ -1,6 +1,7 @@
 import { AMAZON_DISCLOSURE, AFF_REL, amazonUrl } from '@/lib/core';
 import { positiveMoney } from '@/lib/gifts.mjs';
 import GiftArtwork from './GiftArtwork';
+import { giftPreferencesFromProfile, giftSearchQuery } from '@/lib/gift-preferences.mjs';
 
 const departments = [
   ['Home & cozy','cozy home gifts','cozy','A little everyday comfort'],
@@ -10,9 +11,10 @@ const departments = [
   ['Books & journals','books journals gifts','books','Turn a new page'],
   ['Self-care','self care gifts','wellness','A moment just for them'],
 ];
-export default function AmazonGiftShop({budget,currency='$'}) {
+export default function AmazonGiftShop({budget,currency='$',profile}) {
   const cap=positiveMoney(budget),usd=!currency||currency==='$';
-  const url=query=>amazonUrl(query,0,usd?cap:0);
+  const preferences=giftPreferencesFromProfile(profile);
+  const url=query=>amazonUrl(giftSearchQuery(query,preferences),0,usd?cap:0);
   return <section className="amazon-shop" aria-label="Amazon gift browsing">
     <nav className="amazon-shop-categories" aria-label="Amazon gift departments">{departments.map(([label,query])=><a key={label} href={url(query)} target="_blank" rel={AFF_REL}>{label} ↗</a>)}</nav>
     <div className="amazon-shop-hero"><div><p className="eyebrow">Find it on Amazon</p><h3>A little inspiration.<br/>A gift they’ll love.</h3><p>Browse the full selection on Amazon, then use <b>Add to List</b> to keep your favorites together.</p><a className="btn amazon-browse-button" href={url('gift ideas')} target="_blank" rel={AFF_REL}>Browse your gift on Amazon ↗</a></div><div className="amazon-hero-art" aria-hidden="true"><GiftArtwork kind="gift"/></div></div>

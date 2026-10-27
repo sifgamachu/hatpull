@@ -1,12 +1,13 @@
 "use client";
 import { useId, useState } from 'react';
 import { Sheet } from './Sheet';
-import { GIFT_GENDERS, EXACT_AGES, GIFT_INTERESTS, exactAge, cleanGiftPreferences, emptyGiftPreferences, giftPreferenceChips } from '@/lib/gift-preferences.mjs';
+import { GIFT_GENDERS, GIFT_INTERESTS, cleanGiftPreferences, emptyGiftPreferences, giftPreferenceChips } from '@/lib/gift-preferences.mjs';
+import AgeChoice from './AgeChoice';
 
 export default function GiftPreferences({ value, onChange, budget, disabled = false }) {
-  const id = useId(), [draft, setDraft] = useState(null), [step, setStep] = useState(0);
+  const id = useId(), [draft, setDraft] = useState(null), [step, setStep] = useState(0), [ageValid, setAgeValid] = useState(true);
   const chips = giftPreferenceChips(value);
-  function open() { setDraft(cleanGiftPreferences(value)); setStep(0); }
+  function open() { setDraft(cleanGiftPreferences(value)); setStep(0); setAgeValid(true); }
   function toggle(interest) {
     setDraft(p => ({ ...p, interests: p.interests.includes(interest) ? p.interests.filter(x => x !== interest) : [...p.interests, interest].slice(0, 3) }));
   }
@@ -20,9 +21,9 @@ export default function GiftPreferences({ value, onChange, budget, disabled = fa
       {step === 0 ? <>
         <p className="small muted">All choices are optional. Explore any gift you like.</p>
         <fieldset><legend>Gift ideas for</legend><div className="preference-options">{GIFT_GENDERS.map(([key, label]) => <label key={key} className="preference-option"><input type="radio" name={id + '-gender'} value={key} checked={draft.gender === key} onChange={() => setDraft(p => ({ ...p, gender: key }))}/><span>{label}</span></label>)}</div></fieldset>
-        <label className="gift-exact-age" htmlFor={id+'-age'}>Age (years)<select id={id+'-age'} value={draft.age} onChange={e=>setDraft(p=>({...p,age:e.target.value}))}><option value="any">Any age · optional</option>{draft.age!=='any'&&exactAge(draft.age)===''&&<option value={draft.age}>Saved age group · choose an exact age</option>}{EXACT_AGES.map(age=><option key={age} value={age}>{age} {age==='1'?'year':'years'} old</option>)}</select></label>
+        <AgeChoice value={draft.age} emptyValue="any" onChange={age=>setDraft(p=>({...p,age}))} onValidityChange={setAgeValid}/>
       </> : <fieldset><legend>Pick up to three interests</legend><p className="small muted">We’ll look for gifts across your selected interests.</p><div className="preference-options interest-options">{GIFT_INTERESTS.map(([key, label]) => <label key={key} className="preference-option"><input type="checkbox" checked={draft.interests.includes(key)} disabled={draft.interests.length >= 3 && !draft.interests.includes(key)} onChange={() => toggle(key)}/><span>{label}</span></label>)}</div><p className="small muted" role="status">{draft.interests.length} of 3 selected. {draft.interests.length === 3 ? 'Uncheck one to choose another.' : 'Skip this step to see broader ideas.'}</p></fieldset>}
-      <div className="preference-sheet-footer">{step === 1 && <button type="button" className="btn ghost" onClick={() => setStep(0)}>← Back</button>}<button type="button" className="btn" onClick={() => { if (step === 0) setStep(1); else { onChange(cleanGiftPreferences(draft)); setDraft(null); } }}>{step === 0 ? 'Next: interests' : 'Show gifts'}</button></div>
+      <div className="preference-sheet-footer">{step === 1 && <button type="button" className="btn ghost" onClick={() => setStep(0)}>← Back</button>}<button type="button" className="btn" disabled={!ageValid} onClick={() => { if (step === 0) setStep(1); else { onChange(cleanGiftPreferences(draft)); setDraft(null); } }}>{step === 0 ? 'Next: interests' : 'Show gifts'}</button></div>
     </Sheet>}
   </div>;
 }

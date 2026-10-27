@@ -2,6 +2,12 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Type an age, then choose a store — 2026-10-27
+
+The editable wish list now offers a typed age field alongside the scrollable 0–120 dropdown, then the available Amazon/eBay store chooser. It no longer opens the eBay catalog by default. Typed ages commit on blur or Enter through the existing profile save queue; invalid values show an error, blank remains optional, and existing age groups are preserved until edited. Gift Finder's preference dialog uses the same control.
+
+Selecting eBay mounts personalized, budget-filtered products. Selecting Amazon first does not mount the eBay catalog; Amazon browsing links use broad age/gender terms plus the USD budget, and its shared-list setup appears inside that shop. Amazon product cards still require approved API access. Switching shops keeps the shared gift list and existing eBay searches. Store cards retain their small previews; full catalog requests begin on eBay selection. No database, credential or environment changes. Validation: 78 tests, production build and desktop/mobile browser checks with isolated fictional participants. See `docs/age-and-store-choice-20261027.md`.
+
 ## Christmas styling and photo-first product preview — 2026-10-27
 
 The Secret Santa homepage has its Christmas look again: Santa-hat branding, evergreen/red/gold colors, lights, snowfall and wrapped-gift artwork. Setup, invitations, joining, dashboards and wish lists use the festive theme for Christmas celebrations; the finder and personal hub are festive too. The theme cleans up on navigation, leaving unrelated picker pages unchanged. Existing reduced-motion handling is retained. December 19/24/25, Other/custom date, exact ages and four-person exclusion rules remain unchanged.

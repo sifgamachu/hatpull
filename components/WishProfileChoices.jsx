@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useId, useRef, useState } from 'react';
 import { rpc } from '@/lib/db';
-import { WISH_AGES, EXACT_AGES, cleanWishDemographics } from '@/lib/gift-preferences.mjs';
+import { cleanWishDemographics } from '@/lib/gift-preferences.mjs';
 import { createProfileSaveQueue } from '@/lib/profile-save-queue.mjs';
+import AgeChoice from './AgeChoice';
 
-export default function WishProfileChoices({ gid, mid, token, person, value, onChange, onBusy, onSaved, disabled = false, request = rpc }) {
+export default function WishProfileChoices({ gid, mid, token, person, value, onChange, onBusy, onSaved, onAgeValidityChange, disabled = false, request = rpc }) {
   const id = useId(), [status, setStatus] = useState('idle'), queue = useRef(null);
   const callbacks = useRef({onBusy,onSaved}); callbacks.current = {onBusy,onSaved};
   useEffect(() => {
@@ -26,9 +27,9 @@ export default function WishProfileChoices({ gid, mid, token, person, value, onC
     queue.current?.change({[field]:next});
   }
   return <section className="wish-profile-choices" aria-labelledby={id+'-title'}>
-    <div className="wish-profile-heading"><div><p className="eyebrow">Your wish list, your kind of gifts</p><h2 id={id+'-title'}>{person ? `Find gifts for ${person}` : 'Find gifts you’ll love'}</h2><p>Choose gender and age to refresh the gift ideas below. Your choices save automatically.</p></div><span className="wish-profile-status" role="status">{status==='saving'?'Saving choices…':status==='saved'?'✓ Choices saved':status==='error'?'Choices not saved':'Optional · change anytime'}</span></div>
+    <div className="wish-profile-heading"><div><p className="eyebrow">Your wish list, your kind of gifts</p><h2 id={id+'-title'}>{person ? `Find gifts for ${person}` : 'Find gifts you’ll love'}</h2><p>Choose gender and age, then pick a store below. Your choices save automatically.</p></div><span className="wish-profile-status" role="status">{status==='saving'?'Saving choices…':status==='saved'?'✓ Choices saved':status==='error'?'Choices not saved':'Optional · change anytime'}</span></div>
     <fieldset disabled={disabled}><legend>Gender</legend><div className="preference-options">{[['','No preference'],['women','Female'],['men','Male']].map(([key,label])=><label className="preference-option" key={key}><input type="radio" name={id+'-gender'} checked={(value.who||'')===key} onChange={()=>change('who',key)}/><span>{label}</span></label>)}</div></fieldset>
-    <div className="wish-profile-age"><label htmlFor={id+'-age'}>Age (years)</label><select id={id+'-age'} disabled={disabled} value={value.age||''} onChange={e=>change('age',e.target.value)}><option value="">Choose age · optional</option>{WISH_AGES.includes(value.age)&&<option value={value.age}>Previously saved: {value.age} · choose an exact age</option>}{EXACT_AGES.map(age=><option key={age} value={age}>{age} {age==='1'?'year':'years'} old</option>)}</select><p className="small muted">These choices guide suggestions. You can still search for any gift.</p></div>
+    <AgeChoice value={value.age||''} onChange={age=>change('age',age)} disabled={disabled} onValidityChange={onAgeValidityChange}/>
     {status==='error'&&<p role="alert" className="note err">We couldn’t save your choices. The ideas below use your latest selection. <button className="link" disabled={disabled} onClick={()=>queue.current?.retry()}>Retry saving</button></p>}
   </section>;
 }
