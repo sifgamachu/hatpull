@@ -2,6 +2,16 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Wish list → gender/age → automatic products — 2026-10-26
+
+The editable wish list now starts with optional gender cards and an age range, followed directly by live eBay product suggestions. Changes save automatically and refresh the catalog without a wizard, store choice or Search click. The cart-style list remains available throughout; an eBay gift still saves with one tap. Existing saved profile choices also seed the standalone Gift Finder. Amazon remains the existing external shared-list flow.
+
+`supabase/migrations/20261027011756_wishlist_demographics.sql` was applied to Hatpul before the app deployment. `hp_set_wish_demographics` accepts only allowlisted age/who patches, locks the participant row and preserves gifts, hobbies and addresses. Private participant-token and owner/child checks are retained. Anonymous/authenticated execute is intentional; direct table writes remain forbidden. The save queue serializes rapid selections, retains failed changes for Retry, and avoids overwriting unrelated fields.
+
+Matching uses broad eBay search keywords, not inferred identity or a trained recommendation system. Only allowlisted choices go into public catalog queries; names, addresses, notes and birthdays are excluded. Adult ranges 30–44 and 45–64 share the broad adult query. The USD celebration item-price cap remains enforced; shipping/tax and non-USD conversion remain separate. Mobile prioritizes the product grid and keeps the existing budget cap; detailed price controls remain in Gift Finder.
+
+Validation: 66 automated tests passed, including profile preservation, guest/child authorization, failure/retry and rapid-change ordering. Local browser QA used fictional participants in an isolated database with live public eBay results: selections refresh products, persist after reload, keep the $25 cap and preserve a one-tap saved gift. Production SQL was verified inside a rolled-back transaction; no QA group remains. Security advisors retain existing notices, plus the expected execute notices for this explicitly token-checked RPC. See `docs/wishlist-recommendations-20261026.md` for scope and rollback.
+
 ## Public demo and organizer guide — 2026-10-25
 
 The homepage now has direct choices for a name draw, wish-list group and Gift Finder, plus a clearly labeled fictional sample at `/#try-a-draw`. `DrawPreview` uses the existing `drawNames` helper with Sam/Alex excluded in both directions, reveals Sam's recipient, and opens illustrative wishes. All sample state is component memory; it does not call an API, save a real group or touch private celebrations. Organizer sign-in requirements are retained.

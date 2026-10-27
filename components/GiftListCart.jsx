@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { rpc } from '@/lib/db';
 import { getG } from '@/lib/store';
 import { money } from '@/lib/core';
-import { ownedGiftItems, mergeSavedWish, giftListError } from '@/lib/gift-list.mjs';
+import { ownedGiftItems, ownedGiftDemographics, mergeSavedWish, giftListError } from '@/lib/gift-list.mjs';
 import { ebayItemId } from '@/lib/ebay-products.mjs';
 import { amazonWishListUrl } from '@/lib/amazon-wish-list.mjs';
 import { useGiftProducts, ProductPicture, ProductPrice, AmazonPriceDetails } from './GiftProducts';
@@ -22,8 +22,9 @@ export function GiftListButton({ compact = false }) {
 }
 
 // Key this provider by account + celebration + participant to discard private state on a switch.
-export function GiftListCartProvider({ target, children, disabled = false, onBusy, onChanged, initialItems, request = rpc, contextLoading = false, showDock = true, browseHint }) {
+export function GiftListCartProvider({ target, children, disabled = false, onBusy, onChanged, initialItems, initialProfile, request = rpc, contextLoading = false, showDock = true, browseHint }) {
   const [items,setItems]=useState(initialItems ?? null),[error,setError]=useState(''),[open,setOpen]=useState(false),[busy,setBusy]=useState(false),[notice,setNotice]=useState(null),[undo,setUndo]=useState(null),[editing,setEditing]=useState(null);
+  const [profile,setProfile]=useState(initialProfile),[profileReady,setProfileReady]=useState(!!initialProfile);
   const generation=useRef(0),writing=useRef(false),alive=useRef(true),recent=useRef({});
   const gid=target?.gid, mid=target?.mid;
   const refresh=useCallback(async()=>{
@@ -31,12 +32,13 @@ export function GiftListCartProvider({ target, children, disabled = false, onBus
     const current=++generation.current;
     try {
       const {state}=await request('hp_state_delta',{p_gid:gid,p_mtok:getG(gid)?.mtok||null,p_atok:null,p_profile:mid,p_version:null});
-      const next=ownedGiftItems(state,{mid});
-      if(alive.current&&current===generation.current){setItems(next);setError('');}
-    } catch(e) {if(alive.current&&current===generation.current){if(/forbidden|not_found/.test(e.message))setItems(null);setError(giftListError(e));}}
+      const next=ownedGiftItems(state,{mid}), demographics=ownedGiftDemographics(state,{mid});
+      if(alive.current&&current===generation.current){setItems(next);setProfile(demographics);setProfileReady(true);setError('');}
+    } catch(e) {if(alive.current&&current===generation.current){if(/forbidden|not_found/.test(e.message)){setItems(null);setProfile(undefined);}setProfileReady(true);setError(giftListError(e));}}
   },[gid,mid,request]);
   useEffect(()=>{alive.current=true;refresh();const wake=()=>{if(!document.hidden)refresh();};window.addEventListener('focus',wake);window.addEventListener('hatpull:groups',wake);window.addEventListener('storage',wake);return()=>{alive.current=false;generation.current++;window.removeEventListener('focus',wake);window.removeEventListener('hatpull:groups',wake);window.removeEventListener('storage',wake);};},[refresh]);
   useEffect(()=>{if(initialItems)setItems(initialItems);},[initialItems]);
+  useEffect(()=>{if(initialProfile){setProfile(initialProfile);setProfileReady(true);}},[initialProfile]);
   useEffect(()=>{onBusy?.(busy);return()=>onBusy?.(false);},[busy,onBusy]);
   useEffect(()=>{if(!notice)return;const timer=setTimeout(()=>setNotice(null),7000);return()=>clearTimeout(timer);},[notice]);
   function saved(result,product) {
@@ -61,7 +63,7 @@ export function GiftListCartProvider({ target, children, disabled = false, onBus
     finally {writing.current=false;if(alive.current)setBusy(false);}
   }
   const show=()=>{setOpen(true);refresh();},close=()=>{if(!busy){setOpen(false);setEditing(null);}};
-  const value={target,items,busy,saved,show,contextLoading};
+  const value={target,items,profile,profileReady,busy,saved,show,contextLoading};
   return <Cart.Provider value={value}>{children}
     {showDock&&!open&&<div className={'gift-list-dock'+(notice?' has-notice':'')}><div className="gift-list-dock-copy" role="status">{notice?<><strong>✓ {notice.added?'Added to your gift list':'Already on your gift list'}</strong><span>{notice.title}</span></>:<><strong>{items?.length?`${items.length} saved · ready for your gift-giver`:(browseHint?.title||'See something you love?')}</strong><span>{items?.length?'Saved in your Hatpull wish list.':(browseHint?.text||'Tap Add to gift list. We’ll keep it here.')}</span></>}</div><GiftListButton compact/></div>}
     {open&&<Sheet className="gift-cart-sheet" onClose={close}>
