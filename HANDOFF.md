@@ -2,6 +2,12 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## One age box and direct Amazon browsing — 2026-10-27
+
+The shared age control is now one editable combobox: type an exact age or open and scroll the 0–120 list in the same field. Arrow keys/Enter select, Tab/blur save completed values, and Escape cancels an edit. Invalid ages prevent shop selection; existing age groups are retained until changed. Age copy explains gift matching and no longer says “optional.” Blank ages remain supported without a schema change.
+
+The Amazon card and the eBay header's Amazon link open Amazon.com directly in a new tab with broad recipient terms, the first selected interest and the USD budget cap. Non-USD amounts are not treated as dollars. Existing affiliate tagging/disclosure stays in place. There is no intermediate Hatpull Amazon shop. “Already have an Amazon wish list?” separately reveals the existing one-link setup on demand. Amazon API access is still required for an actual in-page Amazon catalog; no approval or imported product data is implied. The festive theme, eBay discovery and wishlist permissions remain unchanged.
+
 ## Hatpull primary domain and matching signals — 2026-10-27
 
 hatpull.com is the primary app address. Legacy secretsantageneratorapp.com page links permanently redirect with their path/query intact; legacy APIs and verified email domains remain unchanged. Vercel/Cloudflare and Supabase/Google return URLs were configured for the new domain. Users may need to sign in again because browser storage is origin-scoped; old invitation links still recover guest access. The owner confirmed the one-l spelling was a typo. See `docs/hatpull-domain-cutover-20261027.md`.
