@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {giftInspirationPlan,mergeInspiration,loadGiftInspiration,isInspirationProduct} from '../lib/gift-inspiration.mjs';
 import {cleanWishDemographics,giftPreferenceChips,giftPreferencesFromProfile} from '../lib/gift-preferences.mjs';
+import {storePreviewIdeas} from '../lib/store-preview-ideas.mjs';
 const now=1000000;
 const item=(id,extra={})=>({itemId:id,title:`Product ${id}`,image:'https://i.ebayimg.com/images/g/test/s-l300.jpg',price:25,shipping:0,checkedAt:now,expiresAt:now+600000,...extra});
 const result=items=>({status:'ready',items,checkedAt:now,expiresAt:now+600000,hasMore:true});
@@ -51,4 +52,42 @@ test('accessory-only listings are removed without hiding sets supplied in a case
  assert.equal(isInspirationProduct('drone','DEERC D20 Propeller Set'),false);
  assert.equal(isInspirationProduct('bits','DEWALT Screwdriver Bit Set with Tough Case'),true);
  assert.equal(isInspirationProduct('mug','Stanley Stay-Hot Camp Mug'),true);
+});
+
+test('store preview loads three matching families, keeps one product per family and enforces the budget',async()=>{
+  const keys=[],updates=[];
+  await loadGiftInspiration({preferences:{age:'8',gender:'men'},max:20,familyLimit:3,perFamily:1,now:()=>now,onUpdate:data=>updates.push(data),load:async key=>{
+    keys.push(key);return result([item(key+'-expensive',{price:30}),item(key+'-valid',{price:15}),item(key+'-extra',{price:10})]);
+  }});
+  assert.equal(keys.length,3);
+  assert.ok(keys.every(key=>new URLSearchParams(key).get('max')==='20'));
+  assert.ok(keys.every(key=>/kids|toy/.test(new URLSearchParams(key).get('q'))));
+  assert.equal(updates.at(-1).items.length,3);
+  assert.ok(updates.at(-1).items.every(p=>p.price===15));
+  assert.equal(updates.at(-1).loadingMore,false);
+});
+
+test('store ideas change with the saved profile, use complete mappings and contain no retailer price or stock claims',()=>{
+  const male=storePreviewIdeas({age:'35',who:'men',name:'PRIVATE NAME',address:'PRIVATE ADDRESS'});
+  const female=storePreviewIdeas({age:'35',who:'women'}), child=storePreviewIdeas({age:'8',who:'men'});
+  assert.notDeepEqual(male.map(x=>x.id),female.map(x=>x.id));
+  assert.ok(child.every(x=>x.id.startsWith('kids')));
+  assert.ok(storePreviewIdeas({age:'2'}).every(x=>x.id.startsWith('toddler')));
+  assert.doesNotMatch(JSON.stringify(male),/PRIVATE|35/);
+  for(const age of ['','0','8','15','25','35','70','120','5–11'])for(const who of ['','women','men']) {
+    const ideas=storePreviewIdeas({age,who},6);
+    assert.equal(ideas.length,6);
+    assert.ok(ideas.every(x=>x.title&&x.art&&x.query&&!('price' in x)&&!('inStock' in x)));
+  }
+});
+
+test('child suggestions reject explicitly incompatible age ranges without guessing missing age guidance',()=>{
+  assert.equal(isInspirationProduct('kidspuzzle','Puzzles for Kids Ages 3-5 4-6 Toddler 24 Pieces',{age:'8'}),false);
+  assert.equal(isInspirationProduct('kidspuzzle','Puzzle for ages 3-5, 8-12',{age:'8'}),true);
+  assert.equal(isInspirationProduct('kidsblocks','Building Blocks Ages 8-14',{age:'8'}),true);
+  assert.equal(isInspirationProduct('kidsblocks','Building Blocks Ages 8-14',{age:'6'}),false);
+  assert.equal(isInspirationProduct('kidsgame','Board Game Ages 10+',{age:'8'}),false);
+  assert.equal(isInspirationProduct('kidsgame','Board Game Ages 10+',{age:'12'}),true);
+  assert.equal(isInspirationProduct('kidspuzzle','Jigsaw Puzzle 1000 Pieces',{age:'8'}),true);
+  assert.equal(isInspirationProduct('kidspuzzle','Puzzles for Ages 3-5',{age:'kids'}),true);
 });

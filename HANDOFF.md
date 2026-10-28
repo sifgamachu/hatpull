@@ -2,6 +2,12 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Personalized store previews — 2026-10-27
+
+Both shop cards now preview gifts for the saved age/gender before opening a store. eBay requests three matching product families with two-request concurrency and shows one real photo, title and current item price per family within the USD cap. The full catalog reuses those searches. Amazon shows clearly labeled original illustrated ideas without prices or stock claims, followed by six matching search links inside its shop. The live Amazon adapter still returns `not_configured`; no Amazon catalog access is implied.
+
+All three previews remain visible on mobile. Stale responses cannot replace a newer selection, expired eBay data refreshes, and missing/broken photos fall back to labeled ideas. Clearly incompatible child age ranges in listing titles are filtered locally; unspecified ages still require checking the listing. No schema, environment or real celebration changes. Validation: 81 tests, production build and isolated desktop/mobile browser checks. See `docs/personalized-store-previews-20261027.md`.
+
 ## Type an age, then choose a store — 2026-10-27
 
 The editable wish list now offers a typed age field alongside the scrollable 0–120 dropdown, then the available Amazon/eBay store chooser. It no longer opens the eBay catalog by default. Typed ages commit on blur or Enter through the existing profile save queue; invalid values show an error, blank remains optional, and existing age groups are preserved until edited. Gift Finder's preference dialog uses the same control.

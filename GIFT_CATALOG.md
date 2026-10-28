@@ -1,5 +1,13 @@
 # Store browsing and wish lists
 
+## Personalized shop previews — October 27, 2026
+
+Before choosing a shop, participants see three gift previews based on their saved age/gender. The eBay card loads three distinct inspiration families, one current product per family, with two concurrent searches and the selected USD item-price maximum (default $50). Photos, titles and prices come from the existing licensed eBay adapter. Shared memory-only searches are reused when the full catalog opens; stale selections and expired products are discarded. All three previews remain visible on mobile, and missing or broken photos fall back to clearly labeled illustrated ideas. Listing titles with explicit child age ranges that exclude the selected exact age are filtered locally.
+
+Amazon's card and its six in-shop ideas use original generic illustrations and personalized search links, without product-photo, price or availability claims. Links include the selected USD budget and configured affiliate tag. The live Amazon adapter was checked October 27 and still returned `not_configured`; Amazon product images remain unavailable. See Amazon's [Program IP License](https://affiliate-program.amazon.com/help/operating/policies) before activating a licensed catalog source. Exact ages and private participant information are not sent to retailers; search queries use allowlisted broad gift terms.
+
+This supersedes the generic `gift set` thumbnail search and mobile single-thumbnail behavior described in the original October 24 release below. See `docs/personalized-store-previews-20261027.md` for validation and rollback.
+
 ## Shop selection — October 24, 2026
 
 Gift Finder now starts with two available shops: eBay and Amazon. Selecting eBay opens its own white/blue catalog layout, rounded search, category navigation, budget filters and one-tap saving. Selecting Amazon opens a navy/gold browsing section with original illustrated departments. Every department opens Amazon, includes the selected USD celebration budget and carries the configured affiliate tag. Category illustrations are not product listings; no Amazon photos, prices, account connection or checkout are implied.

@@ -3,8 +3,8 @@ import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import EbayGiftCatalog from './EbayGiftCatalog';
 import EbayStorePreview from './EbayStorePreview';
 import AmazonGiftShop from './AmazonGiftShop';
-import GiftArtwork from './GiftArtwork';
-import { GiftListButton } from './GiftListCart';
+import StoreIdeaPreview from './StoreIdeaPreview';
+import { GiftListButton, useGiftListCart } from './GiftListCart';
 
 const shops = [
   { id: 'ebay', name: 'eBay', label: 'Search & save right here', description: 'Discover real finds, see prices and add gifts to your list in one tap.', art: ['tech','games','coffee'], action: 'Shop eBay' },
@@ -18,6 +18,8 @@ function StoreLogo({store}) {
 }
 
 export default function GiftStores({target,budget,currency,disabled,onBusy,onSaved,amazonPanel,contextPanel,profile,showPreferences=true,selectionDisabled=false,store:controlledStore,onStoreChange}) {
+  const cart=useGiftListCart(), browsingProfile=profile??cart?.profile;
+  const previewsLoading=disabled||cart?.contextLoading||(!!target&&profile===undefined&&!cart?.profileReady);
   const [localStore,setLocalStore]=useState(null),[busy,setBusy]=useState(false),[visited,setVisited]=useState({});
   const store=controlledStore===undefined?localStore:controlledStore;
   const id=useId(), heading=useRef(null), shopButtons=useRef({}), focusDestination=useRef(null);
@@ -40,7 +42,7 @@ export default function GiftStores({target,budget,currency,disabled,onBusy,onSav
       <div className="shop-lobby-intro"><p className="eyebrow">Your favorite shops. One gift list.</p><h2 id={id+'-shops'}>Where would you like to shop?</h2><p>{profile?'Pick a store to see gift ideas. Your age, preferences and celebration budget come with you.':'Pick a store to start exploring. Your celebration’s budget comes with you.'}</p></div>
       <div className="shop-choices">{shops.map(shop=><button type="button" key={shop.id} ref={el=>{shopButtons.current[shop.id]=el;}} className={`shop-choice shop-choice-${shop.id}`} aria-label={shop.action} aria-describedby={id+'-'+shop.id+'-description'} disabled={busy||selectionDisabled} onClick={()=>choose(shop.id)}>
         <span className="shop-choice-heading"><StoreLogo store={shop.id}/><span className="shop-open">Available now</span></span>
-        {shop.id==='ebay'?<EbayStorePreview budget={budget} currency={currency} disabled={disabled}/>:<span className="shop-choice-art" aria-hidden="true">{shop.art.map(art=><span key={art}><GiftArtwork kind={art}/></span>)}</span>}
+        {shop.id==='ebay'?<EbayStorePreview budget={budget} currency={currency} profile={browsingProfile} disabled={previewsLoading}/>:<StoreIdeaPreview profile={browsingProfile}/>}
         <span className="shop-choice-body" id={id+'-'+shop.id+'-description'}><b>{shop.label}</b><span>{shop.description}</span></span>
         <span className="shop-choice-action">{shop.action}<span aria-hidden="true">→</span></span>
       </button>)}</div>
@@ -53,7 +55,7 @@ export default function GiftStores({target,budget,currency,disabled,onBusy,onSav
     </div>}
     {contextPanel && <div className="shop-context">{contextPanel}</div>}
     {(visited.ebay||store==='ebay') && <div hidden={store!=='ebay'}><EbayGiftCatalog target={target} budget={budget} currency={currency} profile={profile} showPreferences={showPreferences} disabled={disabled} active={store==='ebay'} onBusy={working} onSaved={onSaved}/></div>}
-    {(visited.amazon||store==='amazon') && <div hidden={store!=='amazon'}><AmazonGiftShop budget={budget} currency={currency} profile={profile}/>{amazonPanel && <div className="store-amazon-panel">{amazonPanel}</div>}</div>}
+    {(visited.amazon||store==='amazon') && <div hidden={store!=='amazon'}><AmazonGiftShop budget={budget} currency={currency} profile={browsingProfile}/>{amazonPanel && <div className="store-amazon-panel">{amazonPanel}</div>}</div>}
     {store!=='ebay' && <p className="shop-trademark">Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates.</p>}
   </div>;
 }
