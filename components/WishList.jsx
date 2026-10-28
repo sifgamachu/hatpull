@@ -174,7 +174,7 @@ function Viewer({ gid, g, m, me, prof, items, state, tokens, reload, xm }) {
   async function reserve(item, on, el) {
     if (reserving.current) return; reserving.current = true; setBusy(true);
     try { await rpc("hp_reserve", { p_gid: gid, p_mtok: tokens.mtok, p_owner: m.id, p_item: item, p_on: on }); if (on && xm) burst(el); toast(on ? (xm ? "Reserved. It's your secret 🤫🎁" : "Reserved. Only other gift-givers can see this.") : "Reservation removed"); await reload(); }
-    catch { toast("Couldn't update. Try again."); }
+    catch (e) { if (/already_reserved/.test(e?.message || "")) { toast("Someone else just reserved this gift."); await reload(); } else toast("Couldn't update. Try again."); }
     finally { reserving.current = false; setBusy(false); }
   }
   const b = parseFloat(g.budget) || 0, lo = b ? Math.round(b * 0.7) : 0, hi = b ? Math.round(b) : 0;

@@ -1,7 +1,7 @@
 import { exclusionsAllowed } from "@/lib/setup-flow.mjs";
 import { NextResponse } from "next/server";
 import { serverRpc, verifiedCreator } from "@/lib/serverDb";
-import { drawNames, rid } from "@/lib/core";
+import { rid } from "@/lib/core";
 
 // Organizer changes people or exclusions. The new draw itself is made inside the database (hp_draw);
 // the check here only gives a friendly error before saving.
@@ -9,7 +9,9 @@ import { drawNames, rid } from "@/lib/core";
 export async function POST(req) {
   try {
     const userId = await verifiedCreator(req.headers.get("authorization"));
+    if (Number(req.headers.get("content-length") || 0) > 1_500_000) return NextResponse.json({ error: "That change is too large." }, { status: 413 });
     const b = await req.json();
+    if (Array.isArray(b.exclusions) && b.exclusions.length > 40000) return NextResponse.json({ error: "Too many exclusions." }, { status: 400 });
     const roster = await serverRpc("hp_owned_roster", { p_gid: b.gid, p_owner: userId });
     if (!roster) return NextResponse.json({ error: "Not allowed." }, { status: 403 });
     let members = roster.members.filter(m => !(b.remove || []).includes(m.id));
@@ -19,12 +21,9 @@ export async function POST(req) {
     }
     const ids = new Set(members.map(m => m.id));
     const exclusions = (b.exclusions ?? roster.exclusions ?? []).filter(x => ids.has(x.a) && ids.has(x.b) && x.a !== x.b);
-    let assignment = null;
     if (roster.mode === "draw") {
       if (members.length < 3) return NextResponse.json({ error: "A draw needs at least 3 people." }, { status: 400 });
       if (!exclusionsAllowed(members, exclusions)) return NextResponse.json({ error: "Exclusions require at least 4 people. Remove exclusions before reducing the group to three." }, { status: 400 });
-      assignment = drawNames(members.map(m => m.id), exclusions);
-      if (!assignment) return NextResponse.json({ error: "That change leaves no valid draw. Remove an exclusion first." }, { status: 400 });
     }
     await serverRpc("hp_redraw_owned_group", { p_gid: b.gid, p_owner: userId, p_members: members, p_exclusions: exclusions });
     return NextResponse.json({ ok: true });

@@ -131,3 +131,44 @@ test('wish restore uses add-gift link rules and removal clears its reservation',
     assert.equal(await one(db,'select count(*)::int result from hp_reservations where group_id=$1',[g.id]),0);
   } finally { await db.close(); }
 });
+
+test('stress fixes: big exclusion sets are kept, repeat reveals are quiet, reservation losers are told', async t => {
+  await t.test('more than 2,000 exclusions are all honoured', async()=>{
+    const db=await testDatabase();
+    try {
+      await db.query('insert into auth.users(id,email_confirmed_at) values($1,now())',[owner]);
+      await as(db,owner);
+      const people=Array.from({length:120},(_,i)=>({id:'p'+i,name:'P'+i}));
+      const excl=[];
+      for (let a=0;a<120;a++) for (let b=0;b<120;b++) if (a!==b && Math.floor(a/20)===Math.floor(b/20)) excl.push({a:'p'+a,b:'p'+b});
+      assert.ok(excl.length>2000);
+      const g=await one(db,'select hp_create_owned_group($1::jsonb,$2) result',[JSON.stringify({name:'Teams',mode:'draw',members:people,exclusions:excl}),owner]);
+      const stored=await one(db,'select jsonb_array_length(exclusions) result from hp_groups where id=$1',[g.id]);
+      assert.equal(stored,excl.length);
+      const bad=await one(db,`select count(*)::int result from hp_members m where m.group_id=$1 and floor(substr(m.id,2)::int/20)=floor(substr(m.receiver_id,2)::int/20)`,[g.id]);
+      assert.equal(bad,0);
+      await assert.rejects(db.query('select public.hp_clean_excl($1::jsonb,$2)',[JSON.stringify(Array.from({length:40001},()=>({a:'p1',b:'p2'}))),['p1','p2']]),/too_many_exclusions/);
+    } finally { await db.close(); }
+  });
+  await t.test('second reveal does not bump the group revision; unknown token is refused', async()=>{
+    const {db,g}=await setup();
+    try {
+      await as(db,null);
+      await db.query('select hp_mark_drawn($1,$2)',[g.id,'tok-b']);
+      const v1=await one(db,'select state_version::text result from hp_groups where id=$1',[g.id]);
+      await db.query('select hp_mark_drawn($1,$2)',[g.id,'tok-b']);
+      assert.equal(await one(db,'select state_version::text result from hp_groups where id=$1',[g.id]),v1);
+      await assert.rejects(db.query('select hp_mark_drawn($1,$2)',[g.id,'nope']),/forbidden/);
+    } finally { await db.close(); }
+  });
+  await t.test('a second person reserving the same gift is told it is taken', async()=>{
+    const {db,g}=await setup({settings:{wishVis:'all'}});
+    try {
+      await db.query(`update hp_members set profile='{"items":[{"id":"w1","t":"Gift"}]}' where group_id=$1 and id='a'`,[g.id]);
+      await as(db,null);
+      await db.query('select hp_reserve($1,$2,$3,$4,true)',[g.id,'tok-b','a','w1']);
+      await db.query('select hp_reserve($1,$2,$3,$4,true)',[g.id,'tok-b','a','w1']); // same person again: fine
+      await assert.rejects(db.query('select hp_reserve($1,$2,$3,$4,true)',[g.id,'tok-c','a','w1']),/already_reserved/);
+    } finally { await db.close(); }
+  });
+});

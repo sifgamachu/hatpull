@@ -2,7 +2,7 @@ import { exclusionsAllowed } from "@/lib/setup-flow.mjs";
 import { NextResponse } from "next/server";
 import { serverRpc, verifiedCreator } from "@/lib/serverDb";
 import { createHash } from "crypto";
-import { drawNames, rid } from "@/lib/core";
+import { rid } from "@/lib/core";
 
 // Light per-account limit (per server instance). The database also has a global circuit breaker.
 const hits = new Map(); const WINDOW = 10 * 60 * 1000, LIMIT = 20;
@@ -20,7 +20,9 @@ export async function POST(req) {
     const userId = await verifiedCreator(req.headers.get("authorization"));
     const identity = `user:${userId}`;
     if (limited(identity)) return NextResponse.json({ error: "You've created a lot of celebrations in a short time. Wait a few minutes and try again." }, { status: 429 });
+    if (Number(req.headers.get("content-length") || 0) > 1_500_000) return NextResponse.json({ error: "That setup is too large." }, { status: 413 });
     const b = await req.json();
+    if (Array.isArray(b.exclusions) && b.exclusions.length > 40000) return NextResponse.json({ error: "Too many exclusions." }, { status: 400 });
     // Trim and strip invisible bidi/control characters that could be used to disguise names.
     const clean = s => String(s ?? "").replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, "").trim();
     const people = (b.people || []).map(clean).filter(Boolean).map(s => s.slice(0, 40));
@@ -35,8 +37,7 @@ export async function POST(req) {
     const idOf = n => members.find(m => m.name === n)?.id;
     const exclusions = mode === "draw" ? (b.exclusions || []).map(x => ({ a: idOf(clean(x.a)), b: idOf(clean(x.b)) })).filter(x => x.a && x.b && x.a !== x.b) : [];
     if (!exclusionsAllowed(members, exclusions)) return NextResponse.json({ error: "Exclusions require at least 4 people." }, { status: 400 });
-    // Feasibility check only, for a friendly message; the real draw happens inside the database.
-    if (mode === "draw" && !drawNames(members.map(m => m.id), exclusions)) { return NextResponse.json({ error: "These exclusions leave no valid draw." }, { status: 400 }); }
+    // The draw (and its "no valid draw" check) runs inside the database, so it doesn't block this server.
     const orgMid = b.includeMe && clean(b.orgName) ? idOf(clean(b.orgName).slice(0, 40)) : null;
 
     // Hash the verified account for the cross-server allowance.
