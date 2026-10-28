@@ -37,6 +37,29 @@ test('failed saves retain the latest choices for an explicit retry',async()=>{
   assert.deepEqual(calls.at(-1),{who:'women',age:'65+'});assert.equal(states.at(-1),'saved');
 });
 
+test('Continue waits for in-flight changes and a final age edit before proceeding',async()=>{
+  const calls=[],releases=[];let finished=false;
+  const queue=createProfileSaveQueue({save:patch=>{calls.push(patch);return new Promise(resolve=>releases.push(resolve));}});
+  queue.change({who:'men'});
+  queue.change({age:'35'});
+  const continuing=queue.flush().then(saved=>{finished=true;return saved;});
+  await tick();assert.equal(finished,false);
+  releases.shift()();await tick();assert.equal(finished,false);
+  assert.deepEqual(calls,[{who:'men'},{age:'35'}]);
+  releases.shift()();assert.equal(await continuing,true);
+  assert.equal(await queue.flush(),true);
+});
+
+test('Continue reports a failed save and can retry without discarding choices',async()=>{
+  let fail=true;const calls=[];
+  const queue=createProfileSaveQueue({save:async patch=>{calls.push(patch);if(fail)throw Error('offline');}});
+  queue.change({age:'8'});
+  assert.equal(await queue.flush(),false);
+  fail=false;
+  assert.equal(await queue.flush(),true);
+  assert.deepEqual(calls,[{age:'8'},{age:'8'}]);
+});
+
 test('unmount suppresses callbacks while finishing edits already submitted by the user',async()=>{
   const calls=[],states=[];let release;
   const queue=createProfileSaveQueue({save:patch=>{calls.push(patch);return calls.length===1?new Promise(resolve=>{release=resolve;}):Promise.resolve();},onStatus:s=>states.push(s)});

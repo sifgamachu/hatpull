@@ -1,13 +1,15 @@
 "use client";
-import { useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { rpc } from '@/lib/db';
 import { cleanWishDemographics } from '@/lib/gift-preferences.mjs';
 import { createProfileSaveQueue } from '@/lib/profile-save-queue.mjs';
 import AgeChoice from './AgeChoice';
 
-export default function WishProfileChoices({ gid, mid, token, person, value, onChange, onBusy, onSaved, onAgeValidityChange, disabled = false, request = rpc }) {
-  const id = useId(), [status, setStatus] = useState('idle'), queue = useRef(null);
-  const callbacks = useRef({onBusy,onSaved}); callbacks.current = {onBusy,onSaved};
+export default function WishProfileChoices({ gid, mid, token, person, value, onChange, onBusy, onSaved, onAgeValidityChange, onContinue, celebration, disabled = false, request = rpc }) {
+  const id = useId(), [status, setStatus] = useState('idle'), [ageValid,setAgeValid] = useState(true), [continuing,setContinuing] = useState(false), queue = useRef(null), alive = useRef(true);
+  useEffect(()=>{alive.current=true;return()=>{alive.current=false;};},[]);
+  const validity=useCallback(valid=>{setAgeValid(valid);onAgeValidityChange?.(valid);},[onAgeValidityChange]);
+  const callbacks = useRef({onBusy,onSaved,onContinue}); callbacks.current = {onBusy,onSaved,onContinue};
   useEffect(() => {
     const next = createProfileSaveQueue({
       save: patch => request('hp_set_wish_demographics', {p_gid:gid,p_mtok:token,p_target:mid,p_patch:patch}),
@@ -26,10 +28,19 @@ export default function WishProfileChoices({ gid, mid, token, person, value, onC
     onChange({...cleanWishDemographics(value),[field]:next});
     queue.current?.change({[field]:next});
   }
+  async function next() {
+    if(disabled||!ageValid||continuing)return;
+    setContinuing(true);
+    try {
+      const saved=await queue.current?.flush();
+      if(saved&&alive.current)callbacks.current.onContinue?.();
+    } finally {if(alive.current)setContinuing(false);}
+  }
   return <section className="wish-profile-choices" aria-labelledby={id+'-title'}>
-    <div className="wish-profile-heading"><div><p className="eyebrow">Your wish list, your kind of gifts</p><h2 id={id+'-title'}>{person ? `Find gifts for ${person}` : 'Find gifts you’ll love'}</h2><p>Choose gender and age, then pick a store below. Your choices save automatically.</p></div><span className="wish-profile-status" role="status">{status==='saving'?'Saving choices…':status==='saved'?'✓ Choices saved':status==='error'?'Choices not saved':'Change anytime'}</span></div>
-    <fieldset disabled={disabled}><legend>Gender</legend><div className="preference-options">{[['','No preference'],['women','Female'],['men','Male']].map(([key,label])=><label className="preference-option" key={key}><input type="radio" name={id+'-gender'} checked={(value.who||'')===key} onChange={()=>change('who',key)}/><span>{label}</span></label>)}</div></fieldset>
-    <AgeChoice value={value.age||''} onChange={age=>change('age',age)} disabled={disabled} onValidityChange={onAgeValidityChange}/>
-    {status==='error'&&<p role="alert" className="note err">We couldn’t save your choices. The ideas below use your latest selection. <button className="link" disabled={disabled} onClick={()=>queue.current?.retry()}>Retry saving</button></p>}
+    <div className="wish-profile-heading"><span className="wish-profile-gift" aria-hidden="true">🎁</span><p className="eyebrow">Step 1 of 2 · About {person||'you'}</p><h2 id={id+'-title'} tabIndex={-1}>{person ? `Find gifts for ${person}` : 'Find gifts you’ll love'}</h2><p>{celebration&&<strong>{celebration}<br/></strong>}Tell us a little about {person||'yourself'}, then choose where to shop.</p></div>
+    <AgeChoice label={person?`How old is ${person}?`:'What is your age?'} value={value.age||''} onChange={age=>change('age',age)} disabled={disabled||continuing} onValidityChange={validity}/>
+    <fieldset disabled={disabled||continuing}><legend>{person?'Gift ideas for':'Who are you?'}</legend><div className="preference-options">{[['women','Female'],['men','Male'],['','No preference']].map(([key,label])=><label className="preference-option" key={key}><input type="radio" name={id+'-gender'} checked={(value.who||'')===key} onChange={()=>change('who',key)}/><span>{label}</span></label>)}</div></fieldset>
+    {status==='error'&&<p role="alert" className="note err">We couldn’t save your choices. Please try again to continue. <button className="link" disabled={disabled||continuing} onClick={()=>queue.current?.retry()}>Retry saving</button></p>}
+    <div className="wish-profile-footer"><button type="button" className="btn wish-profile-continue" disabled={disabled||!ageValid||continuing} onClick={next}>{continuing?'Saving choices…':'Continue'}<span aria-hidden="true">→</span></button><span className="wish-profile-status" role="status">{status==='saving'?'Saving choices…':status==='saved'?'✓ Choices saved':status==='error'?'Choices not saved':'Next: choose a store'}</span></div>
   </section>;
 }

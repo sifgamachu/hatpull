@@ -88,6 +88,17 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
   const [about, setAbout] = useState({ hobbies: prof.hobbies || "", address: prof.address || "" });
   const [demographicDraft,setDemographicDraft] = useState(null), [profileSaving,setProfileSaving] = useState(false);
   const [store,setStore] = useState(null), [ageValid,setAgeValid] = useState(true);
+  const [browsing,setBrowsing] = useState(items.length>0), [storesVisited,setStoresVisited] = useState(items.length>0);
+  const profileStage=useRef(null), storeStage=useRef(null), stepFocus=useRef(false);
+  function showStores(){stepFocus.current=true;setStoresVisited(true);setStore(null);setBrowsing(true);}
+  function editPreferences(){stepFocus.current=true;setStore(null);setBrowsing(false);}
+  useEffect(()=>{
+    if(!stepFocus.current)return;
+    stepFocus.current=false;
+    const heading=(browsing?storeStage:profileStage).current?.querySelector('h2');
+    heading?.focus({preventScroll:true});
+    heading?.scrollIntoView({block:'start',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+  },[browsing]);
   const demographics = demographicDraft || cleanWishDemographics(prof);
   const target = {gid,mid:m.id,person:m.name,name:g.name,budget:g.budget,cur:g.cur};
   const showIdeas = () => document.getElementById("wishlist-gift-ideas")?.scrollIntoView({behavior:"smooth",block:"start"});
@@ -119,19 +130,21 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
     } catch { toast("Couldn't copy from that celebration."); }
   }
   return (
-    <GiftListCartProvider key={m.id} target={target} initialItems={items} initialProfile={demographics} disabled={saving||quickSaving||listSaving||catalogSaving||profileSaving} showDock={!!store||items.length>0} onBusy={setCartSaving} onChanged={async()=>{await reload();setDraft(null);}}>
+    <GiftListCartProvider key={m.id} target={target} initialItems={items} initialProfile={demographics} disabled={saving||quickSaving||listSaving||catalogSaving||profileSaving} showDock={browsing&&(!!store||items.length>0)} onBusy={setCartSaving} onChanged={async()=>{await reload();setDraft(null);}}>
     <>
-      <div className="wish-toolbar"><div><p className="eyebrow">Picked by you. A surprise from them.</p><h2>Your little wish collection</h2><p className="muted small">Add a few favorites and the details that make them yours.</p></div><div className="row"><button className="btn small ghost" disabled={saving||catalogSaving||cartSaving||profileSaving} onClick={showIdeas}>Browse gift ideas</button><button className="btn small" disabled={saving || catalogSaving || profileSaving || items.length >= MAX_WISHES} onClick={() => setSelection({})}>+ Add a gift or link</button></div></div>
-      <WishProfileChoices gid={gid} mid={m.id} token={tokens.mtok} person={m.kid?m.name:null} value={demographics} onChange={setDemographicDraft} onBusy={setProfileSaving} onSaved={reload} onAgeValidityChange={setAgeValid} disabled={saving||quickSaving||listSaving||catalogSaving||cartSaving}/>
-      <div className="wish-discovery wish-store-discovery" id="wishlist-gift-ideas">
-        <GiftStores target={target} budget={g.budget} currency={g.cur} profile={demographics} showPreferences={false} store={store} onStoreChange={setStore} selectionDisabled={!ageValid} disabled={saving||quickSaving||listSaving||cartSaving||profileSaving||!ageValid} onBusy={setCatalogSaving} onSaved={async()=>{await reload();setDraft(null);}} amazonPanel={<AmazonListSetup onListPage target={target} items={items} disabled={saving||quickSaving||catalogSaving||cartSaving||profileSaving} onBusy={setListSaving} onSaved={async()=>{await reload();setDraft(null);}}/>}/>
+      <div className="wish-profile-stage" ref={profileStage} hidden={browsing}>
+        <WishProfileChoices gid={gid} mid={m.id} token={tokens.mtok} person={m.kid?m.name:null} celebration={g.name} value={demographics} onChange={setDemographicDraft} onBusy={setProfileSaving} onSaved={reload} onContinue={showStores} onAgeValidityChange={setAgeValid} disabled={saving||quickSaving||listSaving||catalogSaving||cartSaving}/>
+      </div>
+      <div className="wish-shopping-stage stack" hidden={!browsing}>
+      <div className="wish-toolbar"><div><p className="eyebrow">Picked by you. A surprise from them.</p><h2>Your little wish collection</h2><p className="muted small">Add a few favorites and the details that make them yours.</p></div><div className="row"><button className="btn small ghost" disabled={saving||catalogSaving||cartSaving||profileSaving} onClick={editPreferences}>Edit preferences</button><button className="btn small ghost" disabled={saving||catalogSaving||cartSaving||profileSaving} onClick={showIdeas}>Browse gift ideas</button><button className="btn small" disabled={saving || catalogSaving || profileSaving || items.length >= MAX_WISHES} onClick={() => setSelection({})}>+ Add a gift or link</button></div></div>
+      <div className="wish-discovery wish-store-discovery" id="wishlist-gift-ideas" ref={storeStage}>
+        {storesVisited&&<GiftStores target={target} budget={g.budget} currency={g.cur} profile={demographics} showPreferences={false} store={store} onStoreChange={setStore} selectionDisabled={!ageValid} disabled={!browsing||saving||quickSaving||listSaving||cartSaving||profileSaving||!ageValid} onBusy={setCatalogSaving} onSaved={async()=>{await reload();setDraft(null);}} amazonPanel={<AmazonListSetup onListPage target={target} items={items} disabled={saving||quickSaving||catalogSaving||cartSaving||profileSaving} onBusy={setListSaving} onSaved={async()=>{await reload();setDraft(null);}}/>}/>}
       </div>
       <details className="individual-gifts" open={!items.some(w => amazonWishListUrl(w.u))}><summary>Paste a gift link from any store</summary><QuickWish target={{ gid, mid: m.id, person: m.name, name: g.name }} disabled={saving || listSaving || catalogSaving || profileSaving} onBusy={setQuickSaving} onSaved={async () => { await reload(); setDraft(null); }}/></details>
       {items.length ? <div className="product-grid wish-grid">{items.map((w, i) => <WishCard key={w.id} wish={w} group={g} product={products[w.a || ebayItemId(w.u)]}><div className="row"><button className="btn small ghost" disabled={saving||catalogSaving||cartSaving||profileSaving} onClick={() => setSelection({ ...w, editing: true })}>Edit wish</button><button className="btn small ghost" aria-label={`Move ${w.t} earlier`} disabled={!i || saving || catalogSaving || profileSaving} onClick={() => { const next = [...items]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; saveProfile(next); }}>↑</button><button className="link tiny" disabled={saving||catalogSaving||cartSaving||profileSaving} onClick={() => saveProfile(items.filter(item => item.id !== w.id))}>Remove</button></div></WishCard>)}</div> : <div className="wish-empty"><span aria-hidden="true">♡</span><h3>A good surprise starts with a little hint.</h3><p>Choose a gift from the ideas above, or add a link from any store.</p><button className="btn small" onClick={showIdeas}>Find my first wish →</button></div>}
       <p className="tiny muted">{items.length}/{MAX_WISHES} wishes · Reservations for individual gifts stay hidden from you, so the surprise stays intact. {AMAZON_DISCLOSURE} Hatpull may also earn a commission from eBay purchases.</p>
       {Object.values(products).some(p=>p.provider!=="ebay") && <AmazonPriceDetails/>}
       {others.length > 0 && <div className="panel row"><select id="imp" aria-label="Copy wishes from" defaultValue=""><option value="" disabled>Copy wishes from another celebration…</option>{others.map(o => <option key={o.gid} value={o.gid}>{o.name}</option>)}</select><button className="btn small ghost" disabled={saving||catalogSaving||cartSaving||profileSaving} onClick={() => { const v = document.getElementById("imp").value; if (v) importFrom(v); }}>Copy</button></div>}
-      {selection && <WishComposer key={selection.id || "new"} initial={selection} group={g} saving={saving || listSaving || quickSaving || catalogSaving || profileSaving} onSave={saveWish} onClose={() => setSelection(null)}/>}
       <div className="panel stack"><h3>About {m.kid ? m.name : "you"}</h3>
         <p className="small muted">Helps whoever drew {m.kid ? m.name : "you"} pick a gift.</p>
         <label htmlFor="hob">Hobbies and interests</label>
@@ -146,6 +159,8 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
                 <input maxLength={300} placeholder="Your answer" aria-label="Your answer" value={ans[q.id] || ""} onChange={e => setAns({ ...ans, [q.id]: e.target.value })} /><button className="btn small" type="submit">Answer</button></form>}</div>)
           : <p className="muted small">No questions yet. People can ask you things anonymously, like your size or favorite color.</p>}
       </div>}
+      </div>
+      {selection && <WishComposer key={selection.id || "new"} initial={selection} group={g} saving={saving || listSaving || quickSaving || catalogSaving || profileSaving} onSave={saveWish} onClose={() => setSelection(null)}/>}
     </></GiftListCartProvider>
   );
 }

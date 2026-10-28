@@ -54,7 +54,7 @@ export default function GiftStores({target,budget,currency,disabled,onBusy,onSav
   return <div className={`gift-stores shop-theme-${store||'lobby'}`}>
     <div className="shop-utility"><span><b>Hatpull</b> <span>gift finder</span></span><GiftListButton/></div>
     {!store && <section className="shop-lobby" aria-labelledby={id+'-shops'}>
-      <div className="shop-lobby-intro"><p className="eyebrow">Your favorite shops. One gift list.</p><h2 id={id+'-shops'}>Where would you like to shop?</h2><p>{profile?'Pick a store to see gift ideas. Your age, preferences and celebration budget come with you.':'Pick a store to start exploring. Your celebration’s budget comes with you.'}</p></div>
+      <div className="shop-lobby-intro"><p className="eyebrow">Your favorite shops. One gift list.</p><h2 id={id+'-shops'} tabIndex={-1}>Where would you like to shop?</h2><p>{profile?'Pick a store to see gift ideas. Your age, preferences and celebration budget come with you.':'Pick a store to start exploring. Your celebration’s budget comes with you.'}</p></div>
       <div className="shop-matching">
         {showPreferences && <GiftPreferences value={preferences} budget={(!currency||currency==='$')?(positiveMoney(budget)||50):50} onChange={updatePreferences} disabled={busy||selectionDisabled} />}
         <fieldset className="shop-interest-picks" disabled={busy||selectionDisabled}><legend>What are they into? <span>Pick up to 3</span></legend><div>{GIFT_INTERESTS.map(([key,label])=><button type="button" key={key} aria-pressed={preferences.interests.includes(key)} disabled={preferences.interests.length>=3&&!preferences.interests.includes(key)} onClick={()=>toggleInterest(key)}>{label}</button>)}</div></fieldset>

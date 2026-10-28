@@ -2,6 +2,12 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Compact personal-info step before stores — 2026-10-27
+
+Empty wish lists start with a centered personal-information card capped at 400px, with exact age first, vertically stacked gender choices and Continue. Stores and catalog previews do not mount until Continue succeeds. Continue flushes the existing serialized demographic save queue, including an age committed by the click itself; failures keep the form open for retry. Invalid ages cannot advance. The shop screen provides Edit preferences to return to the card; saved choices are retained. Wish lists that already contain gifts open directly to their collection and browsing. The viewer/reservation flow is unchanged.
+
+Gift Finder's preference dialog uses the same compact width and a single Continue action. Interests remain available in an expandable section and in the shop chooser. The festive theme and direct Amazon links remain intact. No schema, credential or environment changes. Validation: 87 tests, including Continue/save race and retry coverage; desktop and 390px mobile checks with fictional participants.
+
 ## One age box and direct Amazon browsing — 2026-10-27
 
 The shared age control is now one editable combobox: type an exact age or open and scroll the 0–120 list in the same field. Arrow keys/Enter select, Tab/blur save completed values, and Escape cancels an edit. Invalid ages prevent shop selection; existing age groups are retained until changed. Age copy explains gift matching and no longer says “optional.” Blank ages remain supported without a schema change.

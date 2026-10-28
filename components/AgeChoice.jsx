@@ -2,7 +2,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { EXACT_AGES, exactAge, GIFT_AGES } from '@/lib/gift-preferences.mjs';
 
-export default function AgeChoice({ value = '', onChange, disabled = false, emptyValue = '', onValidityChange }) {
+export default function AgeChoice({ value = '', onChange, disabled = false, emptyValue = '', onValidityChange, label = 'Age (years)' }) {
   const id = useId(), input = useRef(null), options = useRef([]);
   const [entry, setEntry] = useState(null), [open, setOpen] = useState(false), [active, setActive] = useState(-1);
   const editing = entry?.forValue === value;
@@ -44,7 +44,7 @@ export default function AgeChoice({ value = '', onChange, disabled = false, empt
     }
   }
   return <div className="age-choice" onBlur={e=>{if(!e.currentTarget.contains(e.relatedTarget)){commit();setOpen(false);}}}>
-    <label htmlFor={id+'-age'}>Age (years)</label>
+    <label htmlFor={id+'-age'}>{label}</label>
     <div className="age-combobox">
       <div className="age-choice-control">
         <input ref={input} id={id+'-age'} type="text" role="combobox" inputMode="numeric" autoComplete="off" placeholder={legacy?legacyLabel:'Enter or choose age'} maxLength={3} value={text} disabled={disabled} aria-expanded={expanded} aria-controls={expanded?id+'-ages':undefined} aria-autocomplete="none" aria-activedescendant={expanded&&active>=0?id+'-option-'+active:undefined} aria-invalid={!valid} aria-describedby={id+'-help'+(!valid?' '+id+'-error':'')} onChange={e=>{setEntry({forValue:value,text:e.target.value});setActive(exactAge(e.target.value)!==''?+e.target.value:-1);setOpen(true);}} onKeyDown={keyDown}/>
