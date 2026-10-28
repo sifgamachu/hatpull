@@ -23,7 +23,7 @@ async function get(host, path) {
     }
   }
   const recovered=await get(santa,'/?__hatpull_moved=1');
-  assert.equal(recovered.status,200);assert.equal(recovered.headers.get('clear-site-data'),'"cache"');
+  assert.equal(recovered.status,200);assert.equal(recovered.headers.get('clear-site-data'),undefined);
   const legacyHealth=await get('secretsantageneratorapp.com','/api/health');
   assert.equal(legacyHealth.status,200);assert.equal(legacyHealth.headers.get('location'),undefined);
   console.log('Domain migration: permanent redirects preserve paths/queries; legacy API stays reachable');
