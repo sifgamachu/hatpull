@@ -49,3 +49,9 @@ test('a saved gift reuses its search photo without extending product expiry',asy
   time=4000;
   assert.equal(cache.peekProduct('v1|123456789012|0'),null);
 });
+
+test('public cache keys isolate shipping destinations and normalize invalid client preferences',()=>{
+ const us=searchKey({q:'mug',max:25}),ca=searchKey({q:'mug',max:25,country:'CA'});
+ assert.notEqual(us,ca);assert.equal(new URLSearchParams(ca).get('country'),'CA');
+ assert.equal(us,searchKey({q:'mug',max:25,country:'PRIVATE ADDRESS'}));
+});

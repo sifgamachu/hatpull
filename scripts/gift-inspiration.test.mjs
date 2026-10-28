@@ -91,3 +91,20 @@ test('child suggestions reject explicitly incompatible age ranges without guessi
   assert.equal(isInspirationProduct('kidspuzzle','Jigsaw Puzzle 1000 Pieces',{age:'8'}),true);
   assert.equal(isInspirationProduct('kidspuzzle','Puzzles for Ages 3-5',{age:'kids'}),true);
 });
+
+test('explicit interests override adult gender order and share the three preview positions',()=>{
+  const preferences={age:'40',gender:'men',interests:['coffee','tech','outdoors']};
+  const male=giftInspirationPlan(preferences),female=giftInspirationPlan({...preferences,gender:'women'});
+  assert.deepEqual(male,female);
+  assert.deepEqual(male.slice(0,3).map(x=>x.id),['mug','speaker','inflator']);
+  assert.deepEqual(storePreviewIdeas({age:'40',who:'men',interests:preferences.interests}).map(x=>x.id),male.slice(0,3).map(x=>x.id));
+  assert.ok(giftInspirationPlan({age:'3',interests:['tech','outdoors']}).every(f=>f.id.startsWith('toddler')));
+});
+
+test('country reaches preview searches without exact ages or private profile details',async()=>{
+  const keys=[];
+  await loadGiftInspiration({preferences:giftPreferencesFromProfile({age:'43',who:'women',interests:['tech'],country:'CA',address:'PRIVATE ADDRESS',name:'PRIVATE NAME'}),max:25,familyLimit:3,perFamily:1,now:()=>now,onUpdate:()=>{},load:async key=>{keys.push(key);return result([item(key)]);}});
+  assert.ok(keys.length>0);
+  assert.ok(keys.every(key=>new URLSearchParams(key).get('country')==='CA'&&new URLSearchParams(key).get('max')==='25'));
+  assert.ok(keys.every(key=>!/PRIVATE|43/.test(key)));
+});

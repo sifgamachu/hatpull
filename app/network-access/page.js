@@ -23,10 +23,11 @@ export default function NetworkAccess() {
     <div style={{ overflowX: "auto" }}>
       <table><thead><tr><th scope="col">Hostname</th><th scope="col">Purpose</th></tr></thead><tbody>
         <tr><td><code>onlinenamepickertool.com</code></td><td>Name picker, including its scripts and fonts.</td></tr>
-        <tr><td><code>secretsantageneratorapp.com</code></td><td>Secret Santa, invitations, wish lists, and account pages.</td></tr>
+        <tr><td><code>hatpull.com</code></td><td>Secret Santa, invitations, wish lists, and account pages.</td></tr>
+        <tr><td><code>secretsantageneratorapp.com</code><br/><code>www.secretsantageneratorapp.com</code></td><td>Previous addresses; redirect to hatpull.com.</td></tr>
         <tr><td><code>rkpglmwjpwbrxbluvsqm.supabase.co</code></td><td>Required for Secret Santa data and authentication. Not required for the local picker to spin.</td></tr>
         <tr><td><code>accounts.google.com</code></td><td>Optional Google sign-in, subject to your organization's identity policy.</td></tr>
-        <tr><td><code>www.onlinenamepickertool.com</code><br /><code>www.secretsantageneratorapp.com</code></td><td>Redirects to the corresponding address without www.</td></tr>
+        <tr><td><code>www.onlinenamepickertool.com</code><br /><code>www.hatpull.com</code></td><td>Redirects to the corresponding address without www.</td></tr>
         <tr><td><code>drawnamesonlinetool.com</code></td><td>Optional legacy address that redirects to the Secret Santa site.</td></tr>
       </tbody></table>
     </div>

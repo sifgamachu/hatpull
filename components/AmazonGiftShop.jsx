@@ -1,5 +1,6 @@
 import { AMAZON_DISCLOSURE, AFF_REL, amazonUrl } from '@/lib/core';
 import { positiveMoney } from '@/lib/gifts.mjs';
+import { giftCountryLabel } from '@/lib/gift-delivery.mjs';
 import GiftArtwork from './GiftArtwork';
 import { giftPreferencesFromProfile, giftSearchQuery } from '@/lib/gift-preferences.mjs';
 import { storePreviewIdeas } from '@/lib/store-preview-ideas.mjs';
@@ -15,13 +16,13 @@ const departments = [
 export default function AmazonGiftShop({budget,currency='$',profile}) {
   const cap=positiveMoney(budget),usd=!currency||currency==='$';
   const preferences=giftPreferencesFromProfile(profile);
-  const url=query=>amazonUrl(giftSearchQuery(query,preferences),0,usd?cap:0);
+  const url=query=>amazonUrl(giftSearchQuery(query,{...preferences,interests:[]}),0,usd?cap:0);
   const suggestions=storePreviewIdeas(profile,6);
   return <section className="amazon-shop" aria-label="Amazon gift browsing">
     <nav className="amazon-shop-categories" aria-label="Amazon gift departments">{departments.map(([label,query])=><a key={label} href={url(query)} target="_blank" rel={AFF_REL}>{label} ↗</a>)}</nav>
     <div className="amazon-shop-hero"><div><p className="eyebrow">Find it on Amazon</p><h3>A little inspiration.<br/>A gift they’ll love.</h3><p>Browse the full selection on Amazon, then use <b>Add to List</b> to keep your favorites together.</p><a className="btn amazon-browse-button" href={url('gift ideas')} target="_blank" rel={AFF_REL}>Browse your gift on Amazon ↗</a></div><div className="amazon-hero-art" aria-hidden="true"><GiftArtwork kind="gift"/></div></div>
     <div className="amazon-shop-budget"><b>{cap?`Celebration budget: ${currency||'$'}${cap}`:'Find something thoughtful at any budget.'}</b><span>{cap&&usd?'Your budget is included in the Amazon search. Check final prices, shipping and tax.':!usd?'Amazon.com uses US dollars. Compare currencies before buying.':'Explore a department below. Each opens Amazon in a new tab.'}</span></div>
     <section className="amazon-personalized" aria-label="Amazon ideas for your choices"><h3>A few ideas for your choices</h3><p>Gift inspiration for your preferences. Each idea opens matching products on Amazon.</p><div className="amazon-departments">{suggestions.map(idea=><a key={idea.id} className="amazon-department" href={url(idea.query)} target="_blank" rel={AFF_REL}><span className="amazon-department-art"><GiftArtwork kind={idea.art}/></span><h3>{idea.title}</h3><span className="amazon-department-link">Find on Amazon ↗</span></a>)}</div></section>
-    <p className="amazon-shop-disclosure">{AMAZON_DISCLOSURE} These illustrations are gift ideas; current product photos, prices and shopping are on Amazon.</p>
+    <p className="amazon-shop-disclosure">{AMAZON_DISCLOSURE} {preferences.country!=='US'&&`Check Amazon.com delivery to ${giftCountryLabel(preferences.country)}; these links do not filter international availability. `}These illustrations are gift ideas; current product photos, prices and shopping are on Amazon.</p>
   </section>;
 }

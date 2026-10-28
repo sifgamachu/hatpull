@@ -1,5 +1,5 @@
 Hatpull: work and school network connection guide
-Updated: 2026-10-22
+Updated: 2026-10-27
 Operator: Teregna LLC
 Contact: hello@secretsantageneratorapp.com
 
@@ -11,7 +11,7 @@ onlinenamepickertool.com
   Names and spins run in the browser. No account or database connection is
   required for the picker itself.
 
-secretsantageneratorapp.com
+hatpull.com
   Secret Santa, invitations, wish lists, and accounts.
 
 rkpglmwjpwbrxbluvsqm.supabase.co
@@ -23,11 +23,13 @@ accounts.google.com
   Email sign-in is available when Google sign-in is restricted.
 
 www.onlinenamepickertool.com
-www.secretsantageneratorapp.com
+www.hatpull.com
   Redirects to the corresponding domain without www.
 
+secretsantageneratorapp.com
+www.secretsantageneratorapp.com
 drawnamesonlinetool.com
-  Optional legacy address; redirects to secretsantageneratorapp.com.
+  Optional legacy addresses; redirect to hatpull.com.
 
 Email sender: reminders@send.secretsantageneratorapp.com
   Review mail filtering if a requested sign-in email or reminder is missing.

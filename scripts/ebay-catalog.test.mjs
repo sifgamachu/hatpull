@@ -26,7 +26,7 @@ test('eBay normalization removes seller data and refuses invalid or expired offe
 });
 
 test('eBay query validation bounds budgets, pagination and search size', () => {
-  assert.deepEqual(ebayQuery(new URLSearchParams('q=coffee&max=25&sort=low')), { q: 'coffee', max: 25, sort: 'low', page: 1 });
+  assert.deepEqual(ebayQuery(new URLSearchParams('q=coffee&max=25&sort=low')), { q: 'coffee', max: 25, sort: 'low', page: 1, country: 'US' });
   for (const q of ['max=-1', 'max=10001', 'max=NaN', 'max=1e2', 'page=0', 'page=11', 'sort=__proto__', 'q=' + 'x'.repeat(101)]) assert.throws(() => ebayQuery(new URLSearchParams(q)));
 });
 
@@ -74,4 +74,26 @@ test('notification challenge binds the code, secret token and fixed production e
   const token='x'.repeat(64), code='test-challenge';
   assert.equal(ebayChallenge(code,token),createHash('sha256').update(code+token+EBAY_NOTIFICATION_URL).digest('hex'));
   assert.equal(ebayChallenge('',token),''); assert.equal(ebayChallenge(code,'short'),'');
+});
+
+test('delivery countries validate, separate caches and never reuse US postage internationally',async()=>{
+  const calls=[];
+  const catalog=createEbayCatalog({env,now:()=>1000000,fetcher:async(url,options)=>{
+    calls.push(url);
+    if(url.includes('/oauth2/token'))return response({access_token:'fixture'});
+    const listing=item({shippingOptions:[{shippingCost:{value:'0',currency:'USD'}}]});
+    return response(url.includes('item_summary')?{itemSummaries:[listing]}:listing);
+  }});
+  const us=await catalog('search',{q:'mug',country:'US'});
+  const ca=await catalog('search',{q:'mug',country:'CA'});
+  assert.equal(us.items[0].shipping,0);assert.equal(us.items[0].country,'US');
+  assert.equal(ca.items[0].shipping,null);assert.equal(ca.items[0].country,'CA');
+  assert.match(new URL(calls[2]).searchParams.get('filter'),/deliveryCountry:CA/);
+  assert.equal(calls.length,3);
+  await catalog('search',{q:'mug',country:'CA'});assert.equal(calls.length,3);
+  const detail=await catalog('item',{id,country:'CA'});assert.equal(detail.items[0].shipping,null);
+  for(const country of ['ZZ','us','US,price:[0..100]']){
+    await assert.rejects(catalog('search',{q:'mug',country}),e=>e.code==='invalid_query');
+    await assert.rejects(catalog('item',{id,country}),e=>e.code==='invalid_query');
+  }
 });

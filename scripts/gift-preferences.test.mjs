@@ -5,7 +5,7 @@ import { searchKey } from '../lib/ebay-search-cache.mjs';
 import { ebayQuery } from '../lib/ebay-catalog.mjs';
 
 test('preferences accept only supported values and remove duplicate or unknown interests', () => {
-  assert.deepEqual(cleanGiftPreferences({gender:'private name',age:'1990-01-01',interests:['unknown','games','games','coffee']}),{gender:'any',age:'any',interests:['coffee','games']});
+  assert.deepEqual(cleanGiftPreferences({gender:'private name',age:'1990-01-01',interests:['unknown','games','games','coffee']}),{country:'US',gender:'any',age:'any',interests:['coffee','games']});
   assert.equal(cleanGiftPreferences({interests:GIFT_INTERESTS.map(([id])=>id)}).interests.length,3);
   assert.deepEqual(giftPreferenceChips(emptyGiftPreferences()),[]);
 });

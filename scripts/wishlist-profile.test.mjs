@@ -8,7 +8,7 @@ import { createProfileSaveQueue } from '../lib/profile-save-queue.mjs';
 const tick = () => new Promise(resolve=>setImmediate(resolve));
 test('saved age/gender seed catalog queries without sending private profile fields',()=>{
   const privateProfile={who:'women',age:'12–17',name:'Private Name',address:'Private address',hobbies:'Private text',items:[{id:'private'}]};
-  assert.deepEqual(giftPreferencesFromProfile(privateProfile),{gender:'women',age:'teens',interests:[]});
+  assert.deepEqual(giftPreferencesFromProfile(privateProfile),{country:'US',gender:'women',age:'teens',interests:[]});
   assert.equal(giftSearchQuery('gift set',giftPreferencesFromProfile(privateProfile)),'gift set teen women');
   assert.equal(giftSearchQuery('gift set',giftPreferencesFromProfile({who:'men',age:'5–11'})),'gift set boys');
   assert.equal(giftSearchQuery('gift set',giftPreferencesFromProfile({age:'Under 5'})),'gift set toddler');

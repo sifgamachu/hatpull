@@ -12,7 +12,7 @@ export default function GiftProductPreview({ initial, saved, disabled, target, e
     async function load() {
       setLoading(true);
       try {
-        const data = await ebaySearchCache.load('id=' + encodeURIComponent(initial.itemId));
+        const data = await ebaySearchCache.load('id=' + encodeURIComponent(initial.itemId) + '&country=' + encodeURIComponent(initial.country || 'US'));
         if (!live) return;
         const found = data.items.find(p => p.itemId === initial.itemId);
         setProduct(found || null); setUnavailable(!found);

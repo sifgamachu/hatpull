@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request) {
   try {
     const params = new URL(request.url).searchParams;
-    const result = params.has('id') ? await ebayCatalog('item', { id: params.get('id') }) : await ebayCatalog('search', ebayQuery(params));
+    const result = params.has('id') ? await ebayCatalog('item', { id: params.get('id'), country: params.get('country') || 'US' }) : await ebayCatalog('search', ebayQuery(params));
     // All returned fields are public product data, identical for every visitor.
     // Expiry is bounded by the original product timestamp; never serve stale prices.
     return Response.json(result, { headers: catalogCacheHeaders(result) });

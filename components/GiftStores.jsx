@@ -4,6 +4,10 @@ import EbayGiftCatalog from './EbayGiftCatalog';
 import EbayStorePreview from './EbayStorePreview';
 import AmazonGiftShop from './AmazonGiftShop';
 import StoreIdeaPreview from './StoreIdeaPreview';
+import GiftPreferences from './GiftPreferences';
+import { GIFT_INTERESTS, cleanGiftPreferences, giftPreferencesFromProfile } from '@/lib/gift-preferences.mjs';
+import { positiveMoney } from '@/lib/gifts.mjs';
+import { GIFT_COUNTRIES } from '@/lib/gift-delivery.mjs';
 import { GiftListButton, useGiftListCart } from './GiftListCart';
 
 const shops = [
@@ -18,7 +22,14 @@ function StoreLogo({store}) {
 }
 
 export default function GiftStores({target,budget,currency,disabled,onBusy,onSaved,amazonPanel,contextPanel,profile,showPreferences=true,selectionDisabled=false,store:controlledStore,onStoreChange}) {
-  const cart=useGiftListCart(), browsingProfile=profile??cart?.profile;
+  const cart=useGiftListCart(), baseProfile=profile??cart?.profile;
+  const basePreferences=giftPreferencesFromProfile(baseProfile);
+  const preferenceContext=JSON.stringify([target?.gid,target?.mid,basePreferences]);
+  const [matching,setMatching]=useState(null);
+  const preferences=matching?.context===preferenceContext?matching.value:basePreferences;
+  const browsingProfile={age:preferences.age,who:preferences.gender,interests:preferences.interests,country:preferences.country};
+  const updatePreferences=value=>setMatching({context:preferenceContext,value:cleanGiftPreferences(value)});
+  const toggleInterest=interest=>updatePreferences({...preferences,interests:preferences.interests.includes(interest)?preferences.interests.filter(id=>id!==interest):[...preferences.interests,interest].slice(0,3)});
   const previewsLoading=disabled||cart?.contextLoading||(!!target&&profile===undefined&&!cart?.profileReady);
   const [localStore,setLocalStore]=useState(null),[busy,setBusy]=useState(false),[visited,setVisited]=useState({});
   const store=controlledStore===undefined?localStore:controlledStore;
@@ -40,6 +51,12 @@ export default function GiftStores({target,budget,currency,disabled,onBusy,onSav
     <div className="shop-utility"><span><b>Hatpull</b> <span>gift finder</span></span><GiftListButton/></div>
     {!store && <section className="shop-lobby" aria-labelledby={id+'-shops'}>
       <div className="shop-lobby-intro"><p className="eyebrow">Your favorite shops. One gift list.</p><h2 id={id+'-shops'}>Where would you like to shop?</h2><p>{profile?'Pick a store to see gift ideas. Your age, preferences and celebration budget come with you.':'Pick a store to start exploring. Your celebration’s budget comes with you.'}</p></div>
+      <div className="shop-matching">
+        {showPreferences && <GiftPreferences value={preferences} budget={(!currency||currency==='$')?(positiveMoney(budget)||50):50} onChange={updatePreferences} disabled={busy||selectionDisabled} />}
+        <fieldset className="shop-interest-picks" disabled={busy||selectionDisabled}><legend>What are they into? <span>Optional · pick up to 3</span></legend><div>{GIFT_INTERESTS.map(([key,label])=><button type="button" key={key} aria-pressed={preferences.interests.includes(key)} disabled={preferences.interests.length>=3&&!preferences.interests.includes(key)} onClick={()=>toggleInterest(key)}>{label}</button>)}</div></fieldset>
+        <div className="shop-delivery-choice"><label htmlFor={id+'-country'}>Ship gifts to</label><select id={id+'-country'} value={preferences.country} disabled={busy||selectionDisabled} onChange={e=>updatePreferences({...preferences,country:e.target.value})}>{GIFT_COUNTRIES.map(([code,label])=><option key={code} value={code}>{label}</option>)}</select><small>Filters eBay delivery. Confirm Amazon delivery at the store. Prices are US$.</small></div>
+        <details className="shop-matching-explainer"><summary>How these ideas are chosen</summary><p>Your interests come first, with age-appropriate categories and your budget. Optional gender choices change the starting mix; you can explore every category. eBay supplies current listings in Best Match order within each category, filtered for your chosen shipping country. Amazon ideas open matching searches.</p><p>We mix practical, fun and cozy ideas. These are suggestions, not verified trends or predictions about someone’s personality. Interest and country choices apply during this visit.</p></details>
+      </div>
       <div className="shop-choices">{shops.map(shop=><button type="button" key={shop.id} ref={el=>{shopButtons.current[shop.id]=el;}} className={`shop-choice shop-choice-${shop.id}`} aria-label={shop.action} aria-describedby={id+'-'+shop.id+'-description'} disabled={busy||selectionDisabled} onClick={()=>choose(shop.id)}>
         <span className="shop-choice-heading"><StoreLogo store={shop.id}/><span className="shop-open">Available now</span></span>
         {shop.id==='ebay'?<EbayStorePreview budget={budget} currency={currency} profile={browsingProfile} disabled={previewsLoading}/>:<StoreIdeaPreview profile={browsingProfile}/>}
@@ -54,7 +71,7 @@ export default function GiftStores({target,budget,currency,disabled,onBusy,onSav
       <button type="button" className="shop-switch" disabled={busy||selectionDisabled} onClick={()=>choose(store==='ebay'?'amazon':'ebay')}>Switch to {store==='ebay'?'Amazon':'eBay'} →</button>
     </div>}
     {contextPanel && <div className="shop-context">{contextPanel}</div>}
-    {(visited.ebay||store==='ebay') && <div hidden={store!=='ebay'}><EbayGiftCatalog target={target} budget={budget} currency={currency} profile={profile} showPreferences={showPreferences} disabled={disabled} active={store==='ebay'} onBusy={working} onSaved={onSaved}/></div>}
+    {(visited.ebay||store==='ebay') && <div hidden={store!=='ebay'}><EbayGiftCatalog target={target} budget={budget} currency={currency} profile={browsingProfile} showPreferences={showPreferences} onPreferencesChange={updatePreferences} disabled={disabled} active={store==='ebay'} onBusy={working} onSaved={onSaved}/></div>}
     {(visited.amazon||store==='amazon') && <div hidden={store!=='amazon'}><AmazonGiftShop budget={budget} currency={currency} profile={browsingProfile}/>{amazonPanel && <div className="store-amazon-panel">{amazonPanel}</div>}</div>}
     {store!=='ebay' && <p className="shop-trademark">Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates.</p>}
   </div>;

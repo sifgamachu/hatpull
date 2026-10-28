@@ -2,6 +2,12 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Hatpull primary domain and matching signals — 2026-10-27
+
+hatpull.com is the primary app address. Legacy secretsantageneratorapp.com page links permanently redirect with their path/query intact; legacy APIs and verified email domains remain unchanged. Vercel/Cloudflare and Supabase/Google return URLs were configured for the new domain. Users may need to sign in again because browser storage is origin-scoped; old invitation links still recover guest access. The owner confirmed the one-l spelling was a typo. See `docs/hatpull-domain-cutover-20261027.md`.
+
+Shop previews now share optional interest and shipping-country choices. Interests override adult gender ordering, mix across categories, and retain child age guards and the budget cap. eBay uses live Best Match listings filtered for the selected delivery country; Amazon remains illustrated matching browse links. These are explained heuristics, not a trained psychological model or verified trend feed. See `docs/gift-matching-signals-20261027.md`.
+
 ## Personalized store previews — 2026-10-27
 
 Both shop cards now preview gifts for the saved age/gender before opening a store. eBay requests three matching product families with two-request concurrency and shows one real photo, title and current item price per family within the USD cap. The full catalog reuses those searches. Amazon shows clearly labeled original illustrated ideas without prices or stock claims, followed by six matching search links inside its shop. The live Amazon adapter still returns `not_configured`; no Amazon catalog access is implied.

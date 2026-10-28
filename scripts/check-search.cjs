@@ -9,6 +9,20 @@ async function get(host, path) {
   });
 }
 (async () => {
+  for (const host of ['secretsantageneratorapp.com','www.secretsantageneratorapp.com','www.hatpull.com']) {
+    for (const path of ['/', '/gift-finder?from=legacy', '/g/test-group/w/test-member?invite=test-placeholder', '/auth/callback?next=%2Fmy', '/robots.txt', '/sitemap.xml']) {
+      const r=await get(host,path); assert.equal(r.status,308,host+path);
+      const destination=new URL(r.headers.get('location'),`https://${host}`);
+      // Vercel can consolidate www before the application handles the old apex.
+      if(destination.hostname==='secretsantageneratorapp.com') {
+        const second=await get(destination.hostname,destination.pathname+destination.search);
+        assert.equal(second.status,308); assert.equal(second.headers.get('location'),'https://'+santa+path);
+      } else assert.equal(destination.href,'https://'+santa+path);
+    }
+  }
+  const legacyHealth=await get('secretsantageneratorapp.com','/api/health');
+  assert.equal(legacyHealth.status,200);assert.equal(legacyHealth.headers.get('location'),undefined);
+  console.log('Domain migration: permanent redirects preserve paths/queries; legacy API stays reachable');
   for (const [host, path, target] of [[santa,'/secret-santa-generator','https://'+santa+'/'],[santa,'/name-picker','https://'+picker+'/'],[picker,'/name-picker','https://'+picker+'/']]) {
     const r=await get(host,path); assert.equal(r.status,308); assert.equal(new URL(r.headers.get('location'),`https://${host}`).href,target);
   }

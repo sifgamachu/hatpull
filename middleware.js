@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 // One codebase, two sites:
 //  - onlinenamepickertool.com  -> name picker at "/"
 //  - hatpull.com -> Secret Santa landing at "/"
-//  - secretsantageneratorapp.com -> legacy host during domain cutover
+//  - secretsantageneratorapp.com -> permanent redirect to hatpull.com
 //  - drawnamesonlinetool.com   -> 301 to the Secret Santa site
 export const SANTA_HOST = "hatpull.com";
 export const LEGACY_HOST = "secretsantageneratorapp.com";
@@ -12,7 +12,13 @@ export const PICKER_HOST = "onlinenamepickertool.com";
 export function middleware(req) {
   const host = (req.headers.get("host") || "").toLowerCase().replace(/^www\./, "").split(":")[0];
   const url = req.nextUrl.clone();
-  const santaSite = [SANTA_HOST, LEGACY_HOST].includes(host);
+  const santaSite = host === SANTA_HOST;
+
+  // Keep original paths and invitation queries. API callbacks retain their
+  // registered legacy URL through the matcher exclusion below.
+  if (host === LEGACY_HOST) {
+    return NextResponse.redirect(`https://${SANTA_HOST}${url.pathname}${url.search}`, 308);
+  }
 
   if (host === "drawnamesonlinetool.com") {
     return NextResponse.redirect(`https://${SANTA_HOST}${url.pathname === "/" ? "" : url.pathname}${url.search}`, 301);
