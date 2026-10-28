@@ -1,5 +1,5 @@
 import Festive from "@/components/Festive";
-export const metadata = { title: "FAQ", description: "Answers to common questions about the free Secret Santa generator and online name picker.", alternates: { canonical: "https://secretsantageneratorapp.com/faq" } };
+export const metadata = { title: "FAQ", description: "Answers to common questions about the free Secret Santa generator and online name picker.", alternates: { canonical: "https://hatpull.com/faq" } };
 const FAQ = [
   ["Is it free?", "Yes. Drawing names, invitations, wish lists and the name picker are free. We earn a small commission when you buy through some gift links."],
   ["Does anyone need to sign up?", "The organizer must sign in with Google or email before creating a celebration. Participants can join using the invitation link without creating an account."],

@@ -1,6 +1,6 @@
 import { SITE } from "@/lib/core";
 import Festive from "@/components/Festive";
-export const metadata = { title: "About", description: "Hatpull makes free tools for drawing names: a Secret Santa generator and an online name picker.", alternates: { canonical: "https://secretsantageneratorapp.com/about" } };
+export const metadata = { title: "About", description: "Hatpull makes free tools for drawing names: a Secret Santa generator and an online name picker.", alternates: { canonical: "https://hatpull.com/about" } };
 export default function Page() {
   return (
     <div className="page prose">

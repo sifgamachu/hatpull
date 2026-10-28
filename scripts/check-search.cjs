@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const base = process.env.SEARCH_CHECK_BASE || 'http://localhost:3017';
-const santa = 'secretsantageneratorapp.com', picker = 'onlinenamepickertool.com';
+const santa = 'hatpull.com', picker = 'onlinenamepickertool.com';
 async function get(host, path) {
   const url = base === 'live' ? `https://${host}${path}` : `${base}${path}`;
   return new Promise((resolve,reject)=>{

@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 import { LANDINGS } from "@/lib/landings";
 export default async function sitemap() {
-  const host = ((await headers()).get("host") || "secretsantageneratorapp.com").replace(/^www\./, "");
-  const base = host === "onlinenamepickertool.com" ? "https://onlinenamepickertool.com" : "https://secretsantageneratorapp.com";
+  const host = ((await headers()).get("host") || "hatpull.com").replace(/^www\./, "");
+  const base = host === "onlinenamepickertool.com" ? "https://onlinenamepickertool.com" : "https://hatpull.com";
   const santa = host !== "onlinenamepickertool.com";
   const paths = santa
     ? ["", "/gift-finder", "/how-it-works", "/secret-santa-rules", "/faq", "/about", "/contact", "/privacy", "/terms", "/network-access"]

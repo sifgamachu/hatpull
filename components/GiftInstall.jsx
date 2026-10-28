@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 export default function GiftInstall() {
   const [prompt, setPrompt] = useState(null), [message, setMessage] = useState('');
   useEffect(() => {
-    if (!['secretsantageneratorapp.com','localhost','127.0.0.1'].includes(location.hostname)) return;
+    if (!['hatpull.com','localhost','127.0.0.1'].includes(location.hostname)) return;
     const available = event => { event.preventDefault(); setPrompt(event); };
     const installed = () => { setPrompt(null); setMessage('Installed. If your device supports it, choose Hatpull from a product’s Share menu.'); };
     window.addEventListener('beforeinstallprompt', available); window.addEventListener('appinstalled', installed);

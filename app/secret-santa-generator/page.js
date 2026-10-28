@@ -10,9 +10,9 @@ import { upcomingOccasions, fmtDate, daysUntil, XMAS_OCC } from "@/lib/core";
 export const metadata = {
   title: { absolute: "Free Secret Santa Generator & Wish Lists | Hatpull" },
   description: "Draw Secret Santa names for 3–200 people, exclude couples and share gift wish lists. Organizers sign in; participants join by link. Free to use.",
-  alternates: { canonical: "https://secretsantageneratorapp.com/" },
+  alternates: { canonical: "https://hatpull.com/" },
   verification: { other: { "msvalidate.01": "F4861D58DE9F22DD604DD37B0F0CE192" } },
-  openGraph: { title: "Free Secret Santa Generator & Wish Lists | Hatpull", description: "Draw names, keep couples apart, share wish lists. Free, with easy participant invitations.", url: "https://secretsantageneratorapp.com/", siteName: "Hatpull", type: "website" },
+  openGraph: { title: "Free Secret Santa Generator & Wish Lists | Hatpull", description: "Draw names, keep couples apart, share wish lists. Free, with easy participant invitations.", url: "https://hatpull.com/", siteName: "Hatpull", type: "website" },
 };
 export const revalidate = 3600;
 
@@ -119,7 +119,7 @@ export default function SantaLanding() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context": "https://schema.org", "@graph": [
           ...siteIdentity(false),
-          { "@type": "WebApplication", "@id": "https://secretsantageneratorapp.com/#app", name: "Hatpull Secret Santa Generator", publisher: { "@id": "https://secretsantageneratorapp.com/#organization" }, applicationCategory: "LifestyleApplication", operatingSystem: "Any", offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }, url: "https://secretsantageneratorapp.com/" },
+          { "@type": "WebApplication", "@id": "https://hatpull.com/#app", name: "Hatpull Secret Santa Generator", publisher: { "@id": "https://hatpull.com/#organization" }, applicationCategory: "LifestyleApplication", operatingSystem: "Any", offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }, url: "https://hatpull.com/" },
           { "@type": "FAQPage", mainEntity: FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) },
         ] }) }} />
     </div>

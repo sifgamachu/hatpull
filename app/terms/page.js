@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { SITE } from "@/lib/core";
 import Festive from "@/components/Festive";
-export const metadata = { title: "Terms of Service", description: "The terms for using Hatpull.", alternates: { canonical: "https://secretsantageneratorapp.com/terms" } };
+export const metadata = { title: "Terms of Service", description: "The terms for using Hatpull.", alternates: { canonical: "https://hatpull.com/terms" } };
 export default function Page() {
   return (
     <div className="page prose">
       <Festive on={false} />
       <h1>Terms of Service</h1>
       <p className="muted">Last updated: October 23, 2026</p>
-      <p>These terms govern your use of Hatpull, including the Secret Santa generator at secretsantageneratorapp.com and the name picker at onlinenamepickertool.com, provided by {SITE.legalName}{SITE.address ? `, ${SITE.address}` : ""}. By using Hatpull you agree to them.</p>
+      <p>These terms govern your use of Hatpull, including the Secret Santa generator at hatpull.com and the name picker at onlinenamepickertool.com, provided by {SITE.legalName}{SITE.address ? `, ${SITE.address}` : ""}. By using Hatpull you agree to them.</p>
       <h2>Using Hatpull</h2>
       <p>Hatpull is free to use for personal, family and workplace gift exchanges and name drawing. You agree not to misuse the service, including by trying to access celebrations you weren't invited to, interfering with its operation, or posting unlawful, abusive or infringing content.</p>
       <h2>Who can use it</h2>

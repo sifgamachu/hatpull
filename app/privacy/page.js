@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SITE } from "@/lib/core";
 import Festive from "@/components/Festive";
-export const metadata = { title: "Privacy Policy", description: "How Hatpull collects, uses and protects your information.", alternates: { canonical: "https://secretsantageneratorapp.com/privacy" } };
+export const metadata = { title: "Privacy Policy", description: "How Hatpull collects, uses and protects your information.", alternates: { canonical: "https://hatpull.com/privacy" } };
 export default function Page() {
   const who = `${SITE.legalName}${SITE.address ? `, ${SITE.address}` : ""}`;
   return (
@@ -9,7 +9,7 @@ export default function Page() {
       <Festive on={false} />
       <h1>Privacy Policy</h1>
       <p className="muted">Last updated: October 24, 2026</p>
-      <p>Hatpull (the Secret Santa generator at secretsantageneratorapp.com and the name picker at onlinenamepickertool.com) is run by {who} ("we", "us"). This policy explains what we collect, why, and the choices you have. Contact us any time at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>{SITE.address ? "" : " (our mailing address is available on request)"}.</p>
+      <p>Hatpull (the Secret Santa generator at hatpull.com and the name picker at onlinenamepickertool.com) is run by {who} ("we", "us"). This policy explains what we collect, why, and the choices you have. Contact us any time at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>{SITE.address ? "" : " (our mailing address is available on request)"}.</p>
 
       <h2>What we collect</h2>
       <ul>

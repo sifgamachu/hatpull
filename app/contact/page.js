@@ -1,6 +1,6 @@
 import { SITE } from "@/lib/core";
 import Festive from "@/components/Festive";
-export const metadata = { title: "Contact", description: "Get in touch with the Hatpull team.", alternates: { canonical: "https://secretsantageneratorapp.com/contact" } };
+export const metadata = { title: "Contact", description: "Get in touch with the Hatpull team.", alternates: { canonical: "https://hatpull.com/contact" } };
 export default function Page() {
   return (
     <div className="page prose">

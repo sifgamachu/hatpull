@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Festive from "@/components/Festive";
-export const metadata = { title: "How Secret Santa Works: Step-by-Step Guide", description: "How to run an online Secret Santa: add names, set exclusions, share one invitation link, draw names and share wish lists.", alternates: { canonical: "https://secretsantageneratorapp.com/how-it-works" } };
+export const metadata = { title: "How Secret Santa Works: Step-by-Step Guide", description: "How to run an online Secret Santa: add names, set exclusions, share one invitation link, draw names and share wish lists.", alternates: { canonical: "https://hatpull.com/how-it-works" } };
 export default function Page() {
   const steps = [
     ["Start a celebration", "Open the Secret Santa generator, enter your name and the names of everyone taking part. Three people or more."],

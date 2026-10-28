@@ -8,7 +8,7 @@ import SiteAnalytics from "@/components/SiteAnalytics";
 import AuthSync from "@/components/AuthSync";
 
 export const metadata = {
-  metadataBase: new URL("https://secretsantageneratorapp.com"),
+  metadataBase: new URL("https://hatpull.com"),
   title: { default: "Secret Santa Generator & Online Name Picker | Hatpull", template: "%s | Hatpull" },
   description: "Draw names for Secret Santa online for free, share wish lists, and pick random names with a spinning wheel. Organizers sign in; participants join by invitation link.",
   robots: { index: true, follow: true, googleBot: { "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
