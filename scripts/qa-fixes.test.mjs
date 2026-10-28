@@ -117,3 +117,17 @@ test('redraw drops reservations from people who no longer buy for that person', 
     assert.deepEqual(left,['w1']);
   } finally { await db.close(); }
 });
+
+test('wish restore uses add-gift link rules and removal clears its reservation', async()=>{
+  const {db,g}=await setup({settings:{wishVis:'all'}});
+  try {
+    await as(db,null);
+    for (const bad of [{u:'javascript:alert(1)'},{u:' JavaScript:x'},{u:'data:text/html,hi'},{u:'https://x.com/'+'a'.repeat(450)},{a:'../../evil?'}]) {
+      await assert.rejects(db.query('select hp_change_wish($1,$2,$3,$4,$5::jsonb)',[g.id,'tok-a','a','restore',JSON.stringify({id:'r1',t:'Gift',...bad})]),/invalid_wish/);
+    }
+    await db.query('select hp_change_wish($1,$2,$3,$4,$5::jsonb)',[g.id,'tok-a','a','restore',JSON.stringify({id:'r1',t:'Gift',u:'https://www.ebay.com/itm/123',a:''})]);
+    await db.query('select hp_reserve($1,$2,$3,$4,true)',[g.id,'tok-b','a','r1']);
+    await db.query('select hp_change_wish($1,$2,$3,$4,$5::jsonb)',[g.id,'tok-a','a','remove',JSON.stringify({id:'r1'})]);
+    assert.equal(await one(db,'select count(*)::int result from hp_reservations where group_id=$1',[g.id]),0);
+  } finally { await db.close(); }
+});
