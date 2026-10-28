@@ -13,13 +13,17 @@ async function get(host, path) {
     for (const path of ['/', '/gift-finder?from=legacy', '/g/test-group/w/test-member?invite=test-placeholder', '/auth/callback?next=%2Fmy', '/robots.txt', '/sitemap.xml']) {
       const r=await get(host,path); assert.equal(r.status,308,host+path);
       const destination=new URL(r.headers.get('location'),`https://${host}`);
+      const expected=new URL('https://'+santa+path);
+      if(host!=='www.hatpull.com')expected.searchParams.set('__hatpull_moved','1');
       // Vercel can consolidate www before the application handles the old apex.
       if(destination.hostname==='secretsantageneratorapp.com') {
         const second=await get(destination.hostname,destination.pathname+destination.search);
-        assert.equal(second.status,308); assert.equal(second.headers.get('location'),'https://'+santa+path);
-      } else assert.equal(destination.href,'https://'+santa+path);
+        assert.equal(second.status,308); assert.equal(second.headers.get('location'),expected.href);
+      } else assert.equal(destination.href,expected.href);
     }
   }
+  const recovered=await get(santa,'/?__hatpull_moved=1');
+  assert.equal(recovered.status,200);assert.equal(recovered.headers.get('clear-site-data'),'"cache"');
   const legacyHealth=await get('secretsantageneratorapp.com','/api/health');
   assert.equal(legacyHealth.status,200);assert.equal(legacyHealth.headers.get('location'),undefined);
   console.log('Domain migration: permanent redirects preserve paths/queries; legacy API stays reachable');

@@ -19,3 +19,7 @@ Both hatpull.com and www.hatpull.com are assigned to Hatpull Production in Verce
 The final middleware permanently redirects secretsantageneratorapp.com, its www alias and www.hatpull.com to https://hatpull.com, keeping paths and queries. Legacy API endpoints remain reachable for registered callbacks. The independent name picker remains separate. The live/domain search script checks the old homepage, gift finder, fictional invitation path, auth return, robots and sitemap, plus legacy health and both sites' canonical metadata.
 
 Keep the legacy domains and their valid certificates active so shared links and search-engine migrations can continue. Google's [site-move guidance](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes) recommends permanent redirects and updated canonical URLs. Rankings are not guaranteed and recrawling takes time.
+
+## Returning-browser redirect recovery
+
+Live QA found a real Chrome cache of the previous hatpull.com → legacy-domain 301. Fresh HTTP clients already passed, but returning browsers could loop. Legacy page redirects now append a reserved `__hatpull_moved=1` marker to bypass that cached URL. On the new host, a cache-only Clear-Site-Data response clears stale HTTP redirects, and a small client component removes the marker while preserving the path, other query values and fragment. Cookies and local storage are not cleared. Browsers without this header still reach the fresh marked URL. Canonical metadata remains the clean Hatpull URL.

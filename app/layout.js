@@ -5,6 +5,7 @@ import "@fontsource/jetbrains-mono/500.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SiteAnalytics from "@/components/SiteAnalytics";
+import DomainMigration from "@/components/DomainMigration";
 import AuthSync from "@/components/AuthSync";
 
 export const metadata = {
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
           <main id="app">{children}</main>
           <Footer />
         </div>
+        <DomainMigration />
         <SiteAnalytics />
         <AuthSync />
       </body>

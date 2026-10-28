@@ -13,10 +13,19 @@ export function middleware(req) {
   const host = (req.headers.get("host") || "").toLowerCase().replace(/^www\./, "").split(":")[0];
   const url = req.nextUrl.clone();
   const santaSite = host === SANTA_HOST;
+  const recovered = santaSite && url.searchParams.get('__hatpull_moved') === '1';
+  const finish = response => {
+    // Clear only this site's HTTP cache, never cookies, saved accounts or lists.
+    if (recovered) response.headers.set('Clear-Site-Data', '"cache"');
+    return response;
+  };
 
   // Keep original paths and invitation queries. API callbacks retain their
   // registered legacy URL through the matcher exclusion below.
   if (host === LEGACY_HOST) {
+    // Older visitors may have cached the previous opposite-direction 301.
+    // A fresh URL bypasses it; the app removes this marker after arrival.
+    url.searchParams.set('__hatpull_moved', '1');
     return NextResponse.redirect(`https://${SANTA_HOST}${url.pathname}${url.search}`, 308);
   }
 
@@ -43,9 +52,9 @@ export function middleware(req) {
   }
   if (santaSite && url.pathname === "/") {
     url.pathname = "/secret-santa-generator";
-    return NextResponse.rewrite(url);
+    return finish(NextResponse.rewrite(url));
   }
-  return NextResponse.next();
+  return finish(NextResponse.next());
 }
 
 export const config = { matcher: ["/((?!_next/|api/|favicon.ico|icon|apple-icon|manifest).*)"] };
