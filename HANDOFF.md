@@ -2,6 +2,12 @@
 
 Written 2026-10-21. Read this whole file before changing anything. **Never commit or print secret values.**
 
+## Dedicated Gift Finder preferences page — 2026-10-27
+
+`/gift-finder` now starts with a centered 400px preference card: exact age, gender, up to three interests, delivery country and Continue. Continue opens the separate `/gift-finder/shops` route. The shared App Router layout retains the selected celebration, browsing preferences and gift list while moving between these routes, including browser Back. The shops route has a concise preference recap and Edit preferences; the old inline interest form was removed. Product previews do not mount before the first Continue. A direct visit to the shops route is still supported and uses saved participant demographics or broad defaults. Transient browsing choices are not persisted across a full reload.
+
+The shared store chooser's Edit preferences also uses the compact full-page card inside a wish list; saved age/gender remain handled by the existing private profile step. eBay catalog filters, gift saving, direct Amazon links, pricing caps, and the incoming share-gift page keep their existing behavior. No schema, credential or environment changes. Validation and route details: `docs/gift-preference-pages-20261027.md`.
+
 ## Compact personal-info step before stores — 2026-10-27
 
 Empty wish lists start with a centered personal-information card capped at 400px, with exact age first, vertically stacked gender choices and Continue. Stores and catalog previews do not mount until Continue succeeds. Continue flushes the existing serialized demographic save queue, including an age committed by the click itself; failures keep the form open for retry. Invalid ages cannot advance. The shop screen provides Edit preferences to return to the card; saved choices are retained. Wish lists that already contain gifts open directly to their collection and browsing. The viewer/reservation flow is unchanged.
@@ -16,7 +22,7 @@ The Amazon card and the eBay header's Amazon link open Amazon.com directly in a 
 
 ## Hatpull primary domain and matching signals — 2026-10-27
 
-hatpull.com is the primary app address. Legacy secretsantageneratorapp.com page links permanently redirect with their path/query intact; legacy APIs and verified email domains remain unchanged. Vercel/Cloudflare and Supabase/Google return URLs were configured for the new domain. Users may need to sign in again because browser storage is origin-scoped; old invitation links still recover guest access. The owner confirmed the one-l spelling was a typo. See `docs/hatpull-domain-cutover-20261027.md`.
+hatpull.com is the primary app address. Legacy secretsantageneratorapp.com page links permanently redirect with their path/query intact; legacy APIs and verified email domains remain unchanged. Vercel/Cloudflare and Supabase/Google return URLs were configured for the new domain. Users may need to sign in again because browser storage is origin-scoped; old invitation links still recover guest access. The owner subsequently bought hatpul.com (one l); apex and www now permanently redirect through Vercel to hatpull.com. See `docs/hatpull-domain-cutover-20261027.md`.
 
 Shop previews now share optional interest and shipping-country choices. Interests override adult gender ordering, mix across categories, and retain child age guards and the budget cap. eBay uses live Best Match listings filtered for the selected delivery country; Amazon remains illustrated matching browse links. These are explained heuristics, not a trained psychological model or verified trend feed. See `docs/gift-matching-signals-20261027.md`.
 

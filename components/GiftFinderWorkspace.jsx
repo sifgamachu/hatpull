@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { useGiftContexts } from '@/lib/useGiftContexts';
 import { GIFT_CONTEXT_KEY, GIFT_DRAFT_KEY, chooseGiftContext, giftContextId, giftFromInput, readGiftDraft } from '@/lib/gift-intake.mjs';
 import { money } from '@/lib/core';
@@ -13,6 +14,8 @@ import AmazonListSetup from './AmazonListSetup';
 import { amazonWishListUrl } from '@/lib/amazon-wish-list.mjs';
 
 export default function GiftFinderWorkspace({ incoming = false }) {
+  const pathname=usePathname(),router=useRouter();
+  const preferenceStep=!incoming&&pathname!=='/gift-finder/shops';
   const { contexts, loading, failures, user, retry } = useGiftContexts();
   const [selected, setSelected] = useState(null), [shared, setShared] = useState(null), [error, setError] = useState(''), [signIn, setSignIn] = useState(false), [listBusy, setListBusy] = useState(false), [giftBusy, setGiftBusy] = useState(false), [catalogBusy,setCatalogBusy]=useState(false), [cartBusy,setCartBusy]=useState(false), [store,setStore]=useState(null);
   const busy = listBusy || giftBusy || catalogBusy || cartBusy;
@@ -36,6 +39,7 @@ export default function GiftFinderWorkspace({ incoming = false }) {
   const sharedList = !!amazonWishListUrl(shared?.u);
   function clearSharedDraft() { try { localStorage.removeItem(GIFT_DRAFT_KEY); } catch {} }
   function choose(value) { setSelected(value); try { localStorage.setItem(GIFT_CONTEXT_KEY, value); } catch {} }
+  function changePreferenceStep(next) {setStore(null);router.push(next?'/gift-finder':'/gift-finder/shops',{scroll:false});}
   const contextPanel = <section className="gift-context panel stack" aria-label="Choose your wish list">
       <div className="row between"><div><p className="eyebrow">Your gifts, saved together</p><h2>Your wish list & budget</h2></div>{target && <span className="pill">{target.budget ? `${money(target.cur, target.budget)} per gift` : 'No budget set'}</span>}</div>
       {contexts.length > 0 && <div><label htmlFor="gift-celebration">Celebration & wish list</label><select id="gift-celebration" value={target ? selected : ''} disabled={busy} onChange={e => choose(e.target.value)}><option value="">Choose your wish list…</option>{contexts.map(c => <option key={giftContextId(c)} value={giftContextId(c)}>{c.name} · {c.person}{c.budget ? ` · ${money(c.cur, c.budget)}` : ''}</option>)}</select></div>}
@@ -44,13 +48,13 @@ export default function GiftFinderWorkspace({ incoming = false }) {
       {failures > 0 && <p className="small note" role="status">Some celebrations couldn’t load. <button className="link" onClick={retry}>Try again</button></p>}
       {target && <p className="small muted"><span>Tap <b>Your gift list</b> to see everything you’ve saved.</span></p>}
     </section>;
-  return <GiftListCartProvider key={`${user?.id||'guest'}:${selected||'none'}`} target={target} showDock={incoming||!!store} browseHint={store==='amazon'?{title:'Choosing gifts on Amazon?',text:'Link your Amazon wish list once below.'}:undefined} contextLoading={loading||selected===null} disabled={loading||listBusy||giftBusy||catalogBusy} onBusy={setCartBusy}><div className="stack gift-workspace gift-cart-workspace">
+  return <GiftListCartProvider key={`${user?.id||'guest'}:${selected||'none'}`} target={target} showDock={incoming||(!preferenceStep&&!!store)} browseHint={store==='amazon'?{title:'Choosing gifts on Amazon?',text:'Link your Amazon wish list once below.'}:undefined} contextLoading={loading||selected===null} disabled={loading||listBusy||giftBusy||catalogBusy} onBusy={setCartBusy}><div className="stack gift-workspace gift-cart-workspace">
     {incoming && contextPanel}
     {error && <p className="note err" role="alert">{error}</p>}
-    {!incoming && <GiftStores store={store} onStoreChange={setStore} contextPanel={contextPanel} target={target} budget={target?.budget} currency={target?.cur} disabled={loading||listBusy||giftBusy||cartBusy} onBusy={setCatalogBusy} amazonPanel={<AmazonListSetup target={target} disabled={loading||giftBusy||catalogBusy||cartBusy} onBusy={setListBusy} onSaved={clearSharedDraft}/>}/>}
+    {!incoming && <GiftStores preferenceStep={preferenceStep} onPreferenceStepChange={changePreferenceStep} store={store} onStoreChange={setStore} contextPanel={contextPanel} target={target} budget={target?.budget} currency={target?.cur} disabled={loading||listBusy||giftBusy||cartBusy} onBusy={setCatalogBusy} amazonPanel={<AmazonListSetup target={target} disabled={loading||giftBusy||catalogBusy||cartBusy} onBusy={setListBusy} onSaved={clearSharedDraft}/>}/>}
     {incoming && <GiftListButton/>}
     {incoming && sharedList && <AmazonListSetup key={shared.u} target={target} initial={shared} disabled={loading||giftBusy||cartBusy} onBusy={setListBusy} onSaved={clearSharedDraft}/>}
-    <details className="individual-gifts" open={(incoming && !sharedList) || undefined}><summary>{incoming && !sharedList ? 'Save this individual gift' : 'Or add individual gifts from any store'}</summary>
+    <details className="individual-gifts" hidden={preferenceStep} open={(incoming && !sharedList) || undefined}><summary>{incoming && !sharedList ? 'Save this individual gift' : 'Or add individual gifts from any store'}</summary>
     <div className="stack">
       <QuickWish key={shared?.u || 'new'} target={target} initial={sharedList ? null : shared} disabled={loading || listBusy || catalogBusy || cartBusy} onBusy={setGiftBusy} onSaved={clearSharedDraft}/>
       <GiftInstall/>

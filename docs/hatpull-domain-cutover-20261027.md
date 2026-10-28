@@ -23,3 +23,7 @@ Keep the legacy domains and their valid certificates active so shared links and 
 ## Returning-browser redirect recovery
 
 Live QA found a real Chrome cache of the previous hatpull.com → legacy-domain 301. Fresh HTTP clients already passed, but returning browsers could loop. Legacy page redirects now append a reserved `__hatpull_moved=1` marker to bypass that cached URL. The marked landing bypasses the previous cached URL, and a small client component removes the marker while preserving the path, other query values and fragment. No browser cache, cookies or local storage are cleared. A trial of Clear-Site-Data stalled Chrome navigation during live QA and was removed. Canonical metadata remains the clean Hatpull URL.
+
+## One-l alias added later on October 27
+
+The owner subsequently purchased hatpul.com through Cloudflare. Both hatpul.com and www.hatpul.com now use Vercel 308 Permanent Redirects to hatpull.com. Cloudflare CNAME records for @ and www point to 076c99b1c6722a49.vercel-dns-016.com with DNS only and automatic TTL. Both domains have valid HTTPS certificates. Root, gift-finder, and a fictional invitation path were verified with path/query preservation and final HTTP 200 on the live gift finder. This supersedes the earlier note that the spelling was only a typo; no application or sign-in configuration change was required.
