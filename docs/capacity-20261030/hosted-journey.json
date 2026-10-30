@@ -1,0 +1,231 @@
+{
+  "startedAt": "2026-10-30T13:07:05.258Z",
+  "finishedAt": "2026-10-30T13:08:26.069Z",
+  "target": "isolated Micro database; 100 groups of 200 fictional members",
+  "exclusions": [
+    "Browser rendering",
+    "Vercel CDN and functions",
+    "new organizer authentication",
+    "email delivery",
+    "live retailer API",
+    "external checkout"
+  ],
+  "results": [
+    {
+      "scenario": "journey",
+      "legacy": false,
+      "virtualUsers": 100,
+      "completed": 100,
+      "requests": 500,
+      "errors": 0,
+      "peakHttpInFlight": 24,
+      "seconds": 10.59,
+      "journeyP50Ms": 801,
+      "journeyP95Ms": 2357,
+      "journeyP99Ms": 2807,
+      "generatorEventLoopP99Ms": 22,
+      "rssMB": 122,
+      "endpoints": {
+        "hp_state_delta": {
+          "requests": 200,
+          "statuses": {
+            "200": 200
+          },
+          "codes": {},
+          "bytes": 7374108,
+          "p95Ms": 1123
+        },
+        "hp_set_wish_demographics": {
+          "requests": 100,
+          "statuses": {
+            "200": 100
+          },
+          "codes": {},
+          "bytes": 2700,
+          "p95Ms": 111
+        },
+        "hp_add_wish": {
+          "requests": 100,
+          "statuses": {
+            "200": 100
+          },
+          "codes": {},
+          "bytes": 11900,
+          "p95Ms": 136
+        },
+        "hp_reveal": {
+          "requests": 100,
+          "statuses": {
+            "200": 100
+          },
+          "codes": {},
+          "bytes": 13180,
+          "p95Ms": 112
+        }
+      },
+      "passed": true
+    },
+    {
+      "scenario": "journey",
+      "legacy": false,
+      "virtualUsers": 500,
+      "completed": 500,
+      "requests": 2500,
+      "errors": 0,
+      "peakHttpInFlight": 32,
+      "seconds": 10.83,
+      "journeyP50Ms": 790,
+      "journeyP95Ms": 942,
+      "journeyP99Ms": 1011,
+      "generatorEventLoopP99Ms": 22,
+      "rssMB": 133,
+      "endpoints": {
+        "hp_state_delta": {
+          "requests": 1000,
+          "statuses": {
+            "200": 1000
+          },
+          "codes": {},
+          "bytes": 36826756,
+          "p95Ms": 129
+        },
+        "hp_set_wish_demographics": {
+          "requests": 500,
+          "statuses": {
+            "200": 500
+          },
+          "codes": {},
+          "bytes": 13500,
+          "p95Ms": 109
+        },
+        "hp_add_wish": {
+          "requests": 500,
+          "statuses": {
+            "200": 500
+          },
+          "codes": {},
+          "bytes": 59500,
+          "p95Ms": 123
+        },
+        "hp_reveal": {
+          "requests": 500,
+          "statuses": {
+            "200": 500
+          },
+          "codes": {},
+          "bytes": 66848,
+          "p95Ms": 108
+        }
+      },
+      "passed": true
+    },
+    {
+      "scenario": "journey",
+      "legacy": false,
+      "virtualUsers": 1000,
+      "completed": 1000,
+      "requests": 5000,
+      "errors": 0,
+      "peakHttpInFlight": 657,
+      "seconds": 16.7,
+      "journeyP50Ms": 6985,
+      "journeyP95Ms": 9179,
+      "journeyP99Ms": 10098,
+      "generatorEventLoopP99Ms": 23,
+      "rssMB": 294,
+      "endpoints": {
+        "hp_state_delta": {
+          "requests": 2000,
+          "statuses": {
+            "200": 2000
+          },
+          "codes": {},
+          "bytes": 73704602,
+          "p95Ms": 2390
+        },
+        "hp_set_wish_demographics": {
+          "requests": 1000,
+          "statuses": {
+            "200": 1000
+          },
+          "codes": {},
+          "bytes": 27000,
+          "p95Ms": 2339
+        },
+        "hp_add_wish": {
+          "requests": 1000,
+          "statuses": {
+            "200": 1000
+          },
+          "codes": {},
+          "bytes": 119000,
+          "p95Ms": 2472
+        },
+        "hp_reveal": {
+          "requests": 1000,
+          "statuses": {
+            "200": 1000
+          },
+          "codes": {},
+          "bytes": 133380,
+          "p95Ms": 2334
+        }
+      },
+      "passed": true
+    },
+    {
+      "scenario": "journey",
+      "legacy": false,
+      "virtualUsers": 2000,
+      "completed": 2000,
+      "requests": 10000,
+      "errors": 0,
+      "peakHttpInFlight": 1908,
+      "seconds": 33.67,
+      "journeyP50Ms": 21657,
+      "journeyP95Ms": 26526,
+      "journeyP99Ms": 28601,
+      "generatorEventLoopP99Ms": 24,
+      "rssMB": 572,
+      "endpoints": {
+        "hp_state_delta": {
+          "requests": 4000,
+          "statuses": {
+            "200": 4000
+          },
+          "codes": {},
+          "bytes": 147367912,
+          "p95Ms": 8347
+        },
+        "hp_set_wish_demographics": {
+          "requests": 2000,
+          "statuses": {
+            "200": 2000
+          },
+          "codes": {},
+          "bytes": 54000,
+          "p95Ms": 7869
+        },
+        "hp_add_wish": {
+          "requests": 2000,
+          "statuses": {
+            "200": 2000
+          },
+          "codes": {},
+          "bytes": 238000,
+          "p95Ms": 7354
+        },
+        "hp_reveal": {
+          "requests": 2000,
+          "statuses": {
+            "200": 2000
+          },
+          "codes": {},
+          "bytes": 266760,
+          "p95Ms": 7475
+        }
+      },
+      "passed": false
+    }
+  ]
+}

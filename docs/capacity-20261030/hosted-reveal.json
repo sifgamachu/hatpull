@@ -1,0 +1,188 @@
+{
+  "startedAt": "2026-10-30T13:06:22.693Z",
+  "finishedAt": "2026-10-30T13:07:05.140Z",
+  "target": "isolated Micro database; 100 groups of 200 fictional members",
+  "exclusions": [
+    "Browser rendering",
+    "Vercel CDN and functions",
+    "new organizer authentication",
+    "email delivery",
+    "live retailer API",
+    "external checkout"
+  ],
+  "results": [
+    {
+      "scenario": "reveal",
+      "legacy": true,
+      "virtualUsers": 1000,
+      "completed": 1000,
+      "requests": 2000,
+      "errors": 0,
+      "peakHttpInFlight": 1000,
+      "seconds": 6.93,
+      "journeyP50Ms": 4934,
+      "journeyP95Ms": 6096,
+      "journeyP99Ms": 6246,
+      "generatorEventLoopP99Ms": 151,
+      "rssMB": 348,
+      "endpoints": {
+        "hp_mark_drawn": {
+          "requests": 1000,
+          "statuses": {
+            "204": 1000
+          },
+          "codes": {},
+          "bytes": 0,
+          "p95Ms": 4911
+        },
+        "hp_state_delta": {
+          "requests": 1000,
+          "statuses": {
+            "200": 1000
+          },
+          "codes": {},
+          "bytes": 35886184,
+          "p95Ms": 4768
+        }
+      },
+      "passed": false
+    },
+    {
+      "scenario": "reveal",
+      "legacy": false,
+      "virtualUsers": 100,
+      "completed": 100,
+      "requests": 100,
+      "errors": 0,
+      "peakHttpInFlight": 11,
+      "seconds": 1.05,
+      "journeyP50Ms": 79,
+      "journeyP95Ms": 108,
+      "journeyP99Ms": 125,
+      "generatorEventLoopP99Ms": 22,
+      "rssMB": 350,
+      "endpoints": {
+        "hp_reveal": {
+          "requests": 100,
+          "statuses": {
+            "200": 100
+          },
+          "codes": {},
+          "bytes": 13080,
+          "p95Ms": 108
+        }
+      },
+      "passed": true
+    },
+    {
+      "scenario": "reveal",
+      "legacy": false,
+      "virtualUsers": 500,
+      "completed": 500,
+      "requests": 500,
+      "errors": 0,
+      "peakHttpInFlight": 95,
+      "seconds": 1.17,
+      "journeyP50Ms": 90,
+      "journeyP95Ms": 199,
+      "journeyP99Ms": 239,
+      "generatorEventLoopP99Ms": 28,
+      "rssMB": 352,
+      "endpoints": {
+        "hp_reveal": {
+          "requests": 500,
+          "statuses": {
+            "200": 500
+          },
+          "codes": {},
+          "bytes": 66348,
+          "p95Ms": 199
+        }
+      },
+      "passed": true
+    },
+    {
+      "scenario": "reveal",
+      "legacy": false,
+      "virtualUsers": 1000,
+      "completed": 1000,
+      "requests": 1000,
+      "errors": 0,
+      "peakHttpInFlight": 770,
+      "seconds": 2.35,
+      "journeyP50Ms": 1049,
+      "journeyP95Ms": 1450,
+      "journeyP99Ms": 1571,
+      "generatorEventLoopP99Ms": 662,
+      "rssMB": 267,
+      "endpoints": {
+        "hp_reveal": {
+          "requests": 1000,
+          "statuses": {
+            "200": 1000
+          },
+          "codes": {},
+          "bytes": 133180,
+          "p95Ms": 1450
+        }
+      },
+      "passed": true
+    },
+    {
+      "scenario": "reveal",
+      "legacy": false,
+      "virtualUsers": 2000,
+      "completed": 2000,
+      "requests": 2000,
+      "errors": 0,
+      "peakHttpInFlight": 1619,
+      "seconds": 3.36,
+      "journeyP50Ms": 1480,
+      "journeyP95Ms": 1994,
+      "journeyP99Ms": 2217,
+      "generatorEventLoopP99Ms": 35,
+      "rssMB": 352,
+      "endpoints": {
+        "hp_reveal": {
+          "requests": 2000,
+          "statuses": {
+            "200": 2000
+          },
+          "codes": {},
+          "bytes": 266760,
+          "p95Ms": 1994
+        }
+      },
+      "passed": true
+    },
+    {
+      "scenario": "reveal",
+      "legacy": false,
+      "virtualUsers": 5000,
+      "completed": 2829,
+      "requests": 5000,
+      "errors": 644,
+      "peakHttpInFlight": 4945,
+      "seconds": 12.55,
+      "journeyP50Ms": 2946,
+      "journeyP95Ms": 5015,
+      "journeyP99Ms": 5441,
+      "generatorEventLoopP99Ms": 139,
+      "rssMB": 695,
+      "endpoints": {
+        "hp_reveal": {
+          "requests": 5000,
+          "statuses": {
+            "200": 4356
+          },
+          "codes": {
+            "TypeError": 644
+          },
+          "bytes": 580924,
+          "p95Ms": 10267
+        }
+      },
+      "passed": false
+    }
+  ]
+}

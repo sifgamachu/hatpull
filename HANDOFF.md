@@ -245,3 +245,8 @@ Product images and titles open a Hatpull quick-look sheet with the listing's gal
 Public UX references: https://www.drawnames.com/gift-finder, https://www.drawnames.com/features and https://www.drawnames.com/help. Only public behavior was studied; no private wish lists or purchases were changed. eBay query syntax reference: https://www.edp.ebay.com/support/knowledge-base/2190.
 
 Validation: 61 tests passed, including query/budget bounds, cache freshness, catalog sanitization and existing wishlist SQL tests. Production build passed. Browser checks cover real public eBay results, multi-select controls, cancellation, removable chips, budget retention, quick look and unsigned wishlist selection. Responsive checks use a 390px viewport.
+
+
+## Capacity work — 30 October 2026
+
+The compact reveal and bounded catalog queue changes are covered in `docs/capacity-20261030/README.md`. Production database migration `reveal_capacity` is applied; app deployment status must be checked against the new commit. **100,000 simultaneous end-to-end users is not verified.** The isolated Micro test failed the latency gate at 2,000 mixed-journey participants. Read the report before making capacity claims or running another load test. The new test branch is retained; do not delete it without approval.

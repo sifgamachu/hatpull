@@ -14,12 +14,15 @@ import OrganizerAccess, { isOrganizerError } from "./OrganizerAccess";
 import { GOOGLE_CLIENT_ID, EMAIL_SIGNIN } from "@/lib/auth";
 import {CelebrationNav,JourneyHeading} from './JourneyUI';
 import {celebrationNextStep} from '@/lib/celebration-journey.mjs';
+import {confirmedReveal} from '@/lib/reveal-receipt.mjs';
 const SIGNIN_ON = !!(GOOGLE_CLIENT_ID || EMAIL_SIGNIN);
 
 export default function Dashboard({ gid }) {
   const { state, error, tokens, reload } = useGroup(gid);
   const [sheet, setSheet] = useState(null);
   const [anim, setAnim] = useState(null); // name shown while spinning
+  const [revealReceipt, setRevealReceipt] = useState(null);
+  const revealing = useRef(false);
   const [msg, setMsg] = useState("");
   const [results, setResults] = useState(null);
   const firedLive = useRef(false);
@@ -27,8 +30,10 @@ export default function Dashboard({ gid }) {
   const liveSoon = !!state?.group?.live_at && Math.abs(new Date(state.group.live_at).getTime() - Date.now()) < 180000;
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), liveSoon ? 250 : 30000); return () => clearInterval(t); }, [liveSoon]);
 
-  const g = state?.group, me = state?.me, adm = state?.is_admin, xm = isXmas(g);
-  const ppl = state?.members.filter(m => !m.kid) || [], kids = state?.members.filter(m => m.kid) || [];
+  const g = state?.group, confirmed = confirmedReveal(revealReceipt, state, tokens?.mtok);
+  const me = confirmed ? { ...state.me, drawn: true } : state?.me, adm = state?.is_admin, xm = isXmas(g);
+  const visibleMembers = confirmed ? state.members.map(m => m.id === me.receiver_id ? { ...m, visible: true } : m) : state?.members || [];
+  const ppl = visibleMembers.filter(m => !m.kid), kids = visibleMembers.filter(m => m.kid);
   const liveMs = g?.live_at ? new Date(g.live_at).getTime() - now : null;
   const liveOn = g?.mode === "draw" && liveMs != null && liveMs > -120000;
   useEffect(() => {
@@ -39,14 +44,25 @@ export default function Dashboard({ gid }) {
   }, [adm, g?.date, g?.mode, gid, tokens]);
 
   async function reveal() {
-    if (anim || !me?.receiver_id) return;
-    const names = ppl.map(m => m.name), rec = state.members.find(m => m.id === me.receiver_id);
+    if (revealing.current || anim || !me?.receiver_id) return;
+    revealing.current = true;
+    const names = ppl.map(m => m.name);
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!reduce) for (let i = 0; i < 22; i++) { setAnim(names[(Math.random() * names.length) | 0]); await new Promise(r => setTimeout(r, 60 + i * i * 0.9)); }
-    try { await rpc("hp_mark_drawn", { p_gid: gid, p_mtok: tokens.mtok }); } catch { setAnim(null); toast("Couldn’t save your reveal. Please try again."); return; }
-    setAnim(null); await reload();
+    let receipt;
+    try { receipt = await rpc("hp_reveal", { p_gid: gid, p_mtok: tokens.mtok, p_round: g.round }); }
+    catch (error) {
+      setAnim(null); revealing.current = false;
+      if (/draw_changed/.test(error.message)) { reload(); toast("The organizer redrew the names. Refreshing your draw…"); }
+      else toast("Couldn’t save your reveal. Please try again.");
+      return;
+    }
+    setRevealReceipt({ ...receipt, token: tokens.mtok });
+    setAnim(null); revealing.current = false;
+    // The normal jittered poll refreshes other people's progress. Do not make
+    // every participant download the full roster at the instant of a reveal.
     setTimeout(() => { if (xm) burst(document.querySelector(".slot.done")); }, 50);
-    toast(xm ? `You're ${rec?.name}'s Secret Santa 🎅` : `You drew ${rec?.name}`);
+    toast(xm ? `You're ${receipt.receiver?.name}'s Secret Santa 🎅` : `You drew ${receipt.receiver?.name}`);
   }
   useEffect(() => {
     if (liveOn && liveMs <= 0 && me && !me.drawn && me.receiver_id && !firedLive.current) { firedLive.current = true; reveal(); }
@@ -59,7 +75,7 @@ export default function Dashboard({ gid }) {
   if (me === null && !adm) return <div className="narrow panel">You're no longer in this celebration.</div>;
 
   const isDraw = g.mode === "draw";
-  const joined = ppl.filter(m => m.claimed).length, drawnN = ppl.filter(m => m.drawn).length, wishN = ppl.filter(m => m.wishes > 0).length;
+  const joined = ppl.filter(m => m.claimed).length, drawnN = ppl.filter(m => m.drawn || (confirmed && m.id === me.id)).length, wishN = ppl.filter(m => m.wishes > 0).length;
   const mine = me && state.members.find(m => m.id === me.id);
   const rec = me && state.members.find(m => m.id === me.receiver_id);
   const myQs = state.unanswered_count || 0;
@@ -75,7 +91,7 @@ export default function Dashboard({ gid }) {
     try { await rpc("hp_admin_live", { p_gid: gid, p_atok: tokens.atok }); firedLive.current = false; toast("Live draw in 30 seconds"); reload(); } catch { toast("Couldn't start the live draw."); }
   }
 
-  const nextStep=celebrationNextStep(state);
+  const nextStep=celebrationNextStep(confirmed ? { ...state, me, members: visibleMembers } : state);
   return (
     <div className="journey-surface celebration-page">
       <Festive on={xm}/>
