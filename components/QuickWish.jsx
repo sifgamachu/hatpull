@@ -38,14 +38,15 @@ export default function QuickWish({ target, initial, onSaved, onBusy, disabled =
   }
   return <section className="quick-wish stack" aria-label="Save a gift link">
     <div><p className="eyebrow">Found something you love?</p><h3>{initial && !saved ? 'Your shared gift is ready' : 'One link. On your wish list.'}</h3><p className="small muted">Save the link now. Add a name, size or color whenever you like.</p></div>
-    {ready && <p className="quick-target small">Saving to <strong>{target.person || 'your wish list'}</strong> · {target.name}</p>}
+    {target?.mid && <p className="quick-target small">Saving to <strong>{target.person || 'your wish list'}</strong> · {target.name}</p>}
     {initial && value === initial.u && !saved && <p><strong>{initial.t}</strong></p>}
     <form className="stack" onSubmit={e => { e.preventDefault(); save(value, true); }}>
       {!value && <button type="button" className="btn" disabled={!ready || busy} onClick={pasteAndSave}>{busy ? 'Saving…' : 'Paste & save gift'}</button>}
       <div><label htmlFor={inputId}>{value ? 'Product link or shared text' : 'Or paste a product link here'}</label><textarea ref={inputRef} id={inputId} rows={2} maxLength={8192} value={value} onChange={e => { setValue(e.target.value); setError(''); setSaved(null); }} placeholder="Amazon Share link, product URL, or a link from any store" disabled={busy}/></div>
       {value && <button className="btn" type="submit" disabled={!ready || busy}>{busy ? 'Saving…' : 'Save gift to my wish list'}</button>}
     </form>
-    {!ready && <p className="small muted">{target ? 'You need your own participant wish list to save a gift. Open your invitation and choose your name.' : 'Choose your celebration above to save to the right wish list.'}</p>}
+    {disabled && target?.mid && <p className="small muted" role="status">Saving your changes…</p>}
+    {!target?.mid && <p className="small muted">{target ? 'You need your own participant wish list to save a gift. Open your invitation and choose your name.' : 'Choose your celebration above to save to the right wish list.'}</p>}
     {error && <p className="note err" role="alert">{error}</p>}
     {saved && <div className="quick-saved" role="status"><b>{saved.added ? '✓ Saved to your wish list' : '✓ Already on your wish list'}</b><span>{saved.wish.t}</span><button className="link" onClick={cart?.show} hidden={!cart}>View your gift list →</button>{!cart&&<Link className="link" href={`/g/${saved.target.gid}/w/${saved.target.mid}?edit=${encodeURIComponent(saved.wish.id)}`}>View gift or add size & color →</Link>}</div>}
     <p className="tiny muted">Your gift-giver can open the exact product from your list. This saves a wish; it does not place an order.</p>

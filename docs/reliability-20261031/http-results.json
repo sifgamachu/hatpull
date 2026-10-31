@@ -1,0 +1,92 @@
+{
+  "startedAt": "2026-10-31T18:46:58.485Z",
+  "target": "http://127.0.0.1:3411",
+  "checks": [
+    {
+      "name": "GET / and browser security headers",
+      "passed": true
+    },
+    {
+      "name": "GET /gift-finder and browser security headers",
+      "passed": true
+    },
+    {
+      "name": "GET /gift-finder/shops and browser security headers",
+      "passed": true
+    },
+    {
+      "name": "GET /new and browser security headers",
+      "passed": true
+    },
+    {
+      "name": "GET /my and browser security headers",
+      "passed": true
+    },
+    {
+      "name": "GET /privacy and browser security headers",
+      "passed": true
+    },
+    {
+      "name": "GET /terms and browser security headers",
+      "passed": true
+    },
+    {
+      "name": "GET /robots.txt and browser security headers",
+      "passed": true
+    },
+    {
+      "name": "GET /sitemap.xml and browser security headers",
+      "passed": true
+    },
+    {
+      "name": "Anonymous POST /api/create denied",
+      "passed": true
+    },
+    {
+      "name": "Anonymous POST /api/redraw denied",
+      "passed": true
+    },
+    {
+      "name": "Anonymous POST /api/account/delete denied",
+      "passed": true
+    },
+    {
+      "name": "GET /api/create cannot mutate",
+      "passed": true
+    },
+    {
+      "name": "GET /api/redraw cannot mutate",
+      "passed": true
+    },
+    {
+      "name": "Unauthenticated reminder invocation denied",
+      "passed": true
+    },
+    {
+      "name": "Health exposes only boolean configuration status",
+      "passed": true
+    },
+    {
+      "name": "Malformed catalog input /api/gifts",
+      "passed": true
+    },
+    {
+      "name": "Malformed catalog input /api/gifts?ids=invalid",
+      "passed": true
+    },
+    {
+      "name": "Malformed catalog input /api/gifts/ebay?id=bad",
+      "passed": true
+    },
+    {
+      "name": "Malformed catalog input /api/gifts/ebay?q=gift&max=-5",
+      "passed": true
+    },
+    {
+      "name": "Malformed catalog input /api/gifts/ebay?q=gift&country=INVALID",
+      "passed": true
+    }
+  ],
+  "finishedAt": "2026-10-31T18:46:58.640Z",
+  "passed": true
+}

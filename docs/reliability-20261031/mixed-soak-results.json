@@ -1,0 +1,130 @@
+{
+  "startedAt": "2026-10-31T18:35:28.564Z",
+  "users": 1000,
+  "thinkTimeMs": 20000,
+  "startRampMs": 30000,
+  "stepsPerUser": 15,
+  "target": "Local production Next server; isolated Supabase Micro; synthetic eBay at 100ms",
+  "exclusions": [
+    "real retailer quotas",
+    "Vercel scaling",
+    "real email and new sign-in throughput",
+    "distributed load",
+    "checkout"
+  ],
+  "recovery": {
+    "ms": 14,
+    "items": 24
+  },
+  "finishedAt": "2026-10-31T18:40:40.618Z",
+  "seconds": 312,
+  "completed": 1000,
+  "calls": 20001,
+  "peakHttpRequestsInFlight": 29,
+  "failures": [],
+  "generatorRssStartMB": 43,
+  "generatorRssEndMB": 131,
+  "generatorEventLoopP99Ms": 22,
+  "endpoints": {
+    "hp_state_delta": {
+      "count": 10000,
+      "status": {
+        "200": 10000
+      },
+      "p95Ms": 95,
+      "p99Ms": 167,
+      "maxMs": 817
+    },
+    "search": {
+      "count": 1000,
+      "status": {
+        "200": 1000
+      },
+      "p95Ms": 3,
+      "p99Ms": 4,
+      "maxMs": 6
+    },
+    "detail": {
+      "count": 1000,
+      "status": {
+        "200": 1000
+      },
+      "p95Ms": 3,
+      "p99Ms": 4,
+      "maxMs": 37
+    },
+    "hp_add_wish": {
+      "count": 2000,
+      "status": {
+        "200": 2000
+      },
+      "p95Ms": 117,
+      "p99Ms": 208,
+      "maxMs": 440
+    },
+    "hp_change_wish": {
+      "count": 1000,
+      "status": {
+        "200": 1000
+      },
+      "p95Ms": 125,
+      "p99Ms": 219,
+      "maxMs": 339
+    },
+    "hp_set_wish_demographics": {
+      "count": 1000,
+      "status": {
+        "200": 1000
+      },
+      "p95Ms": 84,
+      "p99Ms": 172,
+      "maxMs": 333
+    },
+    "hp_reveal": {
+      "count": 1000,
+      "status": {
+        "200": 1000
+      },
+      "p95Ms": 85,
+      "p99Ms": 116,
+      "maxMs": 155
+    },
+    "hp_reserve": {
+      "count": 1000,
+      "status": {
+        "204": 1000
+      },
+      "p95Ms": 81,
+      "p99Ms": 107,
+      "maxMs": 153
+    },
+    "hp_save_profile_checked": {
+      "count": 1000,
+      "status": {
+        "204": 1000
+      },
+      "p95Ms": 95,
+      "p99Ms": 138,
+      "maxMs": 828
+    },
+    "searchSorted": {
+      "count": 1000,
+      "status": {
+        "200": 1000
+      },
+      "p95Ms": 5,
+      "p99Ms": 12,
+      "maxMs": 157
+    },
+    "recoverySearch": {
+      "count": 1,
+      "status": {
+        "200": 1
+      },
+      "p95Ms": 14,
+      "p99Ms": 14,
+      "maxMs": 14
+    }
+  },
+  "passed": true
+}
