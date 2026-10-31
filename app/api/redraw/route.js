@@ -1,36 +1,3 @@
-import { exclusionsAllowed } from "@/lib/setup-flow.mjs";
-import { NextResponse } from "next/server";
-import { serverRpc, verifiedCreator } from "@/lib/serverDb";
-import { rid } from "@/lib/core";
-
-// Organizer changes people or exclusions. The new draw itself is made inside the database (hp_draw);
-// the check here only gives a friendly error before saving.
-// Body: { gid, add?: [name], remove?: [id], exclusions?: [{a,b}] (member ids) }
-export async function POST(req) {
-  try {
-    const userId = await verifiedCreator(req.headers.get("authorization"));
-    if (Number(req.headers.get("content-length") || 0) > 1_500_000) return NextResponse.json({ error: "That change is too large." }, { status: 413 });
-    const b = await req.json();
-    if (Array.isArray(b.exclusions) && b.exclusions.length > 40000) return NextResponse.json({ error: "Too many exclusions." }, { status: 400 });
-    const roster = await serverRpc("hp_owned_roster", { p_gid: b.gid, p_owner: userId });
-    if (!roster) return NextResponse.json({ error: "Not allowed." }, { status: 403 });
-    let members = roster.members.filter(m => !(b.remove || []).includes(m.id));
-    for (const n of (b.add || []).map(s => String(s).replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, "").trim().slice(0, 40)).filter(Boolean)) {
-      if (members.some(m => m.name.toLowerCase() === n.toLowerCase())) return NextResponse.json({ error: `${n} is already in the group.` }, { status: 400 });
-      members.push({ id: rid(6), name: n });
-    }
-    const ids = new Set(members.map(m => m.id));
-    const exclusions = (b.exclusions ?? roster.exclusions ?? []).filter(x => ids.has(x.a) && ids.has(x.b) && x.a !== x.b);
-    if (roster.mode === "draw") {
-      if (members.length < 3) return NextResponse.json({ error: "A draw needs at least 3 people." }, { status: 400 });
-      if (!exclusionsAllowed(members, exclusions)) return NextResponse.json({ error: "Exclusions require at least 4 people. Remove exclusions before reducing the group to three." }, { status: 400 });
-    }
-    await serverRpc("hp_redraw_owned_group", { p_gid: b.gid, p_owner: userId, p_members: members, p_exclusions: exclusions });
-    return NextResponse.json({ ok: true });
-  } catch (e) {
-    if (/invalid_session|not_signed_in/.test(e.message)) return NextResponse.json({ error: "Sign in to the organizer account to manage this celebration." }, { status: 401 });
-    if (/no_valid_draw/.test(e.message)) return NextResponse.json({ error: "That change leaves no valid draw. Remove an exclusion first." }, { status: 400 });
-    const msg = /forbidden/.test(e.message) ? "Not allowed." : "Couldn't save that change. Try again.";
-    return NextResponse.json({ error: msg }, { status: /forbidden/.test(e.message) ? 403 : 500 });
-  }
-}
+import { serverRpc, verifiedCreator } from '@/lib/serverDb';
+import { createRedrawHandler } from '@/lib/organizer-handlers.mjs';
+export const POST = createRedrawHandler({ verify: verifiedCreator, rpc: serverRpc });

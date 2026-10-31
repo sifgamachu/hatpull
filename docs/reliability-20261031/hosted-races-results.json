@@ -1,0 +1,37 @@
+{
+  "startedAt": "2026-10-31T18:33:47.585Z",
+  "checks": [
+    {
+      "name": "100 simultaneous identical additions create exactly one wish",
+      "passed": true,
+      "ms": 679
+    },
+    {
+      "name": "20 simultaneous different additions preserve all gifts",
+      "passed": true,
+      "ms": 297
+    },
+    {
+      "name": "50 stale editors produce one accepted save and 49 explicit conflicts",
+      "passed": true,
+      "ms": 317
+    },
+    {
+      "name": "19 simultaneous reservation contenders have exactly one winner",
+      "passed": true,
+      "ms": 182
+    },
+    {
+      "name": "forged token and foreign profile writes are rejected",
+      "passed": true,
+      "ms": 249
+    }
+  ],
+  "expectedRejections": {
+    "profile_conflict": 49,
+    "already_reserved": 18,
+    "forbidden": 2
+  },
+  "passed": true,
+  "finishedAt": "2026-10-31T18:33:49.312Z"
+}
