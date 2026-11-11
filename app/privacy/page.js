@@ -63,6 +63,9 @@ export default function Page() {
       <h2>International transfers</h2>
       <p>Our service is hosted in the United States. If you use Hatpull from outside the US, your information is transferred there. Where the law requires it, we rely on safeguards such as the European Commission's Standard Contractual Clauses (and the UK Addendum) in our providers' agreements, or the EU-U.S. Data Privacy Framework where a provider is certified.</p>
 
+      <h2>Saving gifts from other stores</h2>
+      <p>The optional “Save to Hatpull” browser button runs only when you click it on a product page. It sends Hatpull that page’s link and product name, the same as using your phone’s Share menu. It does not read prices, photos, your cart, your store account or anything else on the page, and Hatpull does not contact the store.</p>
+      <p>When a gift is saved, we also keep an anonymous record to understand which gifts and stores people use: the product link or ID, product name, store, how it was saved, and the celebration’s occasion and budget range. This record does not include anyone’s name, the celebration, notes, sizes, colors or any account details, and we don’t use it to identify you.</p>
       <h2>How long we keep it</h2>
       <ul>
         <li>Celebrations: until the organizer deletes them. We may delete celebrations that have been inactive for more than 18 months.</li>

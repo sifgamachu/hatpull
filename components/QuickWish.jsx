@@ -7,7 +7,7 @@ import { getG } from '@/lib/store';
 import { rid } from '@/lib/core';
 import { giftFromInput } from '@/lib/gift-intake.mjs';
 
-export default function QuickWish({ target, initial, onSaved, onBusy, disabled = false }) {
+export default function QuickWish({ target, initial, onSaved, onBusy, disabled = false, source = 'paste', bare = false, popup = false }) {
   const cart = useGiftListCart();
   const inputId = useId(), inputRef = useRef(null), writing = useRef(false);
   const [value, setValue] = useState(initial?.u || ''), [busy, setBusy] = useState(false), [error, setError] = useState(''), [saved, setSaved] = useState(null);
@@ -20,8 +20,9 @@ export default function QuickWish({ target, initial, onSaved, onBusy, disabled =
     try {
       const wish = giftFromInput(shared && initial && text === initial.u ? { url: text, title: initial.t } : text, rid(6));
       const tokens = getG(target.gid);
-      const result = await rpc('hp_add_wish', { p_gid: target.gid, p_mtok: tokens?.mtok || null, p_target: target.mid, p_wish: wish });
+      const result = await rpc('hp_add_wish', { p_gid: target.gid, p_mtok: tokens?.mtok || null, p_target: target.mid, p_wish: wish, p_source: shared && initial && text === initial.u ? source : (source === 'return' ? 'return' : 'paste') });
       cart?.saved(result);
+      try { localStorage.setItem('hatpull.gift-saved', String(Date.now())); } catch {}
       setValue(''); setSaved({ ...result, target }); await onSaved?.(result);
     } catch (e) {
       setError(/forbidden/.test(e.message) ? 'Open your participant invitation or sign in again to save to this wish list.' : /wish_list_full|too large/.test(e.message) ? 'Your wish list is full. Remove a gift or shorten a few notes first.' : /fetch|network|timeout|failed|Request/i.test(e.message) ? 'Couldn’t save yet. Your link is kept here. Try again.' : e.message);
@@ -37,7 +38,7 @@ export default function QuickWish({ target, initial, onSaved, onBusy, disabled =
     finally { setBusy(false); }
   }
   return <section className="quick-wish stack" aria-label="Save a gift link">
-    <div><p className="eyebrow">Found something you love?</p><h3>{initial && !saved ? 'Your shared gift is ready' : 'One link. On your wish list.'}</h3><p className="small muted">Save the link now. Add a name, size or color whenever you like.</p></div>
+    {!bare && <div><p className="eyebrow">Found something you love?</p><h3>{initial && !saved ? 'Your shared gift is ready' : 'One link. On your wish list.'}</h3><p className="small muted">Save the link now. Add a name, size or color whenever you like.</p></div>}
     {target?.mid && <p className="quick-target small">Saving to <strong>{target.person || 'your wish list'}</strong> · {target.name}</p>}
     {initial && value === initial.u && !saved && <p><strong>{initial.t}</strong></p>}
     <form className="stack" onSubmit={e => { e.preventDefault(); save(value, true); }}>
@@ -48,7 +49,7 @@ export default function QuickWish({ target, initial, onSaved, onBusy, disabled =
     {disabled && target?.mid && <p className="small muted" role="status">Saving your changes…</p>}
     {!target?.mid && <p className="small muted">{target ? 'You need your own participant wish list to save a gift. Open your invitation and choose your name.' : 'Choose your celebration above to save to the right wish list.'}</p>}
     {error && <p className="note err" role="alert">{error}</p>}
-    {saved && <div className="quick-saved" role="status"><b>{saved.added ? '✓ Saved to your wish list' : '✓ Already on your wish list'}</b><span>{saved.wish.t}</span><button className="link" onClick={cart?.show} hidden={!cart}>View your gift list →</button>{!cart&&<Link className="link" href={`/g/${saved.target.gid}/w/${saved.target.mid}?edit=${encodeURIComponent(saved.wish.id)}`}>View gift or add size & color →</Link>}</div>}
+    {saved && <div className="quick-saved" role="status"><b>{saved.added ? '✓ Saved to your wish list' : '✓ Already on your wish list'}</b><span>{saved.wish.t}</span>{popup && <button className="btn small" onClick={() => window.close()}>Close & keep shopping</button>}<button className="link" onClick={cart?.show} hidden={!cart}>View your gift list →</button>{!cart&&<Link className="link" href={`/g/${saved.target.gid}/w/${saved.target.mid}?edit=${encodeURIComponent(saved.wish.id)}`}>View gift or add size & color →</Link>}</div>}
     <p className="tiny muted">Your gift-giver can open the exact product from your list. This saves a wish; it does not place an order.</p>
   </section>;
 }

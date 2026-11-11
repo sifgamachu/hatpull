@@ -40,7 +40,7 @@ export default function AmazonListSetup({ target, initial, items, disabled = fal
     writing.current = true; loadVersion.current++; setBusy(true); setError(''); setSaved(false);
     try {
       const wish = amazonWishListFromInput(text, rid(6)), tokens = getG(target.gid);
-      const result = await rpc('hp_add_wish', { p_gid: target.gid, p_mtok: tokens?.mtok || null, p_target: target.mid, p_wish: wish });
+      const result = await rpc('hp_add_wish', { p_gid: target.gid, p_mtok: tokens?.mtok || null, p_target: target.mid, p_wish: wish, p_source: 'list' });
       setSnapshot(previous => ({ context, lists: [...(previous?.context === context ? previous.lists : []).filter(w => w.id !== result.wish.id && amazonWishListUrl(w.u) !== wish.u), result.wish] }));
       cart?.saved(result);
       setValue(''); setSaved(true); setAnother(false); await onSaved?.(result);

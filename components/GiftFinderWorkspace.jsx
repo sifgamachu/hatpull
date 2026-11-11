@@ -12,12 +12,13 @@ import GiftInstall from './GiftInstall';
 import SignIn from './SignIn';
 import AmazonListSetup from './AmazonListSetup';
 import { amazonWishListUrl } from '@/lib/amazon-wish-list.mjs';
+import { SaveButtonInstall, StoreReturnPrompt } from './BringGiftsBack';
 
 export default function GiftFinderWorkspace({ incoming = false }) {
   const pathname=usePathname(),router=useRouter();
   const preferenceStep=!incoming&&pathname!=='/gift-finder/shops';
   const { contexts, loading, failures, user, retry } = useGiftContexts();
-  const [selected, setSelected] = useState(null), [shared, setShared] = useState(null), [error, setError] = useState(''), [signIn, setSignIn] = useState(false), [listBusy, setListBusy] = useState(false), [giftBusy, setGiftBusy] = useState(false), [catalogBusy,setCatalogBusy]=useState(false), [cartBusy,setCartBusy]=useState(false), [store,setStore]=useState(null);
+  const [selected, setSelected] = useState(null), [shared, setShared] = useState(null), [error, setError] = useState(''), [signIn, setSignIn] = useState(false), [listBusy, setListBusy] = useState(false), [giftBusy, setGiftBusy] = useState(false), [catalogBusy,setCatalogBusy]=useState(false), [cartBusy,setCartBusy]=useState(false), [store,setStore]=useState(null), [via,setVia]=useState('');
   const busy = listBusy || giftBusy || catalogBusy || cartBusy;
   useEffect(() => {
     if (selected !== null || loading) return;
@@ -26,14 +27,14 @@ export default function GiftFinderWorkspace({ incoming = false }) {
   }, [contexts, loading, selected]);
   useEffect(() => {
     if (!incoming) return;
-    const url = new URL(location.href), input = Object.fromEntries(['url', 'text', 'title'].map(k => [k, url.searchParams.get(k) || '']));
+    const url = new URL(location.href); setVia(url.searchParams.get('via') === 'button' ? 'button' : 'share'); const input = Object.fromEntries(['url', 'text', 'title'].map(k => [k, url.searchParams.get(k) || '']));
     try {
       if (input.url || input.text || input.title) {
         const wish = giftFromInput(input); setShared(wish);
         try { localStorage.setItem(GIFT_DRAFT_KEY, JSON.stringify({ at: Date.now(), input: { url: wish.u, title: wish.t } })); } catch {}
       } else { try { setShared(readGiftDraft(localStorage)); } catch {} }
     } catch (e) { setError(e.message); }
-    finally { ['url','text','title'].forEach(k => url.searchParams.delete(k)); history.replaceState(null, '', url.pathname + url.search); }
+    finally { ['url','text','title','via'].forEach(k => url.searchParams.delete(k)); history.replaceState(null, '', url.pathname + url.search); }
   }, [incoming]);
   const target = contexts.find(c => giftContextId(c) === selected);
   const sharedList = !!amazonWishListUrl(shared?.u);
@@ -54,9 +55,11 @@ export default function GiftFinderWorkspace({ incoming = false }) {
     {!incoming && <GiftStores preferenceStep={preferenceStep} onPreferenceStepChange={changePreferenceStep} store={store} onStoreChange={setStore} contextPanel={contextPanel} target={target} budget={target?.budget} currency={target?.cur} disabled={loading||listBusy||giftBusy||cartBusy} onBusy={setCatalogBusy} amazonPanel={<AmazonListSetup target={target} disabled={loading||giftBusy||catalogBusy||cartBusy} onBusy={setListBusy} onSaved={clearSharedDraft}/>}/>}
     {incoming && <GiftListButton/>}
     {incoming && sharedList && <AmazonListSetup key={shared.u} target={target} initial={shared} disabled={loading||giftBusy||cartBusy} onBusy={setListBusy} onSaved={clearSharedDraft}/>}
+    {!incoming && !preferenceStep && store!=='ebay' && <SaveButtonInstall/>}
+    {!incoming && <StoreReturnPrompt target={target} disabled={loading||listBusy||giftBusy||catalogBusy||cartBusy}/>}
     <details className="individual-gifts" hidden={preferenceStep} open={(incoming && !sharedList) || undefined}><summary>{incoming && !sharedList ? 'Save this individual gift' : 'Or add individual gifts from any store'}</summary>
     <div className="stack">
-      <QuickWish key={shared?.u || 'new'} target={target} initial={sharedList ? null : shared} disabled={loading || listBusy || catalogBusy || cartBusy} onBusy={setGiftBusy} onSaved={clearSharedDraft}/>
+      <QuickWish key={shared?.u || 'new'} target={target} initial={sharedList ? null : shared} source={incoming ? (via || 'share') : 'paste'} popup={incoming && via === 'button' && typeof window !== 'undefined' && !!window.opener} disabled={loading || listBusy || catalogBusy || cartBusy} onBusy={setGiftBusy} onSaved={clearSharedDraft}/>
       <GiftInstall/>
     </div>
     </details>

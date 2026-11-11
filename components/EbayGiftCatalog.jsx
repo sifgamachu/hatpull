@@ -70,7 +70,7 @@ export default function EbayGiftCatalog({ target, budget, currency = '$', disabl
     const destination=target; writing.current=true;setBusy(true);setError('');setMessage(null);
     try {
       const wish=ebayWish(product,rid(6)), tokens=getG(destination.gid);
-      const value=await rpc('hp_add_wish',{p_gid:destination.gid,p_mtok:tokens?.mtok||null,p_target:destination.mid,p_wish:wish});
+      const value=await rpc('hp_add_wish',{p_gid:destination.gid,p_mtok:tokens?.mtok||null,p_target:destination.mid,p_wish:wish,p_source:'catalog'});
       cart?.saved(value,product);setSaved(v=>({...v,[product.itemId]:true}));setMessage({title:product.title,target:destination,id:value.wish.id});await onSaved?.(value);
     } catch(e) {setError(/forbidden/.test(e.message)?'Open your participant invitation or sign in again to save to this wish list.':/wish_list_full|too large/.test(e.message)?'Your wish list is full. Remove a gift before adding another.':'Couldn’t save that gift. Please try again.');}
     finally {writing.current=false;setBusy(false);}

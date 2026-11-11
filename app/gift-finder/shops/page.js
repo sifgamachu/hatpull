@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Choose a Gift Store | Hatpull',
+  title: 'Choose a Gift Store',
   alternates: {canonical:'https://hatpull.com/gift-finder'},
   robots: {index:false,follow:true},
 };
