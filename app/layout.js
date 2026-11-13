@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
         <a className="skip" href="#app">Skip to content</a>
         <div className="header-shell"><Header /></div>
         <div className="wrap">
-          <main id="app">{children}</main>
+          <main id="app" className="journey-surface">{children}</main>
           <Footer />
         </div>
         <DomainMigration />
