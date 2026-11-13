@@ -188,7 +188,7 @@ begin
     asg := hp_draw(ids, excl);
     if asg is null then raise exception 'no_valid_draw'; end if;
   else
-    if array_length(ids, 1) < 2 then raise exception 'too few'; end if;
+    if array_length(ids, 1) < 2 and not (array_length(ids, 1) = 1 and coalesce(p->'settings'->>'personal','false') = 'true' and omid is not null and omid = ids[1]) then raise exception 'too few'; end if;
     excl := '[]'::jsonb;
   end if;
   if omid is not null and not (omid = any(ids)) then omid := null; end if;

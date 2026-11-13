@@ -9,7 +9,7 @@ export default function GiftPreferencePage({ value, onChange, onContinue, budget
   const id=useId(), [ageValid,setAgeValid]=useState(true);
   const toggle=interest=>onChange({...value,interests:value.interests.includes(interest)?value.interests.filter(x=>x!==interest):[...value.interests,interest].slice(0,3)});
   return <section className="gift-preference-page" aria-labelledby={id+'-title'}>
-    <header><p className="eyebrow">Step 1 of 3 · Make it personal</p><span className="gift-preference-present" aria-hidden="true">🎁</span><h1 id={id+'-title'} ref={headingRef} tabIndex={-1}>Find something that feels like them</h1><p>A few little details help us find gifts they’ll love.</p><button type="button" className="link gift-browse-now" disabled={disabled||!ageValid} onClick={onContinue}>Browse gifts now <span aria-hidden="true">→</span></button></header>
+    <header><p className="eyebrow">Gift Wizard</p><span className="gift-preference-present" aria-hidden="true">🎁</span><h1 id={id+'-title'} ref={headingRef} tabIndex={-1}>Find something that feels like them</h1><p>A few little details help us find gifts they’ll love.</p><button type="button" className="link gift-browse-now" disabled={disabled||!ageValid} onClick={onContinue}>Browse gifts now <span aria-hidden="true">→</span></button></header>
     {budget>0&&<p className="gift-preference-budget">{money(currency,budget)} celebration budget <span>Comes with you to the shops</span></p>}
     {showDemographics?<>
       <AgeChoice label="What is their age?" value={value.age} emptyValue="any" onChange={age=>onChange({...value,age})} onValidityChange={setAgeValid} disabled={disabled}/>

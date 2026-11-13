@@ -200,3 +200,142 @@ html:root body .account-delete-confirm{background:#e81930;color:#fff}
 .account-profile-guest h1{font-size:25px}
 .account-profile-avatar:focus-visible,.account-profile-row:focus-visible,.account-avatar-choices button:focus-visible{outline:3px solid #075bd8;outline-offset:3px}
 @media(max-width:480px){.account-profile-page{margin-top:18px;margin-bottom:50px}.account-profile-row{font-size:15px}.account-profile-content{padding:0 8px 8px}.account-profile-page{width:min(366px,100%)}}
+
+/* Account destinations share DrawNames' narrow-content, spacious-canvas layout. */
+html:root body:has(.reference-hub:not(.reference-friends-empty)),html:root body:has(.reference-setup),html:root body:has(.reference-create-wish){background:#fff}
+html:root body:has(.reference-friends-empty),html:root body:has(.reference-gift-finder){background-color:#dce2ff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Cg stroke='white' stroke-opacity='.5' stroke-width='2' fill='none'%3E%3Cpath d='M50 15v50M25 40h50M32 22l36 36M32 58l36-36M42 22l8 9 8-9M42 58l8-9 8 9M210 185v30M195 200h30M200 190l20 20M200 210l20-20'/%3E%3C/g%3E%3Cg fill='white' fill-opacity='.5'%3E%3Ccircle cx='140' cy='100' r='3'/%3E%3Ccircle cx='70' cy='230' r='3'/%3E%3C/g%3E%3C/svg%3E");background-size:280px 280px}
+.reference-hub,.reference-create-wish,.reference-setup{position:relative;isolation:isolate;min-height:calc(100dvh - 120px);padding:20px 0 80px;overflow:clip}
+.account-scene{position:absolute;z-index:-1;right:-100px;top:-85px;width:720px;max-width:66%;pointer-events:none}
+.account-scene svg{display:block;width:100%;height:auto}
+.reference-hub-column{position:relative;width:366px;max-width:100%;z-index:1}
+.reference-hub-column>h1{font-size:32px;line-height:1.2;margin:0 0 24px;letter-spacing:-.02em}
+.reference-hub-column>h2{font-size:20px;margin:24px 0 14px}
+.reference-card-list{display:grid;gap:20px}
+.reference-list-card{position:relative;padding:16px 18px;background:#fff;border-radius:12px;box-shadow:0 2px 12px #252b4014;border:1px solid #f2f2f2;font-size:16px;line-height:1.6}
+.reference-list-card p{margin:5px 0 0;color:#444}
+.reference-list-card a{color:#0866dd;font-weight:650;text-decoration:none}
+.reference-list-card a:hover{text-decoration:underline}
+.reference-card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.reference-card-heading>a:first-child{font-size:19px;line-height:1.4}
+.reference-card-menu{position:relative;flex:none}
+.reference-card-menu summary,.reference-card-tool{display:grid;place-items:center;list-style:none;width:32px;height:32px;border-radius:6px;background:#f5f5f5;font-size:22px;cursor:pointer;line-height:1}
+.reference-card-menu summary::-webkit-details-marker{display:none}
+.reference-card-menu>div{position:absolute;top:36px;right:0;min-width:175px;z-index:5;display:grid;gap:10px;padding:14px;background:#fff;border-radius:8px;box-shadow:0 4px 20px #0002;font-size:14px}
+.reference-list-card.reference-past-card{background:#f5f5f5;color:#777}
+.reference-past-card .reference-card-heading>a{color:#666}
+.reference-past-card p{color:#666}
+.reference-action{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:48px;margin:20px 0 0;padding:12px 18px;border:0;border-radius:9px;background:#2e78ff;color:#fff!important;text-decoration:none;font:650 16px/1.4 var(--f-body);text-align:left;cursor:pointer}
+.reference-action>span{font-size:27px;line-height:20px;font-weight:400}
+.reference-action:hover{background:#1466ec;text-decoration:none}
+.reference-action:disabled{opacity:.6;cursor:wait}
+.reference-action-outline{background:#fff;color:#0764ff!important;border:2px solid #0764ff;margin-top:12px}
+.reference-action-outline:hover{background:#eef4ff}
+.reference-section-divider{height:1px;background:#ddd;margin:30px 0}
+.reference-view-draw{display:block;margin-top:12px}
+.reference-wish-previews{display:flex;gap:7px;padding:10px;margin-top:10px;background:#f5f5f5;border-radius:8px}
+.reference-wish-previews img{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:7px}
+.reference-wish-count{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f5f5f5;padding:12px;border-radius:8px;font-size:14px}
+.reference-signin{font-size:15px;line-height:1.6;margin-bottom:22px}
+.reference-signin .link{color:#0764ff;font-weight:650}
+.reference-hub-search{display:block;margin:0 0 20px}
+.reference-hub-empty{text-align:center;padding:10px 18px 24px;line-height:1.6}
+.reference-hub-empty h2{font-size:21px;margin:12px 0}
+.reference-hub-empty p{color:#626262}
+.reference-empty-friends{width:384px;max-width:100%;margin:0 auto;padding:24px 16px 14px;background:#fff;border-radius:14px;text-align:center;font-size:17px;line-height:1.6}
+.reference-empty-friends>.account-menu-gifts{height:145px;align-items:center;transform:scale(1.1);margin-bottom:18px}
+.reference-empty-friends h1{font-size:21px;margin:10px 12px}
+.reference-empty-friends>p{margin:12px 20px 25px}
+.reference-empty-friends>.link{display:block;margin-bottom:16px}
+.reference-create-wish .account-profile-gifts{margin:0 auto -3px}
+.reference-question-card{padding:20px;border:2px solid #d6e3fc;border-radius:17px;background:#fff;box-shadow:0 18px 30px #246bfe12}
+.reference-question-card h2{font-size:20px}
+.reference-question-card .reference-action{margin-top:5px}
+html:root body .reference-setup .setup-layout{display:block;position:relative}
+html:root body .reference-setup .setup-sidebar{display:none}
+html:root body .reference-setup .setup-main{width:366px;max-width:100%}
+html:root body .reference-setup .setup-card{padding:20px;gap:16px;border:2px solid #d6e3fc;border-radius:17px;box-shadow:0 18px 30px #246bfe12}
+html:root body .reference-setup .setup-card h2{font-size:21px}
+html:root body .reference-setup .setup-card h1{font-size:30px}
+html:root body .reference-setup .setup-card header p{font-size:14px;line-height:1.6;margin-top:8px}
+html:root body .reference-setup .setup-footer{padding-top:16px;margin-top:4px}
+html:root body .reference-setup .setup-footer>.btn:last-child{flex:1;justify-content:space-between}
+.reference-setup #setup-question:focus{outline:none}
+html:root body .reference-setup-choice .setup-card{padding:0;border:0;box-shadow:none}
+.reference-setup-choice .setup-options{padding:20px;border:2px solid #d6e3fc;border-radius:17px;box-shadow:0 18px 30px #246bfe12}
+.reference-setup-choice .setup-option{min-height:48px;padding:12px 14px;border-radius:9px}
+.reference-setup-choice .setup-option:first-child{background:#2e78ff;color:#fff;border-color:#2e78ff}
+.reference-setup-choice .setup-option small,.reference-setup-choice .setup-option-symbol{display:none}
+.reference-setup-choice .setup-option strong{font-size:15px}
+.reference-setup-choice .setup-option>span:nth-child(2){flex:1}
+
+/* Gift Finder opens directly on a compact, searchable product grid. */
+html:root body .reference-gift-finder{width:760px;max-width:100%;margin:6px auto 60px;padding:20px;background:#fff;border-radius:18px}
+.reference-finder-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.reference-finder-heading h1{font-size:28px}
+.reference-gift-finder .gift-journey-progress,.reference-gift-finder .shop-utility,.reference-gift-finder .shop-navigation{display:none}
+.reference-gift-finder .gift-stores{border:0;box-shadow:none;background:#fff}
+.reference-finder-context{font-size:13px;margin:0 0 12px;color:#0764ff}
+.reference-finder-context>summary{cursor:pointer}
+.reference-finder-context .gift-context{margin-top:12px}
+.reference-gift-finder .store-search-header{padding:0}
+.reference-gift-finder .shop-theme-ebay .store-search{border:1px solid #bbb;border-radius:9px;min-height:54px;overflow:hidden}
+.reference-gift-finder .store-search .store-department{display:none}
+.reference-gift-finder .shop-theme-ebay .store-search input{padding-left:16px;font-size:16px}
+.reference-gift-finder .shop-theme-ebay .store-search-button{width:46px;flex:none;align-self:stretch;border-radius:0;margin:0;background:#2e78ff;min-height:54px}
+.reference-gift-finder .store-search-button>span{display:none}
+.reference-gift-finder .store-categories{display:none}
+.reference-gift-filters{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:12px 0 8px}
+.reference-gift-filters select,.reference-gift-filters button{min-height:34px;padding:5px 10px;border:0;border-radius:5px;background:#f5f5f5;font:600 13px/1.4 var(--f-body);color:#666;cursor:pointer;max-width:120px;width:auto}
+.reference-gift-filters button:first-child{background:#f4edff;color:#554086;border:1px solid #bba8e5}
+.reference-gift-finder .store-results-layout{display:block;padding:0}
+.reference-gift-finder .store-filters{display:none}
+.reference-gift-finder .store-results-toolbar{margin:10px 0}
+.reference-gift-finder .store-results-toolbar h2{display:none}
+.reference-gift-finder .store-results-toolbar p,.reference-gift-finder .store-catalog-note,.reference-gift-finder .store-save-hint{font-size:11px;line-height:1.5}
+.reference-gift-finder .store-sort{font-size:11px}
+.reference-gift-finder .store-sort select{font-size:11px;padding:5px;min-height:30px}
+.reference-gift-finder .ebay-product-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.reference-gift-finder .shop-theme-ebay .product-card{border:1px solid #eee;border-radius:11px;box-shadow:0 2px 9px #0000000b;overflow:hidden}
+.reference-gift-finder .shop-theme-ebay .product-visual{border:0;border-radius:0;background:#fff}
+.reference-gift-finder .shop-theme-ebay .product-body{padding:9px;gap:7px}
+.reference-gift-finder .shop-theme-ebay .product-body h3{font:400 13px/1.4 var(--f-body)}
+.reference-gift-finder .shop-theme-ebay .product-price strong{font:700 17px/1.3 var(--f-body)}
+.reference-gift-finder .shop-theme-ebay .product-body .btn{font:650 12px/1.3 var(--f-body);min-height:34px;padding:7px;border-radius:7px;background:#2e78ff}
+.reference-gift-finder .shop-lobby{padding:16px 0}
+.reference-gift-finder .gift-preference-page{border:0;padding:10px 0;box-shadow:none}
+.reference-gift-finder .shop-amazon-list{margin-top:20px;font-size:14px}
+@media(max-width:900px){.account-scene{right:-160px;max-width:70%;opacity:.7}.reference-hub-column{width:350px}}
+@media(max-width:700px){.account-scene{display:none}.reference-hub,.reference-create-wish,.reference-setup{padding:10px 0 45px}.reference-hub-column{width:min(366px,100%);margin:0 auto}.reference-hub-column>h1{font-size:29px;margin-bottom:20px}.reference-list-card{padding:15px 16px}.reference-empty-friends{margin-top:8px}.reference-hub-column>.reference-action{position:sticky;bottom:12px;z-index:5;box-shadow:0 5px 20px #246bfe24}.reference-setup .setup-main{margin:auto}html:root body .reference-gift-finder{padding:16px 12px;margin-top:0;border-radius:15px}.reference-gift-finder .ebay-product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.reference-gift-filters{gap:5px}.reference-gift-filters select,.reference-gift-filters button{padding:5px 8px;max-width:110px}.reference-finder-heading h1{font-size:26px}}
+.friend-gift-artwork{display:block;width:220px;max-width:100%;height:180px;margin:0 auto 20px}
+.reference-gift-finder .compact-photo{position:relative}
+.reference-product-preview{position:absolute;right:10px;bottom:-10px;display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:50%;background:#2e78ff;color:#fff;font:400 33px/1 var(--f-body);box-shadow:0 3px 9px #246bfe30;cursor:pointer;z-index:2}
+.reference-gift-finder .compact-heart{top:8px;right:8px}
+.reference-gift-finder .compact-price strong{font-size:17px}
+html:root body:has(.reference-hub:not(.reference-friends-empty))>.header-shell,html:root body:has(.reference-setup)>.header-shell,html:root body:has(.reference-create-wish)>.header-shell{margin-bottom:0}
+.reference-hub:not(.reference-friends-empty){padding-top:48px}
+.reference-create-wish,.reference-setup{padding-top:32px}
+.reference-gift-finder .ebay-catalog{gap:0;margin-top:0}
+.reference-gift-finder .store-results{padding:0}
+html:root body .reference-gift-filters select{background:#f5f5f5;border:0;border-radius:5px;min-height:34px}
+.reference-finder-heading .gift-list-button{padding:8px 12px;border-radius:9px;background:#eef4ff;color:#0764ff;min-height:40px;box-shadow:none}
+.reference-finder-heading .gift-list-button .gift-list-icon{width:28px;height:28px}
+.reference-finder-heading .gift-list-button strong{font-size:13px}
+@media(max-width:700px){.reference-hub:not(.reference-friends-empty){padding-top:28px}.reference-create-wish,.reference-setup{padding-top:20px}}
+html:root body:has(.journey-surface) .reference-setup .setup-card{padding:20px;gap:16px;border:2px solid #d6e3fc;border-radius:17px;box-shadow:0 18px 30px #246bfe12}
+html:root body:has(.journey-surface) .reference-setup-choice .setup-card{padding:0;border:0;box-shadow:none;background:transparent}
+html:root body:has(.journey-surface) .reference-setup-choice .setup-card>h1{font-size:32px;line-height:1.2}
+html:root body:has(.journey-surface) .reference-setup-choice .setup-card>.account-profile-gifts{margin:0 auto -18px}
+html:root body:has(.journey-surface) .reference-setup-choice .setup-options{padding:20px;border:2px solid #d6e3fc;border-radius:17px;background:#fff;box-shadow:0 18px 30px #246bfe12}
+html:root body:has(.journey-surface) .reference-setup-choice .setup-option{min-height:48px;padding:12px 14px;border-radius:9px;grid-template-columns:1fr auto}
+html:root body:has(.journey-surface) .reference-setup-choice .setup-option:first-child{background:#2e78ff;color:#fff;border-color:#2e78ff}
+html:root body:has(.journey-surface) .reference-setup-choice .setup-option:last-child{background:#fff;color:#0764ff;border:2px solid #0764ff}
+html:root body:has(.journey-surface) .brand .b-n{display:none}
+html:root body:has(.journey-surface) .brand .b-x{display:block}
+.reference-setup-choice .setup-choice-card{display:flex;flex-direction:column;gap:16px}
+.reference-setup-choice .setup-choice-card>h1{font-size:32px;line-height:1.2}
+.reference-setup-choice .setup-choice-card>.account-profile-gifts{margin:0 auto -18px}
+html:root body:has(.journey-surface) .reference-setup .setup-card{padding:20px!important;gap:16px!important}
+.reference-wish-previews{position:relative;display:flex;gap:7px;padding:10px;margin-top:10px;background:#f5f5f5;border-radius:8px;text-decoration:none!important}
+.reference-wish-previews>span{display:grid;place-items:center;flex:none;width:72px;height:72px;background:#fff;border-radius:7px;overflow:hidden}
+.reference-wish-previews>span>img,.reference-wish-previews>span>svg{width:100%;height:100%;object-fit:contain}
+.reference-wish-previews .reference-preview-more{position:absolute;right:9px;bottom:9px;width:auto;height:auto;padding:3px 7px;border-radius:5px;background:#fff;color:#666;font-size:12px}

@@ -12,16 +12,16 @@ import { useGiftListCart } from './GiftListCart';
 import { ebayItemId } from '@/lib/ebay-products.mjs';
 import GiftPreferences from './GiftPreferences';
 import GiftProductPreview from './GiftProductPreview';
-import { emptyGiftPreferences, giftPreferenceChips, giftPreferencesFromProfile } from '@/lib/gift-preferences.mjs';
+import { GIFT_GENDERS, GIFT_AGES, emptyGiftPreferences, giftPreferenceChips, giftPreferencesFromProfile } from '@/lib/gift-preferences.mjs';
 
 import {giftCountryLabel} from '@/lib/gift-delivery.mjs';
 import {loadGiftInspiration} from '@/lib/gift-inspiration.mjs';
 
 const categories = [['','All gifts'],['camp mug','Drinkware'],['portable tire inflator','Car & travel'],['socket set','Tools & DIY'],['bluetooth speaker','Electronics'],['board game','Games'],['throw blanket','Home & cozy'],['art supplies','Arts & crafts'],['push up board','Fitness'],['camping lantern','Outdoors'],['skin care gift set','Self-care']];
-export default function EbayGiftCatalog({ target, budget, currency = '$', disabled = false, active = true, onBusy, onSaved, profile, showPreferences = true, onPreferencesChange }) {
+export default function EbayGiftCatalog({ compact=false, onWizard, onChooseShop, target, budget, currency = '$', disabled = false, active = true, onBusy, onSaved, profile, showPreferences = true, onPreferencesChange }) {
   const formId = useId(), writing = useRef(false), cart = useGiftListCart();
   const cap = (!currency || currency === '$') ? positiveMoney(budget) : null;
-  const [term,setTerm] = useState(''), [query,setQuery] = useState(''), [maximum,setMaximum] = useState(cap ? String(cap) : '50'), [appliedMaximum,setAppliedMaximum]=useState(cap ? String(cap) : '50'), [sort,setSort] = useState('recommended'), [page,setPage] = useState(1), [retry,setRetry] = useState(0);
+  const [term,setTerm] = useState(''), [query,setQuery] = useState(''), [maximum,setMaximum] = useState(cap ? String(cap) : compact?'':'50'), [appliedMaximum,setAppliedMaximum]=useState(cap ? String(cap) : compact?'':'50'), [sort,setSort] = useState('recommended'), [page,setPage] = useState(1), [retry,setRetry] = useState(0);
   const [result,setResult] = useState(null), [busy,setBusy] = useState(false), [saved,setSaved] = useState({}), [message,setMessage] = useState(null), [error,setError] = useState('');
   const [overrides,setOverrides] = useState(null), [preview,setPreview] = useState(null);
   const context = (target?.gid || '') + ':' + (target?.mid || '');
@@ -32,7 +32,7 @@ export default function EbayGiftCatalog({ target, budget, currency = '$', disabl
   const inspiration = !query, preferenceKey = JSON.stringify(preferences);
   const suggestedQuery = query, personalized = giftPreferenceChips(preferences).length > 0;
   const searchKey = inspiration ? 'ideas:'+JSON.stringify([preferenceKey,effectiveMax,sort,page]) : catalogKey({q:suggestedQuery,max:effectiveMax,sort,page,country:preferences.country});
-  useEffect(()=>{setMaximum(cap ? String(cap) : '50');setAppliedMaximum(cap ? String(cap) : '50');setPage(1);},[cap]);
+  useEffect(()=>{setMaximum(cap ? String(cap) : compact?'':'50');setAppliedMaximum(cap ? String(cap) : compact?'':'50');setPage(1);},[cap]);
   useEffect(()=>{setSaved({});setMessage(null);setError('');setPreview(null);setOverrides(null);setPage(1);},[context]);
   useEffect(()=>{setPage(1);},[profileKey]);
   useEffect(()=>{onBusy?.(busy);return()=>onBusy?.(false);},[busy,onBusy]);
@@ -85,11 +85,12 @@ export default function EbayGiftCatalog({ target, budget, currency = '$', disabl
         <label className="sr-only" htmlFor={formId+'-department'}>Gift department</label>
         <select id={formId+'-department'} className="store-department" value={department} onChange={e=>category(e.target.value)}>{categories.map(([q,label])=><option key={q} value={q}>{label}</option>)}</select>
         <label className="sr-only" htmlFor={formId+'-search'}>Search gifts on eBay</label>
-        <input id={formId+'-search'} type="search" maxLength={50} value={term} onChange={e=>setTerm(e.target.value)} placeholder="Search for anything on eBay" autoComplete="off"/>
+        <input id={formId+'-search'} type="search" maxLength={50} value={term} onChange={e=>setTerm(e.target.value)} placeholder={compact?"Search in Gift Finder":"Search for anything on eBay"} autoComplete="off"/>
         <button className="store-search-button" type="submit" aria-label="Search gifts"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" strokeWidth="2.5"/><path d="m16 16 5 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg><span>Search</span></button>
       </form>
+      {compact&&<div className="reference-gift-filters" aria-label="Filter gifts"><button type="button" onClick={onWizard}>Gift Wizard ✦</button><label><span className="sr-only">Gender</span><select aria-label="Gender" value={preferences.gender} onChange={e=>changePreferences({...preferences,gender:e.target.value})}>{GIFT_GENDERS.map(([key,label])=><option key={key} value={key}>{key==='any'?'Gender':label}</option>)}</select></label><label><span className="sr-only">Age</span><select aria-label="Age" value={preferences.age} onChange={e=>changePreferences({...preferences,age:e.target.value})}>{GIFT_AGES.map(([key,label])=><option key={key} value={key}>{key==='any'?'Age':label}</option>)}{!GIFT_AGES.some(([key])=>key===preferences.age)&&<option value={preferences.age}>{preferences.age} years</option>}</select></label><label><span className="sr-only">Price</span><select aria-label="Price" value={effectiveMax} onChange={e=>applyBudget(e.target.value)}><option value={cap||0}>{cap?'Full budget':'Any price'}</option>{[15,25,50,100].filter(v=>!cap||v<cap).map(v=><option key={v} value={v}>Under ${v}</option>)}{effectiveMax>0&&![15,25,50,100,cap].includes(effectiveMax)&&<option value={effectiveMax}>Under ${effectiveMax}</option>}</select></label><label><span className="sr-only">Category</span><select aria-label="Category" value={department} onChange={e=>category(e.target.value)}>{categories.map(([q,label])=><option key={q} value={q}>{q?label:'Category'}</option>)}</select></label><button type="button" onClick={onChooseShop}>Shop ▾</button></div>}
       <div className="store-categories" aria-label="Gift categories">{categories.map(([q,label])=><button key={q} aria-pressed={query===q} onClick={()=>category(q)}>{label}</button>)}</div>
-      {showPreferences && <GiftPreferences key={context} value={preferences} onChange={changePreferences} budget={effectiveMax} disabled={busy} />}
+      {showPreferences && !compact && <GiftPreferences key={context} value={preferences} onChange={changePreferences} budget={effectiveMax} disabled={busy} />}
     </div>
     <div className="store-results-layout">
       <aside className="store-filters" aria-label="Gift price filters">
@@ -105,12 +106,12 @@ export default function EbayGiftCatalog({ target, budget, currency = '$', disabl
         <p className="store-catalog-note">New Buy It Now items · Ships to {giftCountryLabel(preferences.country)} · Prices in US dollars. Confirm delivery on eBay; shipping and tax may be extra. Hatpull may earn a commission from eBay purchases.</p>
         {currency&&currency!=='$'&&<p className="store-catalog-note">Your celebration uses {currency}; compare currencies before buying.</p>}
         {sort!=='recommended'&&<p className="tiny muted store-sort-note">{inspiration?'These ideas are sorted':'Results are sorted'} by {preferences.country==='US'?'item price + listed shipping':'price; shipping is checked at the store'}. Final delivery charges may differ.</p>}
-        {!ready&&<p className="store-save-hint">{disabled?'Checking your wish list…':'Choose your celebration above to save favorites. You can browse first.'}</p>}
+        {!ready&&<p className="store-save-hint">{disabled?'Checking your wish list…':compact?'Browse freely. Choose a wish list when you save a gift.':'Choose your celebration above to save favorites. You can browse first.'}</p>}
         {error&&<p className="note err" role="alert">{error}</p>}
         {message&&!cart&&<div className="quick-saved" role="status"><b>✓ Saved to {message.target.person}’s wish list</b><span>{message.title}</span><Link className="link" href={'/g/'+message.target.gid+'/w/'+message.target.mid+'?edit='+encodeURIComponent(message.id)}>View gift or add size & color →</Link></div>}
         <div aria-busy={loading} data-search-key={searchKey} data-search-state={loading?'loading':current.status}>
           {loading?<div className="product-grid ebay-product-grid store-skeletons" aria-hidden="true">{Array.from({length:6},(_,i)=><div className="product-card store-skeleton" key={i}><div className="skeleton-photo"/><div className="skeleton-line"/><div className="skeleton-line short"/><div className="skeleton-price"/></div>)}</div>:current.status!=='ready'?<div className="store-empty"><h3>We couldn’t load these gifts.</h3><p>Please try again, or switch to Amazon to keep browsing.</p><button className="btn small ghost" onClick={()=>{setResult(null);setRetry(x=>x+1);}}>Try again</button></div>:!current.items.length?<div className="store-empty"><h3>No gifts matched this search.</h3><p>Try a different phrase or adjust your preferences and price filter.</p>{personalized&&showPreferences&&<button type="button" className="btn small ghost" onClick={()=>changePreferences({...emptyGiftPreferences(),country:preferences.country})}>Clear preferences · keep budget</button>}</div>:<>
-            <div className="product-grid ebay-product-grid inspiration-grid">{current.items.map((product,index)=><ProductCard compact key={product.itemId} product={product} onSelect={save} saved={isSaved(product)} onViewSaved={cart?.show} onPreview={showPreview} disabled={disabled||busy||cart?.busy||(!target&&!cart)} priorityImage={index<4}/>)}</div>
+            <div className="product-grid ebay-product-grid inspiration-grid">{current.items.map((product,index)=><ProductCard compact reference={compact} key={product.itemId} product={product} onSelect={save} saved={isSaved(product)} onViewSaved={cart?.show} onPreview={showPreview} disabled={disabled||busy||cart?.busy||(!target&&!cart)} priorityImage={index<4}/>)}</div>
             {current.loadingMore&&<p className="small muted" role="status">Finding more kinds of gifts…</p>}{current.partial&&!current.loadingMore&&<p className="small muted">Some categories couldn’t load. <button className="link" onClick={()=>setRetry(x=>x+1)}>Try again</button></p>}{(page>1||current.hasMore)&&<div className="row store-pagination"><button className="btn small ghost" disabled={page===1} onClick={()=>setPage(p=>p-1)}>← Previous</button><span className="small">Page {page}</span><button className="btn small ghost" disabled={!current.hasMore||current.loadingMore} onClick={()=>setPage(p=>p+1)}>Next gifts →</button></div>}
           </>}
         </div>

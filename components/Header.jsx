@@ -28,8 +28,8 @@ export default function Header() {
         <h2 className="sr-only">Your Hatpull account</h2>
         <nav className="account-menu-body" aria-label="Your account navigation" onClick={event => { if (event.target.closest('a')) close(); }}>
           <div className="account-menu-group">
-            <Link className="account-menu-row account-menu-primary" href={SITE.santa + "/new?occ=0"}>Create a new celebration<span aria-hidden="true">›</span></Link>
-            <Link className="account-menu-row" href={SITE.santa + "/new?mode=wish"}>Create a wish list<span aria-hidden="true">›</span></Link>
+            <Link className="account-menu-row account-menu-primary" href={SITE.santa + "/new"}>Create a new celebration<span aria-hidden="true">›</span></Link>
+            <Link className="account-menu-row" href={SITE.santa + "/wish-lists/create"}>Create a wish list<span aria-hidden="true">›</span></Link>
           </div>
           <div className="account-menu-group">{[["My celebrations", "/my"], ["My wish lists", "/wish-lists"], ["My friends", "/friends"], ["Gift Finder", "/gift-finder"]].map(([label, path]) => <Link className="account-menu-row" key={path} href={SITE.santa + path}>{label}<span aria-hidden="true">›</span></Link>)}</div>
           <div className="account-menu-group"><Link className="account-menu-row" href={SITE.santa + "/account"}>My account<span aria-hidden="true">›</span></Link></div>

@@ -43,7 +43,7 @@ export default function WishList({ gid, mid }) {
   if (isOrganizerError(error)) return <OrganizerAccess gid={gid} error={error} reload={reload} />;
   if (error && error !== "network") return <div className="mid panel stack"><p>{error === "not_found" ? "This celebration no longer exists." : "You don't have access to this wish list on this device."}</p><Link className="btn small ghost" href="/my">My celebrations</Link></div>;
   if (!state) return <div className="mid panel muted"><h1 className="sr-only">Wish list</h1>{error === "network" ? "Can't reach the server. Retrying…" : "Loading wish list…"}</div>;
-  const g = state.group, me = state.me, xm = isXmas(g);
+  const g = state.group, me = state.me, xm = isXmas(g), personal = g.settings?.personal === true;
   const m = state.members.find(x => x.id === mid);
   if (!m) return <div className="mid panel stack"><p>This person isn't in the celebration anymore.</p><Link className="btn small ghost" href={`/g/${gid}`}>Back</Link></div>;
   const mineList = me && (m.id === me.id || (m.kid && m.parent_id === me.id));
@@ -54,12 +54,12 @@ export default function WishList({ gid, mid }) {
   const collectionCount = [listCount && `${listCount} Amazon list${listCount === 1 ? "" : "s"}`, (giftCount || !listCount) && `${giftCount} gift${giftCount === 1 ? "" : "s"}`].filter(Boolean).join(" · ");
 
   return (
-    <div className="journey-surface wishlist-page stack"><JourneyPaths active={g.mode==='wish'?'wish':'draw'}/>
+    <div className="journey-surface wishlist-page stack">{!personal&&<JourneyPaths active={g.mode==='wish'?'wish':'draw'}/>}
       <Festive on={xm} />
       {xm&&<HolidayGiftBanner/>}
-      <Link href={`/g/${gid}`} className="link crumb">← {g.name}</Link>
-      <JourneyHeading eyebrow={mineList?'A few hints for a lovely surprise':iDrew?'Your drawn name':'Shared with your celebration'} title={mineList?(m.kid?`${m.name}’s wish list`:'My wish list'):`${m.name}’s wish list`}><p>{collectionCount}{g.budget?` · ${money(g.cur,g.budget)} celebration budget`:''}</p></JourneyHeading>
-      <CelebrationNav gid={gid} mid={me?.id} active={mineList?'wishes':'recipient'} admin={state.is_admin}/>
+      <Link href={personal?'/wish-lists':`/g/${gid}`} className="link crumb">← {personal?'My wish lists':g.name}</Link>
+      <JourneyHeading eyebrow={mineList?'A few hints for a lovely surprise':iDrew?'Your drawn name':'Shared with your celebration'} title={personal?g.name:mineList?(m.kid?`${m.name}’s wish list`:'My wish list'):`${m.name}’s wish list`}><p>{collectionCount}{g.budget?` · ${money(g.cur,g.budget)} celebration budget`:''}</p></JourneyHeading>
+      {!personal&&<CelebrationNav gid={gid} mid={me?.id} active={mineList?'wishes':'recipient'} admin={state.is_admin}/>}
       {iDrew && <div className="note">{xm ? `🎅 You're ${m.name}'s Secret Santa.` : `You drew ${m.name}.`} {listCount > 0 ? (giftCount > 0 ? "Open their Amazon wish list or reserve an individual gift below." : "Open their Amazon wish list to choose a gift.") : `Reserve a gift so nobody else buys the same thing. ${m.name} won't see it.`}</div>}
       {mineList ? <Editor key={m.id} gid={gid} g={g} m={m} prof={prof} items={items} setDraft={setDraft} tokens={tokens} reload={reload} xm={xm} questions={viewState.questions.filter(q => q.to === m.id)} />
         : <Viewer gid={gid} g={g} m={m} me={me} prof={prof} items={items} state={viewState} tokens={tokens} reload={reload} xm={xm} />}
@@ -181,7 +181,7 @@ function Editor({ gid, g, m, prof, items, setDraft, tokens, reload, xm, question
         {g.settings?.mail?.on && !m.kid && <><label htmlFor="addr">Mailing address</label><textarea id="addr" maxLength={300} value={about.address} onChange={e => setAbout({ ...about, address: e.target.value })} placeholder="Street, city, postal code" /><p className="tiny muted">{g.settings.mail.vis === "all" ? "Everyone in the group can see this." : "Only the person who drew you can see this."}</p></>}
         <div><button className="btn small ghost" disabled={saving||catalogSaving||cartSaving||profileSaving} onClick={saveAbout}>Save</button></div>
       </div>
-      {!m.kid && <div className="panel stack"><h3>Questions for you</h3>
+      {!m.kid && !g.settings?.personal && <div className="panel stack"><h3>Questions for you</h3>
         {questions.length ? questions.map(q => <div className="msg stack" style={{ gap: 6 }} key={q.id}><div className="small"><b>Q:</b> {q.body}</div>
           {q.answer ? <div className="small"><b>A:</b> {q.answer}</div>
             : <form className="row" style={{ flexWrap: "nowrap" }} onSubmit={async e => { e.preventDefault(); const a = (ans[q.id] || "").trim(); if (!a) return; try { await rpc("hp_answer", { p_gid: gid, p_mtok: tokens.mtok, p_qid: q.id, p_answer: a }); toast("Answer sent"); reload(); } catch { toast("Couldn't send your answer."); } }}>

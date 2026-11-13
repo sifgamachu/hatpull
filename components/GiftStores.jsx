@@ -20,7 +20,7 @@ function StoreLogo({store}) {
     : <img className="shop-logo shop-logo-amazon" src="/stores/amazon-available-white.png" alt="Available at Amazon" width="1500" height="723"/>;
 }
 
-export default function GiftStores({target,budget,currency,disabled,onBusy,onSaved,amazonPanel,contextPanel,profile,showPreferences=true,selectionDisabled=false,store:controlledStore,onStoreChange,preferenceStep:controlledPreferenceStep,onPreferenceStepChange}) {
+export default function GiftStores({compact=false,target,budget,currency,disabled,onBusy,onSaved,amazonPanel,contextPanel,profile,showPreferences=true,selectionDisabled=false,store:controlledStore,onStoreChange,preferenceStep:controlledPreferenceStep,onPreferenceStepChange}) {
   const cart=useGiftListCart(), baseProfile=profile??cart?.profile;
   const basePreferences=giftPreferencesFromProfile(baseProfile);
   const preferenceContext=JSON.stringify([target?.gid,target?.mid,basePreferences]);
@@ -63,6 +63,7 @@ export default function GiftStores({target,budget,currency,disabled,onBusy,onSav
     focusDestination.current=null;
   },[store]);
   return <div className={`gift-stores shop-theme-${store||'lobby'}${preferenceStep?' is-preference-step':''}`}>
+    {compact&&<div className="reference-finder-heading"><h1>Gift Finder</h1><GiftListButton compact/></div>}
     <ol className="gift-journey-progress" aria-label="Find and save gifts">{['Preferences','Choose a store','Save gifts'].map((label,index)=>{const current=preferenceStep?0:store?2:1;return <li key={label} aria-current={index===current?'step':undefined} data-complete={index<current}><span>{index<current?'✓':index+1}</span>{label}</li>;})}</ol>
     {preferenceStep&&<GiftPreferencePage value={preferences} onChange={updatePreferences} onContinue={()=>changePreferenceStep(false)} headingRef={preferenceHeading} budget={budget} currency={currency} disabled={previewsLoading||busy||selectionDisabled} showDemographics={showPreferences} contextPanel={contextPanel}/>}
     {(shopsVisited||!preferenceStep)&&<div hidden={preferenceStep}>
@@ -84,8 +85,8 @@ export default function GiftStores({target,budget,currency,disabled,onBusy,onSav
       <div className="shop-selected-title"><h2 ref={heading} tabIndex={-1} aria-label={`${store==='ebay'?'eBay':'Amazon'} gift finds`}><StoreLogo store={store}/></h2><p>{store==='ebay'?'Search eBay listings. Save favorites to Hatpull.':'Browse on Amazon. Keep your wish-list link in Hatpull.'}</p></div>
       <a className="shop-switch" {...amazonLinkProps}>Shop Amazon ↗</a>
     </div>}
-    {contextPanel && !preferenceStep && <div className="shop-context">{contextPanel}</div>}
-    {(visited.ebay||store==='ebay') && <div hidden={store!=='ebay'}><EbayGiftCatalog target={target} budget={budget} currency={currency} profile={browsingProfile} showPreferences={showPreferences} onPreferencesChange={updatePreferences} disabled={disabled} active={!preferenceStep&&store==='ebay'} onBusy={working} onSaved={onSaved}/></div>}
+    {contextPanel && !preferenceStep && (compact?<details className="reference-finder-context"><summary>Choose a wish list to save gifts</summary>{contextPanel}</details>:<div className="shop-context">{contextPanel}</div>)}
+    {(visited.ebay||store==='ebay') && <div hidden={store!=='ebay'}><EbayGiftCatalog compact={compact} onWizard={()=>changePreferenceStep(true)} onChooseShop={()=>choose(null)} target={target} budget={budget} currency={currency} profile={browsingProfile} showPreferences={showPreferences} onPreferencesChange={updatePreferences} disabled={disabled} active={!preferenceStep&&store==='ebay'} onBusy={working} onSaved={onSaved}/></div>}
     {amazonPanel && <details className="shop-amazon-list" onToggle={e=>{if(e.currentTarget.open)setAmazonListOpened(true);}}><summary>Already have an Amazon wish list?</summary>{amazonListOpened&&<div className="store-amazon-panel">{amazonPanel}</div>}</details>}
     {store!=='ebay' && <p className="shop-trademark">Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates.</p>}
     </div>}
