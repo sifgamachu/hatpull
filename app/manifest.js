@@ -7,6 +7,6 @@ export default async function manifest() {
     start_url: "/", display: "standalone", background_color: "#0F3328", theme_color: "#0F3328",
     id: "/", scope: "/",
     ...(!picker ? { share_target: { action: "/share-gift", method: "GET", params: { title: "title", text: "text", url: "url" } } } : {}),
-    icons: [{ src: "/icons/hatpull-192.png?v=20261113", sizes: "192x192", type: "image/png", purpose: "any" }, { src: "/icons/hatpull-512.png?v=20261113", sizes: "512x512", type: "image/png", purpose: "any" }],
+    icons: [{ src: "/icons/hatpull-192.png?v=20261113-redhat", sizes: "192x192", type: "image/png", purpose: "any" }, { src: "/icons/hatpull-512.png?v=20261113-redhat", sizes: "512x512", type: "image/png", purpose: "any" }],
   };
 }

@@ -16,9 +16,9 @@ export const metadata = {
   robots: { index: true, follow: true, googleBot: { "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
   applicationName: "Hatpull",
   icons: {
-    icon: [{ url: "/favicon.ico?v=20261113", sizes: "any" }, { url: "/icon.svg?v=20261113", type: "image/svg+xml", sizes: "any" }],
-    shortcut: "/favicon.ico?v=20261113",
-    apple: [{ url: "/apple-icon.png?v=20261113", sizes: "180x180", type: "image/png" }],
+    icon: [{ url: "/favicon.ico?v=20261113-redhat", sizes: "any" }, { url: "/icon.svg?v=20261113-redhat", type: "image/svg+xml", sizes: "any" }],
+    shortcut: "/favicon.ico?v=20261113-redhat",
+    apple: [{ url: "/apple-icon.png?v=20261113-redhat", sizes: "180x180", type: "image/png" }],
   },
   appleWebApp: { capable: true, title: "Hatpull", statusBarStyle: "default" },
   formatDetection: { telephone: false },
