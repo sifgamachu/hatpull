@@ -15,6 +15,11 @@ export const metadata = {
   description: "Draw names for Secret Santa online for free, share wish lists, and pick random names with a spinning wheel. Organizers sign in; participants join by invitation link.",
   robots: { index: true, follow: true, googleBot: { "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
   applicationName: "Hatpull",
+  icons: {
+    icon: [{ url: "/favicon.ico?v=20261113", sizes: "any" }, { url: "/icon.svg?v=20261113", type: "image/svg+xml", sizes: "any" }],
+    shortcut: "/favicon.ico?v=20261113",
+    apple: [{ url: "/apple-icon.png?v=20261113", sizes: "180x180", type: "image/png" }],
+  },
   appleWebApp: { capable: true, title: "Hatpull", statusBarStyle: "default" },
   formatDetection: { telephone: false },
 };
