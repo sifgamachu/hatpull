@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { profileSymbol } from "@/lib/account-profile.mjs";
 import { useUser, signOut } from "@/lib/auth";
 import { Sheet } from "./Sheet";
 import SignIn from "./SignIn";
@@ -11,7 +12,7 @@ export default function Header() {
   const user = useUser();
   const [menu, setMenu] = useState(false), [login, setLogin] = useState(false), [leaving, setLeaving] = useState(false);
   const close = () => setMenu(false);
-  const initial = (user?.user_metadata?.full_name || user?.email || "A").slice(0, 1).toUpperCase();
+  const initial = profileSymbol(user);
   const brand = (
       <Link className="brand" href="/" aria-label="Home">
         <svg className="b-n" viewBox="0 0 32 32" aria-hidden="true"><rect x="7" y="6" width="18" height="16" rx="2" fill="var(--pine)" /><rect x="3" y="21" width="26" height="5" rx="2.5" fill="var(--pine)" /><rect x="7" y="17" width="18" height="3" fill="var(--ribbon)" /></svg>
