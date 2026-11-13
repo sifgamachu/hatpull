@@ -117,3 +117,19 @@ html:root body:has(.journey-surface) .setup-date-options .setup-option[aria-pres
 html:root body:has(.journey-surface) .setup-mobile-progress{display:block;font-size:13px;color:#075bd8;font-weight:600}
 html:root body:has(.journey-surface) .setup-mobile-progress .progress{height:4px;margin:0;background:#e3ebfb}
 @media(max-width:700px){.journey-paths{width:100%;top:6px}}
+
+/* Phones first for sign-in: a thumb-reach bottom sheet with full-size fields and buttons. */
+.sheet .panel>.row.between{flex-wrap:nowrap;align-items:flex-start}
+.sheet .panel>.row.between>h2{min-width:0}
+.sheet .panel>.row.between>.link{flex:none}
+.check input{flex:none}
+@media(max-width:700px){
+html:root body:has(.journey-surface) .top .navlink{display:inline-flex;align-items:center;min-height:44px;padding:8px 10px;font-size:14px}
+.sheet:not([class*=gift]){place-items:end center;padding:0}
+.sheet:not([class*=gift])>.panel{width:100%;max-height:92dvh;border-radius:20px 20px 0 0!important;padding:22px 18px calc(22px + env(safe-area-inset-bottom,0px))}
+.sheet input:not([type=checkbox]):not([type=radio]){min-height:50px;font-size:16px}
+.sheet .btn{min-height:50px}
+.sheet .check input{width:22px;height:22px}
+.sheet button.link{min-height:44px}
+#siCode{font-size:22px;letter-spacing:.3em;text-align:center}
+}
