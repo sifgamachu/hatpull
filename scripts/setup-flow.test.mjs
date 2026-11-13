@@ -12,7 +12,7 @@ test('draw and wish-only routes advance and backtrack through the correct stages
       assert.equal(nextSetupStep({...base,mode,step:ids[i]},-1),ids[Math.max(i-1,0)]);
     }
   }
-  assert.deepEqual(setupSteps('wish').map(s=>s.id),[1,2,4,5]);
+  assert.deepEqual(setupSteps('wish').map(s=>s.id),[1,2,4,6,7,8,5]);
 });
 test('roster validation handles organizer participation, duplicate names and capacity',()=>{
   assert.deepEqual(setupPeople(base),['Sam','Alex','Taylor']);
@@ -23,10 +23,10 @@ test('roster validation handles organizer participation, duplicate names and cap
   assert.match(validateSetup({...base,names:Array.from({length:200},(_,i)=>'Person '+i)},2,'2026-10-26'),/200/);
 });
 test('review rejects malformed money, invalid calendar days and past dates',()=>{
-  for(const budget of ['0','-10','1.2.3','1.234','10001','NaN'])assert.match(validateSetup({...base,budget},4,'2026-10-26'),/budget/);
-  for(const date of ['2026-10-25','2026-02-31','invalid'])assert.match(validateSetup({...base,date},4,'2026-10-26'),/date/);
+  for(const budget of ['0','-10','1.2.3','1.234','10001','NaN'])assert.match(validateSetup({...base,budget},7,'2026-10-26'),/budget/);
+  for(const date of ['2026-10-25','2026-02-31','invalid'])assert.match(validateSetup({...base,date},6,'2026-10-26'),/date/);
   assert.equal(validateSetup({...base,date:'',budget:''},4,'2026-10-26'),'');
-  assert.equal(validateSetup({...base,budget:'25.50'},4,'2026-10-26'),'');
+  assert.equal(validateSetup({...base,budget:'25.50'},7,'2026-10-26'),'');
 });
 test('legacy setup drafts migrate without losing roster, exclusions or sign-in recovery',()=>{
   const storage=(step,version)=>({getItem:()=>JSON.stringify({version,at:1000,q:'?occ=0',st:{...base,step,excl:{Sam:['Alex']}}})});
@@ -66,4 +66,16 @@ test('Secret Santa suggests the requested full dates and accepts custom dates',a
   assert.deepEqual(suggestDates('Secret Santa',new Date(2026,11,20)),['2026-12-24','2026-12-25']);
   assert.ok(suggestDates('Secret Santa',new Date(2026,11,26)).every(d=>d.startsWith('2027')));
   assert.equal(validateSetup({...base,date:'2026-12-20',customDate:true},4,'2026-10-27'),'');
+});
+
+ test('split decisions validate only their own screen, and all new stages recover after reload',()=>{
+  const incomplete={...base,name:'Friends',date:'invalid',budget:'bad'};
+  assert.equal(validateSetup(incomplete,4,'2026-11-13'),'');
+  assert.match(validateSetup(incomplete,6,'2026-11-13'),/date/);
+  assert.match(validateSetup({...incomplete,date:''},7,'2026-11-13'),/budget/);
+  for(const step of [4,6,7,8,5]){
+    const storage={getItem:()=>JSON.stringify({version:3,at:1000,q:'?occ=0',st:{...base,step}})};
+    assert.equal(readWizardDraft(storage,'?occ=0',2000).step,step);
+  }
+  assert.deepEqual(setupSteps('draw').map(s=>s.id),[1,2,3,4,6,7,8,5]);
 });

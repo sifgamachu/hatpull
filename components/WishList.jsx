@@ -21,7 +21,7 @@ import { WishCard, WishComposer } from "./WishCards";
 import { useGiftProducts, AmazonPriceDetails } from "./GiftProducts";
 import { GIFT_IDEAS, MAX_WISHES, MAX_PROFILE_BYTES, productAsin, productUrl, wishMatches } from "@/lib/gifts.mjs";
 
-import {CelebrationNav,JourneyHeading,HolidayGiftBanner} from './JourneyUI';
+import {CelebrationNav,JourneyHeading,HolidayGiftBanner,JourneyPaths} from './JourneyUI';
 
 export default function WishList({ gid, mid }) {
   const { state, error, tokens, reload } = useGroup(gid, mid);
@@ -54,7 +54,7 @@ export default function WishList({ gid, mid }) {
   const collectionCount = [listCount && `${listCount} Amazon list${listCount === 1 ? "" : "s"}`, (giftCount || !listCount) && `${giftCount} gift${giftCount === 1 ? "" : "s"}`].filter(Boolean).join(" · ");
 
   return (
-    <div className="journey-surface wishlist-page stack">
+    <div className="journey-surface wishlist-page stack"><JourneyPaths active={g.mode==='wish'?'wish':'draw'}/>
       <Festive on={xm} />
       {xm&&<HolidayGiftBanner/>}
       <Link href={`/g/${gid}`} className="link crumb">← {g.name}</Link>

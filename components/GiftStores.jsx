@@ -63,6 +63,7 @@ export default function GiftStores({target,budget,currency,disabled,onBusy,onSav
     focusDestination.current=null;
   },[store]);
   return <div className={`gift-stores shop-theme-${store||'lobby'}${preferenceStep?' is-preference-step':''}`}>
+    <ol className="gift-journey-progress" aria-label="Find and save gifts">{['Preferences','Choose a store','Save gifts'].map((label,index)=>{const current=preferenceStep?0:store?2:1;return <li key={label} aria-current={index===current?'step':undefined} data-complete={index<current}><span>{index<current?'✓':index+1}</span>{label}</li>;})}</ol>
     {preferenceStep&&<GiftPreferencePage value={preferences} onChange={updatePreferences} onContinue={()=>changePreferenceStep(false)} headingRef={preferenceHeading} budget={budget} currency={currency} disabled={previewsLoading||busy||selectionDisabled} showDemographics={showPreferences} contextPanel={contextPanel}/>}
     {(shopsVisited||!preferenceStep)&&<div hidden={preferenceStep}>
     <div className="shop-utility"><span><b>Hatpull</b> <span>gift finder</span></span><GiftListButton/></div>

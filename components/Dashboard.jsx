@@ -12,7 +12,7 @@ import { ExclusionGrid } from "./Wizard";
 import SignIn from "./SignIn";
 import OrganizerAccess, { isOrganizerError } from "./OrganizerAccess";
 import { GOOGLE_CLIENT_ID, EMAIL_SIGNIN } from "@/lib/auth";
-import {CelebrationNav,JourneyHeading} from './JourneyUI';
+import {CelebrationNav,JourneyHeading,JourneyPaths} from './JourneyUI';
 import {celebrationNextStep} from '@/lib/celebration-journey.mjs';
 import {confirmedReveal} from '@/lib/reveal-receipt.mjs';
 const SIGNIN_ON = !!(GOOGLE_CLIENT_ID || EMAIL_SIGNIN);
@@ -93,13 +93,13 @@ export default function Dashboard({ gid }) {
 
   const nextStep=celebrationNextStep(confirmed ? { ...state, me, members: visibleMembers } : state);
   return (
-    <div className="journey-surface celebration-page">
+    <div className="journey-surface celebration-page"><JourneyPaths active={g.mode==='wish'?'wish':'draw'}/>
       <Festive on={xm}/>
       <JourneyHeading eyebrow={isDraw?'Your Secret Santa':'Your wish-list group'} title={g.name} action={adm?<Link className="btn" href={`/invite/${gid}`}>Invite people →</Link>:null}><p>{[g.date&&fmtDate(g.date),g.budget&&money(g.cur,g.budget)+' per gift',ppl.length+' people'].filter(Boolean).join(' · ')}</p></JourneyHeading>
       <CelebrationNav gid={gid} mid={me?.id} admin={adm}/>
       <section className="journey-next"><span className="journey-next-symbol" aria-hidden="true">✦</span><div><p className="eyebrow">Your next step</p><h2>{nextStep.label}</h2><p>{nextStep.detail}</p></div><Link className="btn" href={nextStep.href}>{nextStep.action} →</Link></section>
       <div className="celebration-counts"><div><strong>{joined}/{ppl.length}</strong><span>people joined</span></div><div><strong>{wishN}/{ppl.length}</strong><span>wish lists started</span></div>{isDraw&&<div><strong>{drawnN}/{ppl.length}</strong><span>names revealed</span></div>}</div>
-      {welcome&&me&&<p className="note">You’re in, {me.name}. Your wish list and drawn name are saved here. Keep your personal link below for your next visit.</p>}
+      {welcome&&me&&<p className="note">You’re in, {me.name}. Your wish list{isDraw?' and drawn name are':' is'} saved here. Keep your personal link below for your next visit.</p>}
       <div className="dash">
 
         <div>
@@ -133,7 +133,7 @@ export default function Dashboard({ gid }) {
           <div className="panel stack">
             <h3>Progress</h3>
             <div className="steps-v">
-              {step(joined >= 1 ? "done" : "now", "Send your invitations", adm ? <><Link className="link" href={`/invite/${gid}`}>Share invitation</Link> · <button className="link" onClick={() => setSheet("remind")}>Send reminder</button></> : null)}
+              {step(joined === ppl.length ? "done" : "now", "Invite your group", adm ? <><Link className="link" href={`/invite/${gid}`}>Share invitation</Link> · <button className="link" onClick={() => setSheet("remind")}>Send reminder</button></> : null)}
               {step(joined === ppl.length ? "done" : joined ? "now" : "", "Join", `${joined} of ${ppl.length} joined`)}
               {isDraw && step(drawnN === ppl.length ? "done" : drawnN ? "now" : "", "Draw names", `${drawnN} of ${ppl.length} drew a name`)}
               {step(wishN === ppl.length ? "done" : wishN ? "now" : "", "Make wish lists", `${wishN} of ${ppl.length} have a wish list`)}

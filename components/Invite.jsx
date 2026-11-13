@@ -6,7 +6,7 @@ import { copy } from "@/lib/ui";
 import Festive from "./Festive";
 import OrganizerAccess from "./OrganizerAccess";
 
-import {JourneyHeading,CelebrationNav} from './JourneyUI';
+import {JourneyHeading,CelebrationNav,JourneyPaths} from './JourneyUI';
 
 export default function Invite({ gid }) {
   const { state, error, reload } = useGroup(gid);
@@ -20,7 +20,8 @@ export default function Invite({ gid }) {
   return (
     <div className="journey-surface invite-page stack">
       <Festive on={isXmas(g)} />
-      <JourneyHeading eyebrow="Your celebration is ready" title="Bring everyone together."><p>{g.name} is saved. Share one invitation, then start your own wish list.</p></JourneyHeading>
+      <JourneyPaths active={g.mode==='wish'?'wish':'draw'}/>
+      <JourneyHeading eyebrow="Your celebration is ready" title="Bring everyone together."><p>{g.name} is saved. {state.me?'Share one invitation, then start your own wish list.':'Share the invitation so everyone can join and add their wishes.'}</p></JourneyHeading>
       <CelebrationNav gid={gid} mid={state.me?.id} active="invite" admin/>
       <div className="invite-layout"><section className="panel stack invite-share">
         <p className="eyebrow">1 · Invite your group</p>
@@ -34,7 +35,7 @@ export default function Invite({ gid }) {
           <a className="btn ghost" href={`mailto:?subject=${encodeURIComponent(g.name)}&body=${encodeURIComponent(text)}`}>Email</a>
           <button className="btn ghost" onClick={() => copy(link)}>Copy link only</button>
         </div>
-      </section><aside className="stack"><section className="panel stack"><p className="eyebrow">2 · Make a little wish</p><h2>Give your gift-giver a head start.</h2><p>Choose your preferences and save gifts in your celebration’s budget.</p>{state.me&&<Link className="btn" href={`/g/${gid}/w/${state.me.id}`}>Start my wish list →</Link>}<Link className="btn ghost" href={`/g/${gid}`}>Open celebration</Link></section><OrganizerKey gid={gid}/></aside></div>
+      </section><aside className="stack"><section className="panel stack"><p className="eyebrow">2 · Make a little wish</p><h2>{state.me?'Give your gift-giver a head start.':'Follow your group’s wishes.'}</h2><p>{state.me?'Choose your preferences and save gifts in your celebration’s budget.':'You’re organizing without taking part. Open the celebration to follow who has joined and see their wish lists.'}</p>{state.me&&<Link className="btn" href={`/g/${gid}/w/${state.me.id}`}>Start my wish list →</Link>}<Link className="btn ghost" href={`/g/${gid}`}>Open celebration</Link></section><OrganizerKey gid={gid}/></aside></div>
     </div>
   );
 }

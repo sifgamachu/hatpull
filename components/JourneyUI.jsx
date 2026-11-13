@@ -1,5 +1,13 @@
 import Link from 'next/link';
 
+export function JourneyPaths({active}){
+  return <nav className="journey-paths" aria-label="Choose your gift journey">{[
+    ['draw','Draw names','/new?occ=0'],
+    ['wish','Share wish lists','/new?mode=wish'],
+    ['gifts','Find gifts','/gift-finder'],
+  ].map(([id,label,href])=><Link key={id} href={href} aria-current={active===id?'page':undefined}><span aria-hidden="true">✓</span>{label}</Link>)}</nav>;
+}
+
 export function JourneyHeading({eyebrow,title,children,action}){
   return <header className="journey-heading"><div><span className="holiday-heading-note" aria-hidden="true">✦ A little Christmas magic ✦</span>{eyebrow&&<p className="eyebrow">{eyebrow}</p>}<h1>{title}</h1>{children&&<div className="journey-heading-copy">{children}</div>}</div>{action}</header>;
 }
