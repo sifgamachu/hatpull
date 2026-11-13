@@ -28,8 +28,8 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <a className="skip" href="#app">Skip to content</a>
+        <div className="header-shell"><Header /></div>
         <div className="wrap">
-          <Header />
           <main id="app">{children}</main>
           <Footer />
         </div>

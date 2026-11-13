@@ -5,7 +5,7 @@ export function JourneyPaths({active}){
     ['draw','Draw names','/new?occ=0'],
     ['wish','Share wish lists','/new?mode=wish'],
     ['gifts','Find gifts','/gift-finder'],
-  ].map(([id,label,href])=><Link key={id} href={href} aria-current={active===id?'page':undefined}><span aria-hidden="true">✓</span>{label}</Link>)}</nav>;
+  ].map(([id,label,href])=><Link key={id} href={href} aria-current={active===id?'page':undefined}>{label}</Link>)}</nav>;
 }
 
 export function JourneyHeading({eyebrow,title,children,action}){
