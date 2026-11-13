@@ -133,3 +133,35 @@ html:root body:has(.journey-surface) .top .navlink{display:inline-flex;align-ite
 .sheet button.link{min-height:44px}
 #siCode{font-size:22px;letter-spacing:.3em;text-align:center}
 }
+
+/* Full-width account menu, with a compact column of actions. */
+.account-menu-trigger,.account-menu-close{display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;background:transparent;color:#444;cursor:pointer;font:400 26px/1 var(--f-body);border-radius:50%}
+.account-menu-trigger:hover,.account-menu-close:hover{background:#f4f4f4}
+.account-menu-avatar{display:grid;place-items:center;flex:none;width:34px;height:34px;padding:0;border:0;border-radius:50%;background:#f4f4f4;color:#0764ff;font:700 16px/1 var(--f-body);cursor:pointer}
+.sheet.account-menu-overlay{z-index:100;place-items:start center;padding:0;background:#0004;color:#292929;color-scheme:light}
+html:root body .sheet.account-menu-overlay>.panel{display:block;width:100%;max-width:none;max-height:100dvh;min-height:min(675px,100dvh);margin:0;padding:0;border:0;border-radius:0 0 18px 18px!important;background:#fff;box-shadow:none;overflow:auto}
+.account-menu-top{display:flex;align-items:center;justify-content:space-between;max-width:1160px;height:76px;margin:auto;padding:0 8px;gap:20px}
+.account-menu-top .brand{color:#292929}
+.account-menu-controls{display:flex;align-items:center;gap:12px}
+.account-menu-close{font-size:32px;font-weight:300}
+.account-menu-body{display:flex;flex-direction:column;gap:0;width:min(390px,calc(100% - 36px));margin:0 auto;font-size:17px;font-weight:650}
+.account-menu-group{position:relative;display:grid;gap:8px;padding:17px 0}
+.account-menu-group:before{content:"";position:absolute;top:0;left:28px;right:28px;height:1px;background:#ececec}
+.account-menu-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:11px 17px;border-radius:9px;background:#f5f5f5;color:#0764ff;text-decoration:none;line-height:1.4}
+.account-menu-row>span{font-size:27px;line-height:20px;font-weight:400}
+.account-menu-row:hover{background:#eaf1ff}
+.account-menu-row.account-menu-primary{background:#2e78ff;color:#fff}
+.account-menu-row.account-menu-primary:hover{background:#1464ed}
+.account-menu-session{display:flex;align-items:center;flex-direction:column;gap:3px;text-align:center;margin:8px 0 14px;overflow-wrap:anywhere}
+.account-menu-session .link{color:#0764ff;font-weight:650;font-size:16px;border:0;background:none;cursor:pointer}
+.account-menu-session button:disabled{opacity:.6}
+.account-menu-row:focus-visible,.account-menu-controls button:focus-visible,.account-menu-trigger:focus-visible,.account-menu-avatar:focus-visible{outline:3px solid #075bd8;outline-offset:3px}
+.account-menu-gifts{display:flex;justify-content:center;align-items:flex-end;gap:4px;height:65px;overflow:hidden;padding-top:20px;margin-top:auto}
+.account-menu-gifts>span{position:relative;display:block;width:58px;height:43px;background:#4f91ff;transform:rotate(-14deg);border-radius:3px 3px 0 0}
+.account-menu-gifts>span:nth-child(even){background:#e34c38;transform:rotate(12deg);height:36px}
+.account-menu-gifts>span:nth-child(3){background:#f17e6c;transform:rotate(-5deg);height:39px}
+.account-menu-gifts>span:after{content:"";position:absolute;left:-3px;right:-3px;top:0;height:13px;background:inherit;border-radius:3px}
+.account-menu-gifts>span>b{position:absolute;left:24px;top:0;bottom:0;width:11px;background:#ffcf40;z-index:1}
+.account-menu-gifts>span>i:before,.account-menu-gifts>span>i:after{content:"";position:absolute;width:20px;height:22px;top:-20px;border:6px solid #ffcf40;border-radius:60% 60% 0 60%;left:7px;transform:rotate(-10deg)}
+.account-menu-gifts>span>i:after{left:27px;transform:rotate(80deg)}
+@media(max-width:700px){.account-menu-top{height:70px;padding:0 18px}.account-menu-body{font-size:16px}.account-menu-group{padding:14px 0}.account-menu-session{margin-top:6px}.account-menu-row{min-height:48px}}

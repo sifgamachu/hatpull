@@ -1,14 +1,7 @@
 "use client";
-import { useState } from "react";
-import Link from "next/link";
-import { SITE } from "@/lib/core";
-import { useUser, GOOGLE_CLIENT_ID, EMAIL_SIGNIN } from "@/lib/auth";
-import SignIn from "./SignIn";
-
-export default function AccountButton() {
-  const user = useUser(); const [open, setOpen] = useState(false);
-  if (!GOOGLE_CLIENT_ID && !EMAIL_SIGNIN && !user) return null; // sign-in not switched on yet
-  if (user === undefined) return <span className="navlink" aria-hidden="true" style={{ visibility: "hidden" }}>Sign in</span>;
-  if (user) return <Link className="navlink" href={SITE.santa + "/account"} title={user.email}>Account</Link>;
-  return <><button className="navlink linkish" onClick={() => setOpen(true)}>Sign in</button>{open && <SignIn close={() => setOpen(false)} />}</>;
+import { useUser } from "@/lib/auth";
+export default function AccountButton({ onOpen }) {
+  const user = useUser();
+  const initial = (user?.user_metadata?.full_name || user?.email || "A").slice(0, 1).toUpperCase();
+  return <button type="button" className={user ? "account-menu-avatar" : "navlink linkish"} onClick={onOpen} aria-label="Open account menu" aria-haspopup="dialog">{user ? initial : "Account"}</button>;
 }
