@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { SITE } from "@/lib/core";
 import AccountButton from "./AccountButton";
@@ -9,15 +10,14 @@ export default function Header() {
         <svg className="b-x" viewBox="0 0 32 32" aria-hidden="true"><path d="M5 23C6 14 12 7 20 8c4 .5 6.5 3.5 7.5 7-2-1.6-4-2-5-1.4L23 23z" fill="#C62F42" /><circle cx="27.5" cy="16" r="3" fill="#FFFFFF" stroke="#E6E1D6" /><rect x="3" y="21.5" width="22" height="6" rx="3" fill="#FFFFFF" stroke="#E6E1D6" /></svg>
         Hatpull
       </Link>
-      <nav className="row" style={{ gap: 6, justifyContent: "flex-end" }} aria-label="Main">
+      <div className="header-actions"><AccountButton /><details className="header-menu" onKeyDown={event => { if (event.key === 'Escape') { event.currentTarget.open = false; event.currentTarget.querySelector('summary').focus(); } }}><summary aria-label="Open navigation"><span aria-hidden="true">☰</span></summary><nav className="header-menu-links" aria-label="Main" onClick={event => { if (event.target.closest('a')) event.currentTarget.closest('details').open = false; }}>
         <Link className="navlink picker-nav" href={SITE.picker + "/"}>Name picker</Link>
         <Link className="navlink" href={SITE.santa + "/"}>Home</Link>
         <Link className="navlink" href={SITE.santa + "/my"}>My celebrations</Link>
         <Link className="navlink" href={SITE.santa + "/wish-lists"}>My wish lists</Link>
         <Link className="navlink" href={SITE.santa + "/gift-finder"}>Find gifts</Link>
-        <AccountButton />
         <Link className="btn small" href={SITE.santa + "/new"}>Draw names</Link>
-      </nav>
+      </nav></details></div>
     </header>
   );
 }

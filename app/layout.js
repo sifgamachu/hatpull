@@ -1,4 +1,5 @@
 import "./globals.css";
+import "./drawnames-style.css";
 import "@fontsource-variable/outfit";
 import "@fontsource/young-serif/400.css";
 import "@fontsource/jetbrains-mono/500.css";

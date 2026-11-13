@@ -1,0 +1,79 @@
+/* Public DrawNames reference, studied November 13, 2026.
+   Scoped to the gift-exchange journey; Hatpull artwork and product behavior stay independent. */
+.header-actions{display:flex;align-items:center;gap:12px}
+.header-menu{position:relative}
+.header-menu summary{display:grid;place-items:center;list-style:none;width:44px;height:44px;cursor:pointer;border-radius:8px;font-size:25px}
+.header-menu summary::-webkit-details-marker{display:none}
+.header-menu summary:hover{background:var(--soft)}
+.header-menu summary:focus-visible{outline:3px solid #246bfe;outline-offset:2px}
+.header-menu-links{position:absolute;right:0;top:54px;z-index:40;display:flex;flex-direction:column;align-items:stretch;gap:5px;width:260px;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 35px #24283920}
+.header-menu-links .navlink{padding:12px!important;font-size:15px!important}
+.header-menu-links .btn{margin-top:8px}
+html:root body:has(.journey-surface){--paper:#dce2ff;--card:#fff;--ink:#292929;--muted:#626262;--line:#dedede;--ribbon:#246bfe;--ribbon-ink:#fff;--pine:#075bd8;--soft:#f3f5fc;--f-display:"Outfit Variable",system-ui,sans-serif;--r:20px;background-color:var(--paper);background-image:radial-gradient(circle at 20px 30px,#ffffff95 0 2px,transparent 4px),radial-gradient(circle at 100px 160px,#ffffff80 0 3px,transparent 5px);background-size:230px 270px,310px 340px;color:var(--ink);color-scheme:light}
+html:root body:has(.journey-surface)>.wrap{max-width:1160px}
+html:root body:has(.journey-surface) .top{position:relative;z-index:25;flex-wrap:nowrap;justify-content:space-between;min-height:76px;margin:0 -16px 28px;padding:14px 24px;background:#fff;border:0;border-radius:0 0 18px 18px;box-shadow:0 4px 15px #3038610b}
+html:root body:has(.journey-surface) .brand{font-family:var(--f-body);font-weight:600;font-size:25px;letter-spacing:-.04em}
+html:root body:has(.journey-surface) .top nav{width:260px;align-items:stretch;justify-content:flex-start!important}
+html:root body:has(.journey-surface) .top nav>.btn{display:flex}
+html:root body:has(.journey-surface) h1,html:root body:has(.journey-surface) h2,html:root body:has(.journey-surface) h3{font-weight:750;letter-spacing:-.025em}
+html:root body:has(.journey-surface) .page{padding-top:0}
+html:root body:has(.journey-surface) .btn{border-radius:9px;font-weight:700;min-height:48px;background:#246bfe;color:#fff}
+html:root body:has(.journey-surface) .btn:hover{background:#0759e7;filter:none}
+html:root body:has(.journey-surface) .journey-surface .btn:not(.ghost){background:#246bfe;color:#fff;border-color:#246bfe}
+html:root body:has(.journey-surface) .journey-surface .btn:not(.ghost):hover{background:#0759e7}
+html:root body:has(.journey-surface) .btn.ghost{background:#fff;color:#075bd8;box-shadow:inset 0 0 0 1px #cbd8ed}
+html:root body:has(.journey-surface) .link{color:#075bd8}
+html:root body:has(.journey-surface) .panel{background:#fff;border-color:#e4e7ed;box-shadow:0 5px 18px #30386109}
+html:root body:has(.journey-surface) input,html:root body:has(.journey-surface) select,html:root body:has(.journey-surface) textarea{border-color:#c9c9c9;border-radius:7px;background:#fff;color:#292929}
+html:root body:has(.journey-surface) input[type=checkbox],html:root body:has(.journey-surface) input[type=radio]{accent-color:#246bfe}
+html:root body:has(.journey-surface) .reference-hero{grid-template-columns:1.15fr 1fr;min-height:510px;gap:18px;padding:46px;background:#fff;border:0;border-radius:24px;box-shadow:0 5px 22px #3038610b;overflow:hidden}
+.reference-hero h1{font-size:clamp(40px,4.8vw,62px);line-height:1.08;max-width:12ch;margin:0 0 24px;letter-spacing:-.03em!important}
+.reference-benefits{list-style:none;padding:0;margin:0 0 24px;font-size:17px;line-height:1.6}
+.reference-benefits li{position:relative;padding-left:28px}
+.reference-benefits li:before{content:"✓";position:absolute;left:0;color:#e80f1b;font-weight:800;font-size:21px}
+.reference-benefits a{color:#075bd8;text-decoration:none;font-weight:750}
+.reference-benefits a:hover{text-decoration:underline}
+.reference-hero .reference-trust{font-size:16px!important;line-height:1.65!important;margin-bottom:24px}
+html:root body:has(.journey-surface) .reference-start{justify-content:space-between;width:min(100%,320px);background:#ed101b!important;color:#fff!important;font-size:17px;padding:13px 18px}
+.reference-start span{font-size:27px;line-height:1}
+.reference-sample{display:block;margin-top:16px;width:fit-content}
+.reference-hero .journey-art{height:360px;background:radial-gradient(ellipse at 50% 50%,#e6ebff 0 60%,transparent 61%)}
+.reference-hero .present-tall{background:#246bfe}.reference-hero .present-wide{background:#ef3743}
+.reference-hero .journey-present:after{background:#ffce37}.reference-hero .journey-present i,.reference-hero .journey-present b{border-color:#ffce37}
+.reference-hero .journey-orbit{border-color:#d1dbfa}
+.reference-hero .journey-art-note{background:#fff;border-color:#e5e8f0}.reference-hero .journey-art-note strong{color:#292929}
+html:root body:has(.journey-surface) .section{margin-top:28px;padding:30px;background:#fff;border-radius:22px}
+html:root body:has(.journey-surface) .section>h2{font-size:30px;margin-bottom:20px}
+html:root body:has(.journey-surface) .start-choice{background:#fff;border-color:#e4e7ed;border-radius:16px;padding:24px}
+html:root body:has(.journey-surface) .start-choice:hover{border-color:#246bfe;background:#f7f9ff}
+html:root body:has(.journey-surface) .start-choice-action{color:#075bd8}
+html:root body:has(.journey-surface) .how div{background:#f3f5fc}
+html:root body:has(.journey-surface) .how div::before{color:#246bfe;font-weight:750}
+html:root body:has(.journey-surface) .cta-band{background:#fff;border-radius:22px}
+html:root body:has(.journey-surface) .journey-surface .cta-band>.btn{background:#ed101b}
+html:root body:has(.journey-surface)>.wrap>footer{padding:32px 24px;background:#fff;border-radius:22px;color:#626262;line-height:1.7}
+html:root body:has(.journey-surface) .garland{display:none}
+html:root body:has(.journey-surface) .journey-heading{border:0;background:#fff;border-radius:20px;padding:26px;margin-bottom:24px}
+html:root body:has(.journey-surface) .holiday-heading-note{display:none}
+html:root body:has(.journey-surface) .journey-nav{background:#fff;border:0;border-radius:12px;padding:8px}
+html:root body:has(.journey-surface) .journey-nav a[aria-current=page]{background:#246bfe;color:#fff}
+html:root body:has(.journey-surface) .journey-next,html:root body:has(.journey-surface) .setup-organizer{background:#eff3ff;border-color:#d6e2fa}
+html:root body:has(.journey-surface) .setup-layout{grid-template-columns:330px minmax(0,560px);justify-content:center;gap:48px}
+html:root body:has(.journey-surface) .setup-sidebar h1{color:#292929}
+html:root body:has(.journey-surface) .setup-card{border:1.5px solid #ceddf3!important;background:#fff;box-shadow:0 12px 35px #3038610d!important;border-radius:18px}
+html:root body:has(.journey-surface) .setup-steps li[aria-current=step]{color:#075bd8}
+html:root body:has(.journey-surface) .setup-steps li[aria-current=step]>span{background:#246bfe;border-color:#246bfe;box-shadow:0 0 0 5px #edf2ff}
+html:root body:has(.journey-surface) .setup-option:hover,html:root body:has(.journey-surface) .setup-option[aria-pressed=true]{border-color:#246bfe;background:#f1f5ff}
+html:root body:has(.journey-surface) .setup-option[aria-pressed=true] .setup-selection{background:#246bfe;border-color:#246bfe}
+html:root body:has(.journey-surface) .progress span{background:#246bfe}
+html:root body:has(.journey-surface) .gift-preference-page,html:root body:has(.journey-surface) .wish-profile-choices{background:#fff;color:#292929;border-color:#ceddf3;border-radius:16px}
+html:root body:has(.journey-surface) .preference-option:has(input:checked){background:#eef4ff;border-color:#246bfe;color:#075bd8;box-shadow:inset 0 0 0 1px #246bfe}
+html:root body:has(.journey-surface) .gift-preference-page .preference-option{background:#fff}
+html:root body:has(.journey-surface) .gift-preference-summary>span,html:root body:has(.journey-surface) .gift-preference-budget{background:#eff3ff;color:#075bd8}
+html:root body:has(.journey-surface) .holiday-gift-banner{background:#fff;border:1px solid #e2e7f3;color:#292929}
+html:root body:has(.journey-surface) .holiday-gift-banner strong{color:#292929}
+html:root body:has(.journey-surface) .holiday-gift-banner p{color:#626262}
+html:root body:has(.journey-surface) .gift-list-dock .gift-list-button{background:#246bfe}
+@media(max-width:950px){html:root body:has(.journey-surface) .reference-hero{padding:32px;grid-template-columns:1.15fr .85fr}.reference-hero h1{font-size:48px}html:root body:has(.journey-surface) .setup-layout{grid-template-columns:260px minmax(0,1fr);gap:24px}}
+@media(max-width:700px){html:root body:has(.journey-surface) .top{padding:12px 18px;margin-bottom:22px;gap:12px}html:root body:has(.journey-surface) .reference-hero{grid-template-columns:1fr;padding:30px 24px 20px;gap:8px}.reference-hero h1{font-size:44px;max-width:12ch}.reference-benefits{font-size:16px}.reference-hero .journey-art{height:265px;max-width:360px;width:100%;justify-self:center}html:root body:has(.journey-surface) .reference-start{font-size:16px;padding:12px 16px!important}html:root body:has(.journey-surface) .section{padding:24px 20px}html:root body:has(.journey-surface) .section>h2{font-size:26px}html:root body:has(.journey-surface) .setup-layout{display:block}html:root body:has(.journey-surface) .journey-heading{padding:22px}.header-actions{gap:4px}}
+@media(prefers-reduced-motion:reduce){html:root body:has(.journey-surface) *{scroll-behavior:auto}}
