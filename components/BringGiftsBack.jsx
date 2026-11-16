@@ -63,7 +63,7 @@ export function StoreReturnPrompt({ target, disabled }) {
   if (!open || !target?.mid) return null;
   const name = open === 'amazon' ? 'Amazon' : 'eBay';
   return <Sheet className="store-return" onClose={() => setOpen(null)}>
-    <div><p className="eyebrow">Welcome back from {name}</p><h2>Found something? Save it now.</h2><p className="small muted">Copied a product link on {name}? Tap <b>Paste & save gift</b>. Nothing copied yet? Go back, tap <b>Share → Copy link</b> on the product, then return here.</p></div>
+    <div><p className="eyebrow">Welcome back from {name}</p><h2>Found something? Save it now.</h2><p className="small muted">Copied a product link on {name}? Tap <b>Paste & save gift</b>. Nothing copied yet? Go back to the product, copy its link (<b>Share → Copy link</b>, or the address at the top of your browser), then return here. Adding it to your Amazon cart or list doesn’t copy it.</p><p className="small muted">On a computer, the <b>🎁 Save to Hatpull</b> bookmark button below skips copying altogether.</p></div>
     <QuickWish target={target} disabled={disabled} source="return" bare onSaved={() => {}}/>
     <button className="btn ghost small" onClick={() => setOpen(null)}>Not now</button>
   </Sheet>;

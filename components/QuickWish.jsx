@@ -30,11 +30,15 @@ export default function QuickWish({ target, initial, onSaved, onBusy, disabled =
   }
   async function pasteAndSave() {
     if (!ready || busy) return;
-    setError(''); setBusy(true);
+    setError(''); setBusy(true); let noLink = false;
     try {
       if (!navigator.clipboard?.readText) throw new Error('unavailable');
-      const text = await navigator.clipboard.readText(); setValue(text.slice(0, 8192)); await save(text);
-    } catch { setError('Paste the copied link into the box below, then choose Save gift.'); inputRef.current?.focus(); }
+      const text = await navigator.clipboard.readText();
+      // Don't drop unrelated copied text into the box: only accept a clipboard that holds one product link.
+      try { giftFromInput(text); } catch { noLink = true; throw new Error('no link'); }
+      setValue(text.slice(0, 8192)); await save(text);
+    } catch {
+      if (noLink) { setError('What you last copied isn’t a product link. On the product page, choose Share → Copy link (or copy the address from the top of your browser), then tap Paste & save gift again.'); return; } setError('Paste the copied link into the box below, then choose Save gift.'); inputRef.current?.focus(); }
     finally { setBusy(false); }
   }
   return <section className="quick-wish stack" aria-label="Save a gift link">
