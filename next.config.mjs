@@ -19,7 +19,10 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/gift-share-worker.js", headers: [{ key: "Cache-Control", value: "no-cache" }] }, {
+    return [{ source: "/.well-known/apple-app-site-association", headers: [
+      { key: "Content-Type", value: "application/json" },
+      { key: "Cache-Control", value: "public, max-age=3600" },
+    ] }, { source: "/gift-share-worker.js", headers: [{ key: "Cache-Control", value: "no-cache" }] }, {
       source: "/(.*)",
       headers: [
         { key: "X-Content-Type-Options", value: "nosniff" },

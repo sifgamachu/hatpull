@@ -1,0 +1,23 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["B6PA9QSBVA.com.hatpull.ios"],
+        "components": [
+          { "/": "/" },
+          { "/": "/new" },
+          { "/": "/my" },
+          { "/": "/wish-lists" },
+          { "/": "/wish-lists/create" },
+          { "/": "/friends" },
+          { "/": "/gift-finder" },
+          { "/": "/gift-finder/preferences" },
+          { "/": "/account" },
+          { "/": "/join/*" },
+          { "/": "/g/*" },
+          { "/": "/invite/*" }
+        ]
+      }
+    ]
+  }
+}

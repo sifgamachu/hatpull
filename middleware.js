@@ -13,6 +13,8 @@ export function middleware(req) {
   const host = (req.headers.get("host") || "").toLowerCase().replace(/^www\./, "").split(":")[0];
   const url = req.nextUrl.clone();
   const santaSite = host === SANTA_HOST;
+  // Apple requires a direct 200 on every associated domain.
+  if (santaSite && url.pathname === "/.well-known/apple-app-site-association") return NextResponse.next();
 
 
   // Keep original paths and invitation queries. API callbacks retain their

@@ -6,7 +6,7 @@ export async function testDatabase({ enforceOrganizer = true } = {}) {
   const db = new PGlite({ extensions: { pgcrypto } });
   await db.exec(`create role anon; create role authenticated; create role service_role;
     create schema extensions; create schema auth;
-    create table auth.users(id uuid primary key, is_anonymous boolean default false, email_confirmed_at timestamptz, phone_confirmed_at timestamptz);
+    create table auth.users(id uuid primary key, email text, is_anonymous boolean default false, email_confirmed_at timestamptz, phone_confirmed_at timestamptz);
     create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('test.uid',true),'')::uuid $$;
     create function auth.jwt() returns jsonb language sql stable as $$ select '{}'::jsonb $$;`);
   await db.exec(await readFile(new URL('../supabase/schema.sql', import.meta.url), 'utf8'));

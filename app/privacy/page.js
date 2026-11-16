@@ -8,7 +8,7 @@ export default function Page() {
     <div className="page prose">
       <Festive on={false} />
       <h1>Privacy Policy</h1>
-      <p className="muted">Last updated: October 24, 2026</p>
+      <p className="muted">Last updated: November 15, 2026</p>
       <p>Hatpull (the Secret Santa generator at hatpull.com and the name picker at onlinenamepickertool.com) is run by {who} ("we", "us"). This policy explains what we collect, why, and the choices you have. Contact us any time at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>{SITE.address ? "" : " (our mailing address is available on request)"}.</p>
 
       <h2>What we collect</h2>
@@ -41,6 +41,9 @@ export default function Page() {
       <h2>Cookies and storage</h2>
       <p>We store your private celebration links and, if you sign in, your sign-in session in your browser's local storage. Setup drafts, including entered names and settings, are also saved in browser storage so they survive sign-in. Drafts can be restored for six hours and are cleared when creation succeeds; you can clear browser storage to remove them sooner. We don't set advertising cookies.</p>
       <p>The Gift Finder remembers your selected wish list in browser storage. A product you explicitly share to Hatpull can be restored from storage on this device for up to one hour while you choose a list or sign in; its draft is cleared after saving. We read the clipboard only when you press Paste &amp; save. Installing Hatpull adds sharing support on compatible devices; it does not cache private pages for offline access.</p>
+      <h2>The Hatpull mobile app</h2>
+      <p>The mobile app uses the same Hatpull account and celebration database as the website. Sign-in sessions and saved invitation access are stored in encrypted device storage (iOS Keychain or Android Keystore-backed storage). On iOS, this storage may survive reinstalling the app. You can remove saved invitations from My account in the app. Signing out ends the app session but retains guest invitation links unless you remove them.</p>
+      <p>Gift searches send search words and budget filters to Hatpull and the selected store as described below. The app does not request access to your contacts, microphone, camera or location. When you choose Share invitation, your device opens its share sheet; you choose the destination and whether to send. Account deletion is available in My account.</p>
       <h2>Visitor statistics</h2>
       <p>We use Vercel Web Analytics to count page views. It doesn't use cookies and doesn't track you across other websites. Private celebration and invitation links are removed from the page addresses it records.</p>
 
