@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.hatpull.android",
+      "sha256_cert_fingerprints": [
+        "1E:5E:12:CC:7B:A9:B9:B6:2D:21:B2:05:96:E6:EE:9F:77:D3:24:2D:6A:75:19:8B:2C:67:EC:83:D4:93:3A:16"
+      ]
+    }
+  }
+]
