@@ -1,12 +1,12 @@
 import { SITE } from "@/lib/core";
 import Festive from "@/components/Festive";
-export const metadata = { title: "Contact", description: "Get in touch with the Hatpull team.", alternates: { canonical: "https://hatpull.com/contact" } };
+export const metadata = { title: { absolute: "Contact Hatpull | Official Support for hatpull.com" }, description: "Contact the Hatpull team for help with invitations, private name draws, wish lists, or organizer access at hatpull.com.", alternates: { canonical: "https://hatpull.com/contact" } };
 export default function Page() {
   return (
     <div className="page prose">
       <Festive on={false} />
-      <h1>Contact us</h1>
-      <p>We'd love to hear from you, whether it's a question about your celebration, a bug, a feature idea, or a partnership.</p>
+      <h1>Contact Hatpull</h1>
+      <p>This is the support page for <a href="https://hatpull.com/">hatpull.com</a>, the Secret Santa organizer from Teregna LLC. Contact us about a celebration, a bug, a feature idea, or a partnership.</p>
       <div className="panel stack" style={{ marginTop: 12 }}>
         <p style={{ margin: 0 }}><b>Email:</b> <a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
         <p className="muted small" style={{ margin: 0 }}>We usually reply within two business days, and faster in December.</p>
