@@ -7,12 +7,15 @@ import { Bow } from "@/components/bits";
 import { LANDINGS } from "@/lib/landings";
 import { upcomingOccasions, fmtDate, daysUntil, XMAS_OCC } from "@/lib/core";
 
+const homepageTitle = "Hatpull | Free Secret Santa Generator & Wish Lists";
+const homepageDescription = "Organize your Secret Santa on Hatpull. Draw names for 3–200 people, set exclusions, and share private matches and gift wish lists with one invitation.";
+
 export const metadata = {
-  title: { absolute: "Free Secret Santa Generator & Wish Lists | Hatpull" },
-  description: "Draw Secret Santa names for 3–200 people, exclude couples and share gift wish lists. Organizers sign in; participants join by link. Free to use.",
+  title: { absolute: homepageTitle },
+  description: homepageDescription,
   alternates: { canonical: "https://hatpull.com/" },
   verification: { other: { "msvalidate.01": "F4861D58DE9F22DD604DD37B0F0CE192" } },
-  openGraph: { title: "Free Secret Santa Generator & Wish Lists | Hatpull", description: "Draw names, keep couples apart, share wish lists. Free, with easy participant invitations.", url: "https://hatpull.com/", siteName: "Hatpull", type: "website" },
+  openGraph: { title: homepageTitle, description: homepageDescription, url: "https://hatpull.com/", siteName: "Hatpull", type: "website" },
 };
 export const revalidate = 3600;
 
