@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Festive from "@/components/Festive";
-export const metadata = { title: "How Secret Santa Works: Step-by-Step Guide", description: "How to run an online Secret Santa: add names, set exclusions, share one invitation link, draw names and share wish lists.", alternates: { canonical: "https://hatpull.com/how-it-works" } };
+export const metadata = { title: "How Secret Santa Works: Step-by-Step Guide", description: "Run a Secret Santa with Hatpull. Add names, set exclusions, share one invitation link, draw names and share wish lists.", alternates: { canonical: "https://hatpull.com/how-it-works" } };
 export default function Page() {
   const steps = [
     ["Start a celebration", "Open the Secret Santa generator, enter your name and the names of everyone taking part. Three people or more."],
@@ -15,7 +15,7 @@ export default function Page() {
   return (
     <div className="page prose">
       <Festive on />
-      <h1>How Secret Santa works</h1>
+      <h1>How Secret Santa works on Hatpull</h1>
       <p className="muted">Running a gift exchange online takes about a minute to set up. Here's the whole process.</p>
       <ol className="stack" style={{ paddingLeft: 20 }}>{steps.map(([t, d]) => <li key={t}><b>{t}.</b> {d}</li>)}</ol>
       <h2>Secret Santa rules that keep it fun</h2>
