@@ -26,7 +26,7 @@ export default function Footer() {
         {LANDINGS.map(l => <Link key={l.slug} href={`${SITE.santa}/${l.slug}`}>{l.nav}</Link>)}
       </div>
       <div className="tiny" style={{ marginTop: 8 }}>{AMAZON_DISCLOSURE}</div>
-      <div className="tiny" style={{ marginTop: 4 }}>© {new Date().getFullYear()} Hatpull, a Teregna product.</div>
+      <div className="tiny" style={{ marginTop: 4 }}>© {new Date().getFullYear()} Hatpull.</div>
     </footer>
   );
 }
